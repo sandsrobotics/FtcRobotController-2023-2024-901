@@ -69,8 +69,8 @@ public class TeleopForza extends LinearOpMode {
         Odometry odo = new Odometry(pt);
         odo.raise();
 
-        Lifter l = new Lifter(r);
-        new LifterTeleop(l);
+        //Lifter l = new Lifter(r);
+        //new LifterTeleop(l);
 
         DecimalFormat df = new DecimalFormat("#0.0");
 
@@ -100,7 +100,7 @@ public class TeleopForza extends LinearOpMode {
             packet.fieldOverlay().setStroke("red").strokeLine(x,y,x+x1,y+y1);
 
             // Debug lines
-            telemetry.addData("opmode name",r.opMode.getClass().getName());
+            /*telemetry.addData("opmode name",r.opMode.getClass().getName());
             telemetry.addData("opmode name",r.opMode.getClass().getAnnotation(TeleOp.class));
 
             telemetry.addData("limit hit", !l.getHardware().limitSwitch.getState());
@@ -114,7 +114,7 @@ public class TeleopForza extends LinearOpMode {
                     + df.format(l.getLeftUltra()) + " : "
                     + df.format(l.getMidUltra()) + " : "
                     + df.format(l.getRightUltra()) +"]");
-
+*/
             if(gamepad1.dpad_down) telemetry.addData("tasks", r.getTaskManager());
             if(gamepad1.dpad_down) telemetry.addData("events", r.getEventManager());
             r.opMode.telemetry.addData("time", System.currentTimeMillis() - start);

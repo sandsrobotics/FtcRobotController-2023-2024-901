@@ -1,16 +1,17 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.depricated.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 @Disabled
-@Autonomous(name="6 Auto-RIGHT-Tall", group="Test")
-public class AutoRightTall extends AutoRightDangerousAndAll {
+@Autonomous(name="Auto-no move", group="Test")
+public class NoMoveAuto extends AutoRightDangerousAndAll {
     @Override
     public void initAuto(){
         isRight = true;
+        parkOnly = true;
         transformFunc = (v) -> v;
-        targetPole = 2;
+        shutdownps = true;
     }
 
 }

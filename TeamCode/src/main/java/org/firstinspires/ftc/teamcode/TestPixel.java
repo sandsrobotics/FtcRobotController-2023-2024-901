@@ -76,8 +76,6 @@ public class TestPixel extends LinearOpMode {
             telemetry.addData("tile position", fieldToTile(pt.getCurrentPosition()));
             telemetry.addData("relative position", pt.getRelativePosition());
 
-            //if(gamepad1.dpad_down) telemetry.addData("tasks", r.getTaskManager());
-            //if(gamepad1.dpad_down) telemetry.addData("events", r.getEventManager());
             r.opMode.telemetry.addData("time", System.currentTimeMillis() - start);
 
             if(gamepad1.dpad_down) {
