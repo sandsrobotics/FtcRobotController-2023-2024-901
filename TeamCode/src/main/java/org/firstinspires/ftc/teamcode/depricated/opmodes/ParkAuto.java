@@ -1,9 +1,6 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.depricated.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-
-import om.self.ezftc.utils.AngleMath;
 
 @Autonomous(name="1 park auto", group="Test")
 public class ParkAuto extends AutoRightDangerousAndAll {
