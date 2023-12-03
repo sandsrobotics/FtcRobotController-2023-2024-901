@@ -53,7 +53,7 @@ public class IntakeSettings {
                 0,
                 1,
                 .5,
-                3199,
+                8699,
                 201,
                 0,
                 .46,

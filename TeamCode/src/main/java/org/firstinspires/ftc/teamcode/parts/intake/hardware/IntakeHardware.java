@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.parts.intake.hardware;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -19,13 +20,15 @@ public class IntakeHardware {
     public final Servo sweepLiftServo;
     public final DcMotorEx robotLiftMotor;
     public final Servo grabberServo;
+    public final DigitalChannel hangLiftLimitSwitch;
 
-    public IntakeHardware(DcMotor sliderMotor, DcMotor sweeperMotor, Servo sweepLiftServo, DcMotorEx robotLiftMotor, Servo grabberServo) {
+    public IntakeHardware(DcMotor sliderMotor, DcMotor sweeperMotor, Servo sweepLiftServo, DcMotorEx robotLiftMotor, Servo grabberServo, DigitalChannel hangLiftLimitSwitch) {
         this.sweeperMotor = sweeperMotor;
         this.sliderMotor = sliderMotor;
         this.sweepLiftServo = sweepLiftServo;
         this.robotLiftMotor = robotLiftMotor;
         this.grabberServo = grabberServo;
+        this.hangLiftLimitSwitch = hangLiftLimitSwitch;
     }
 
     public static IntakeHardware makeDefault(HardwareMap hardwareMap) {
@@ -34,13 +37,16 @@ public class IntakeHardware {
         ServoSettings sweepLiftServoSettings = new ServoSettings(ServoSettings.Number.ZERO_B, Servo.Direction.FORWARD);
         MotorSettings robotLiftMotorSettings = new MotorSettings(MotorSettings.Number.TWO_B, DcMotorSimple.Direction.FORWARD, DcMotor.ZeroPowerBehavior.BRAKE, DcMotor.RunMode.RUN_TO_POSITION, robotLiftHoldPower);
         ServoSettings grabberServoSettings = new ServoSettings(ServoSettings.Number.ZERO, Servo.Direction.FORWARD);
+        DigitalChannel limit = hardwareMap.get(DigitalChannel.class, "digital0");
+        limit.setMode(DigitalChannel.Mode.INPUT);
 
         return new IntakeHardware(
                 slideMotorSettings.makeMotor(hardwareMap),
                 sweepMotorSettings.makeMotor(hardwareMap),
                 sweepLiftServoSettings.makeServo(hardwareMap),
                 robotLiftMotorSettings.makeExMotor(hardwareMap),
-                grabberServoSettings.makeServo(hardwareMap)
+                grabberServoSettings.makeServo(hardwareMap),
+                limit
         );
     }
 }

@@ -37,6 +37,7 @@ import om.self.task.core.TaskEx;
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
+@Disabled
 @TeleOp(name="3 odo bot test w/ relative move", group="Linear Opmode")
 public class Test extends LinearOpMode {
     @Override

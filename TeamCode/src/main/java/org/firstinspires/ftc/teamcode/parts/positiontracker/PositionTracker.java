@@ -85,9 +85,11 @@ public class PositionTracker extends LoopedPartImpl<Robot, PositionTrackerSettin
             angle -= offset;
             imuAngle = AngleMath.scaleAngle(angle);
             setCurrentPosition(currentPosition.withZ(imuAngle));
+            //PositionTicket currentPosTix = new PositionTicket(currentPosition.withZ(imuAngle));
+            //tickets.put(positionSourceId, currentPosTix);
+
         }
     }
-
 
     @Override
     public void onBeanLoad() {

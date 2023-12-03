@@ -1,7 +1,9 @@
 package org.firstinspires.ftc.teamcode.depricated.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
+@Disabled
 @Autonomous(name="1 park auto", group="Test")
 public class ParkAuto extends AutoRightDangerousAndAll {
     @Override

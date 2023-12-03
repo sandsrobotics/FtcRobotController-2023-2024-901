@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.parts.intake;
 
+import com.qualcomm.robotcore.hardware.DcMotor;
+
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.parts.intake.hardware.IntakeHardware;
 import org.firstinspires.ftc.teamcode.parts.intake.settings.IntakeSettings;
@@ -107,8 +109,15 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
 
         if (power < 0) {
             power *= getSettings().maxDownLiftSpeed;
-            if (getHardware().robotLiftMotor.getCurrentPosition() <= getSettings().minLiftPosition)
+            //if (getHardware().robotLiftMotor.getCurrentPosition() <= getSettings().minLiftPosition)
+            if (getHardware().hangLiftLimitSwitch.getState() == true) {
+                if (getHardware().robotLiftMotor.getCurrentPosition() != 0) {
+                    getHardware().robotLiftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    getHardware().robotLiftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    setRobotLiftPositionUnsafe(0);
+                }
                 power = 0;
+            }
         } else {
             power *= getSettings().maxUpLiftSpeed;
             if (getHardware().robotLiftMotor.getCurrentPosition() >= getSettings().maxLiftPosition)
@@ -137,11 +146,12 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
         setSweepPosition(control.sweepLiftPosition);
         setGrabPosition(control.grabberPosition);
         robotLiftWithPower(control.robotLiftPosition, false);
-        parent.opMode.telemetry.addData("Slider Position", getSlidePosition());
+        parent.opMode.telemetry.addData("Slider height", getSlidePosition());
         parent.opMode.telemetry.addData("Sweep Speed", control.sweeperPower);
-        parent.opMode.telemetry.addData("Lifter height", getRobotLiftPosition());
+        parent.opMode.telemetry.addData("Lift height", getRobotLiftPosition());
         parent.opMode.telemetry.addData("dpad",control.robotLiftPosition);
         parent.opMode.telemetry.addData("Lift Current", getHardware().robotLiftMotor.getCurrent(CurrentUnit.MILLIAMPS));
+        parent.opMode.telemetry.addData("Lift Switch", getHardware().hangLiftLimitSwitch.getState() ? "closed" : "open");
     }
 
     @Override
