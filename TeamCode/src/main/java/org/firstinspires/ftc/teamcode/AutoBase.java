@@ -56,7 +56,7 @@ public class AutoBase extends LinearOpMode{
         Robot r = new Robot(this);
         Drive d = new Drive(r);
 
-        customStartPos = new Vector3(0, 0, 0);
+        customStartPos = new Vector3(-1.5, 2.0, 90);
 
         PositionTrackerSettings pts = new PositionTrackerSettings(AxesOrder.XYZ, false, 100, new Vector3(2,2,2), new Vector3(-1.5 * Constants.tileSide,62,90));
 //        pts.withPosition(transformFunc.apply(pts.startPosition));

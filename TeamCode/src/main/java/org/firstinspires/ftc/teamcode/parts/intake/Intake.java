@@ -96,10 +96,10 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
                 getHardware().grabberServo.setPosition(getSettings().grabberOpenPosition);
                 break;
             case 2:
-                getHardware().grabberServo.setPosition(getSettings().grabberGripTwoPosition);
+                getHardware().grabberServo.setPosition(getSettings().grabberGripOnePosition);
                 break;
             case 3:
-                getHardware().grabberServo.setPosition(getSettings().grabberGripOnePosition);
+                getHardware().grabberServo.setPosition(getSettings().grabberGripTwoPosition);
                 break;
         }
     }
