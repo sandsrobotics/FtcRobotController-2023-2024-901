@@ -11,6 +11,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.teamcode.parts.drive.Drive;
 import org.firstinspires.ftc.teamcode.parts.intake.Intake;
 import org.firstinspires.ftc.teamcode.parts.positionsolver.PositionSolver;
+import org.firstinspires.ftc.teamcode.parts.positionsolver.XRelativeSolver;
 import org.firstinspires.ftc.teamcode.parts.positiontracker.PositionTracker;
 import org.firstinspires.ftc.teamcode.parts.positiontracker.encodertracking.EncoderTracker;
 import org.firstinspires.ftc.teamcode.parts.positiontracker.hardware.PositionTrackerHardware;
@@ -25,6 +26,8 @@ import om.self.ezftc.utils.Vector3;
 import om.self.task.core.Group;
 import om.self.task.core.TaskEx;
 import om.self.task.other.TimedTask;
+
+import static om.self.ezftc.utils.Constants.tileSide;
 
 @Config
 @Autonomous(name="AutoBase", group="Test")
@@ -47,6 +50,10 @@ public class AutoBase extends LinearOpMode{
         return Constants.tileToInch(transformFunc.apply(tiles));
     }
 
+    public Vector3 fieldToTile(Vector3 p){
+        return new Vector3(p.X / tileSide, p.Y / tileSide, p.Z);
+    }
+
     @Override
     public void runOpMode() {
         initAuto();
@@ -56,21 +63,16 @@ public class AutoBase extends LinearOpMode{
         Robot r = new Robot(this);
         Drive d = new Drive(r);
 
-        customStartPos = new Vector3(-1.5, 2.0, 90);
-
-        PositionTrackerSettings pts = new PositionTrackerSettings(AxesOrder.XYZ, false, 100, new Vector3(2,2,2), new Vector3(-1.5 * Constants.tileSide,62,90));
-//        pts.withPosition(transformFunc.apply(pts.startPosition));
-        pts = pts.withPosition(customStartPos != null ? customStartPos : transformFunc.apply(pts.startPosition));
+        PositionTrackerSettings pts = new PositionTrackerSettings(AxesOrder.XYZ, false, 100, new Vector3(2,2,2), new Vector3(-1.5 * tileSide, 2.0 * tileSide,90));
+        //pts = pts.withPosition(customStartPos != null ? customStartPos : transformFunc.apply(pts.startPosition));
         pt = new PositionTracker(r, pts, PositionTrackerHardware.makeDefault(r));
 
-        //Odometry odo = new Odometry(pt);
-        //odo.lower();
+        XRelativeSolver solver = new XRelativeSolver(d);
+        EncoderTracker et = new EncoderTracker(pt);
 
-        intake = new Intake(r);
+        //intake = new Intake(r);
         //positionSolverLose = new PositionSolver(d,PositionSolverSettings.loseSettings);
         positionSolver = new PositionSolver(d);
-        et = new EncoderTracker(pt);
-
         DecimalFormat df = new DecimalFormat("#0.0");
         r.init();
 
@@ -110,6 +112,7 @@ public class AutoBase extends LinearOpMode{
             telemetry.addData("position", pt.getCurrentPosition());
             if(gamepad1.dpad_down) telemetry.addData("tasks", r.getTaskManager());
             if(gamepad1.dpad_down) telemetry.addData("events", r.getEventManager());
+            telemetry.addData("tile position", fieldToTile(pt.getCurrentPosition()));
 
             dashboardTelemetry.update();
             telemetry.update();
@@ -121,7 +124,7 @@ public class AutoBase extends LinearOpMode{
     private void gotoTestPos(TaskEx autoTask) {
         // start:  -1.5, 2.6, 180
         // - 35.25, 62, 90
-        Vector3 testPosition = new Vector3(-1.5, 2.0, 90);
+        Vector3 testPosition = new Vector3(-1.5, 1.5, 0);
         positionSolver.addMoveToTaskEx(tileToInchAuto(testPosition), autoTask);
     }
 }
