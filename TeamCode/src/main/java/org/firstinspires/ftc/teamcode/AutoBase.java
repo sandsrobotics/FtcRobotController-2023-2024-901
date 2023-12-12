@@ -41,6 +41,8 @@ public class AutoBase extends LinearOpMode{
     PositionTracker pt;
     EncoderTracker et;
 
+    Vector3 startPosition = new Vector3(-1.5,-2.7,0);
+
     public void initAuto(){
         transformFunc = (v) -> v;
         isRight = true;
@@ -63,7 +65,7 @@ public class AutoBase extends LinearOpMode{
         Robot r = new Robot(this);
         Drive d = new Drive(r);
 
-        PositionTrackerSettings pts = new PositionTrackerSettings(AxesOrder.XYZ, false, 100, new Vector3(2,2,2), new Vector3(-1.5 * tileSide, 2.0 * tileSide,90));
+        PositionTrackerSettings pts = new PositionTrackerSettings(AxesOrder.XYZ, false, 100, new Vector3(2,2,2), tileToInchAuto(startPosition));
         //pts = pts.withPosition(customStartPos != null ? customStartPos : transformFunc.apply(pts.startPosition));
         pt = new PositionTracker(r, pts, PositionTrackerHardware.makeDefault(r));
 
@@ -122,9 +124,14 @@ public class AutoBase extends LinearOpMode{
     }
 // ********* Put the methods that do the parts of the autonomous routines here ************//
     private void gotoTestPos(TaskEx autoTask) {
-        // start:  -1.5, 2.6, 180
-        // - 35.25, 62, 90
-        Vector3 testPosition = new Vector3(-1.5, 1.5, 0);
-        positionSolver.addMoveToTaskEx(tileToInchAuto(testPosition), autoTask);
+        //(-1.5,-2.6,0);
+        Vector3 pos1 = new Vector3(-1.5, 0, 90);
+        Vector3 pos2 = new Vector3(-1.5, 0, 90);
+        Vector3 pos3 = new Vector3(0.5,0,0);
+        Vector3 pos4 = new Vector3(1.5,-1.5,180);
+        positionSolver.addMoveToTaskEx(tileToInchAuto(pos1), autoTask);
+        positionSolver.addMoveToTaskEx(tileToInchAuto(pos2), autoTask);
+        positionSolver.addMoveToTaskEx(tileToInchAuto(pos3), autoTask);
+        positionSolver.addMoveToTaskEx(tileToInchAuto(pos4), autoTask);
     }
 }

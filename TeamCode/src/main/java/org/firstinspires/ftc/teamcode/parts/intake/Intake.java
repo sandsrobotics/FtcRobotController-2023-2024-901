@@ -42,7 +42,7 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
     }
 
     public void sweepWithPower(double power) {
-        getHardware().sweeperMotor.setPower(power);
+        getHardware().sweeperMotor.setPower(.33 * power);
     }
 
     public void setSlidePosition(int position){
