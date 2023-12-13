@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.teamcode.parts.apriltags.Tag;
 import org.firstinspires.ftc.teamcode.parts.drive.Drive;
 import org.firstinspires.ftc.teamcode.parts.intake.Intake;
 import org.firstinspires.ftc.teamcode.parts.positionsolver.PositionSolver;
@@ -40,7 +41,9 @@ public class AutoBase extends LinearOpMode{
     PositionSolver positionSolver;
     PositionTracker pt;
     EncoderTracker et;
+    Tag aprilTag;
 
+    //Vector3 centralspikemark = new Vector3(-35.25, -39.5, -90);
     Vector3 startPosition = new Vector3(-1.5,-2.7,0);
 
     public void initAuto(){
@@ -64,6 +67,7 @@ public class AutoBase extends LinearOpMode{
         Telemetry dashboardTelemetry = dashboard.getTelemetry();
         Robot r = new Robot(this);
         Drive d = new Drive(r);
+        aprilTag = new Tag(r);
 
         PositionTrackerSettings pts = new PositionTrackerSettings(AxesOrder.XYZ, false, 100, new Vector3(2,2,2), tileToInchAuto(startPosition));
         //pts = pts.withPosition(customStartPos != null ? customStartPos : transformFunc.apply(pts.startPosition));
@@ -79,9 +83,14 @@ public class AutoBase extends LinearOpMode{
         r.init();
 
         while (!isStarted()) {
+            aprilTag.onRun();
+            telemetry.addLine(String.format("\nDetected tag ID=%s", aprilTag.detectedID));
+            telemetry.addLine(String.format("\nPark ID=%s", aprilTag.parkID));
+
             r.opMode.telemetry.update();
             sleep(50);
         }
+
         r.start();
         if(shutdownps)
             positionSolver.triggerEvent(Robot.Events.STOP);

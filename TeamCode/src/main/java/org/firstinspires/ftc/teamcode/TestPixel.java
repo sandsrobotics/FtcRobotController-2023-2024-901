@@ -11,6 +11,7 @@ import org.firstinspires.ftc.teamcode.parts.positiontracker.PositionTracker;
 import org.firstinspires.ftc.teamcode.parts.positiontracker.encodertracking.EncoderTracker;
 import org.firstinspires.ftc.teamcode.parts.intake.Intake;
 import org.firstinspires.ftc.teamcode.parts.intake.IntakeTeleop;
+import org.firstinspires.ftc.teamcode.parts.teamprop.TeamProp;
 
 import java.text.DecimalFormat;
 
@@ -48,12 +49,15 @@ public class TestPixel extends LinearOpMode {
 
         Intake i = new Intake(r);
         new IntakeTeleop(i);
+        TeamProp tp = new TeamProp(r);
 
         DecimalFormat df = new DecimalFormat("#0.0");
 
         r.init();
 
-        while (!isStarted()) {}
+        while (!isStarted()) {
+            telemetry.addData("Team Prop", tp.position);
+        }
 
         r.start();
 
