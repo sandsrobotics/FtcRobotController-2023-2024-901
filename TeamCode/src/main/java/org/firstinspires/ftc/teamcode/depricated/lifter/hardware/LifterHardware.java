@@ -1,18 +1,16 @@
-package org.firstinspires.ftc.teamcode.parts.lifter.hardware;
+package org.firstinspires.ftc.teamcode.depricated.lifter.hardware;
 
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.ColorRangeSensor;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.lib.DFR304Range;
 
-import om.self.ezftc.utils.hardware.motor.MotorFunction;
 import om.self.ezftc.utils.hardware.motor.MotorSettings;
 import om.self.ezftc.utils.hardware.servo.ServoSettings;
 

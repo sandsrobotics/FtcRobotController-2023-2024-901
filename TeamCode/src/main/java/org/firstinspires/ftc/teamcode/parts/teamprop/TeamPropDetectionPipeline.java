@@ -8,7 +8,7 @@ import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
 
-class TeamPropDetectionPipeline extends OpenCvPipeline
+public class TeamPropDetectionPipeline extends OpenCvPipeline
 {
     /*
      * An enum to define the team prop position
@@ -81,7 +81,7 @@ class TeamPropDetectionPipeline extends OpenCvPipeline
     int avg1, avg2, avg3;
 
     // Volatile since accessed by OpMode thread w/o synchronization
-    private volatile TeamPropPosition position = TeamPropPosition.LEFT;
+    public volatile TeamPropPosition position = TeamPropPosition.LEFT;
 
     //public TeamPropDetectionPipeline(){}
 

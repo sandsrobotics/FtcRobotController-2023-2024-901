@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.parts.positiontracker;
 
-import org.firstinspires.ftc.teamcode.parts.lifter.Lifter;
-
 import om.self.ezftc.utils.Vector2;
 import om.self.ezftc.utils.Vector3;
 

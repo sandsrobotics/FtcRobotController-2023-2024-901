@@ -9,10 +9,10 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.teamcode.parts.apriltags.Tag;
+import org.firstinspires.ftc.teamcode.depricated.apriltags.Tag;
 import org.firstinspires.ftc.teamcode.parts.drive.Drive;
-import org.firstinspires.ftc.teamcode.parts.lifter.Lifter;
-import org.firstinspires.ftc.teamcode.parts.lifter.LifterControl;
+import org.firstinspires.ftc.teamcode.depricated.lifter.Lifter;
+import org.firstinspires.ftc.teamcode.depricated.lifter.LifterControl;
 import org.firstinspires.ftc.teamcode.parts.positionsolver.PositionSolver;
 import org.firstinspires.ftc.teamcode.parts.positionsolver.settings.PositionSolverSettings;
 import org.firstinspires.ftc.teamcode.parts.positiontracker.PositionTracker;
@@ -20,7 +20,6 @@ import org.firstinspires.ftc.teamcode.parts.positiontracker.encodertracking.Enco
 import org.firstinspires.ftc.teamcode.parts.positiontracker.hardware.PositionTrackerHardware;
 import org.firstinspires.ftc.teamcode.parts.positiontracker.odometry.Odometry;
 import org.firstinspires.ftc.teamcode.parts.positiontracker.settings.PositionTrackerSettings;
-import org.firstinspires.ftc.teamcode.parts.positiontracker.slamra.Slamra;
 
 import java.text.DecimalFormat;
 import java.util.function.Function;
@@ -29,7 +28,6 @@ import om.self.ezftc.core.Robot;
 import om.self.ezftc.utils.Constants;
 import om.self.ezftc.utils.Vector3;
 import om.self.task.core.Group;
-import om.self.task.core.Task;
 import om.self.task.core.TaskEx;
 import om.self.task.other.TimedTask;
 @Disabled

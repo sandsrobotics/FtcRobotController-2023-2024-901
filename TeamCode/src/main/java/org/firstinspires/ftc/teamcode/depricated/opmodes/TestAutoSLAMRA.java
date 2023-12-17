@@ -5,10 +5,10 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.teamcode.parts.apriltags.Tag;
+import org.firstinspires.ftc.teamcode.depricated.apriltags.Tag;
 import org.firstinspires.ftc.teamcode.parts.drive.Drive;
-import org.firstinspires.ftc.teamcode.parts.lifter.Lifter;
-import org.firstinspires.ftc.teamcode.parts.lifter.LifterControl;
+import org.firstinspires.ftc.teamcode.depricated.lifter.Lifter;
+import org.firstinspires.ftc.teamcode.depricated.lifter.LifterControl;
 import org.firstinspires.ftc.teamcode.parts.positionsolver.PositionSolver;
 import org.firstinspires.ftc.teamcode.parts.positiontracker.PositionTracker;
 import org.firstinspires.ftc.teamcode.parts.positiontracker.encodertracking.EncoderTracker;

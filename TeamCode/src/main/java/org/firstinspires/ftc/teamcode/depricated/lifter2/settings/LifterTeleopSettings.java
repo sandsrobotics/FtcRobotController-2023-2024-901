@@ -1,7 +1,8 @@
-package org.firstinspires.ftc.teamcode.parts.lifter2.settings;
+package org.firstinspires.ftc.teamcode.depricated.lifter2.settings;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
-import org.firstinspires.ftc.teamcode.parts.lifter2.Lifter;
+
+import org.firstinspires.ftc.teamcode.depricated.lifter2.Lifter;
 
 import java.util.function.Supplier;
 

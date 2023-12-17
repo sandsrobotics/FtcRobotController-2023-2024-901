@@ -19,7 +19,7 @@
  * SOFTWARE.
  */
 
-package org.firstinspires.ftc.teamcode.parts.apriltags;
+package org.firstinspires.ftc.teamcode.depricated.apriltags;
 
 import org.opencv.calib3d.Calib3d;
 import org.opencv.core.CvType;

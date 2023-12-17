@@ -12,8 +12,8 @@ import om.self.ezftc.core.part.LoopedPartImpl;
 
 public class TeamProp extends LoopedPartImpl<Robot, ObjectUtils.Null, ObjectUtils.Null> {
     OpenCvCamera camera;
-    TeamPropDetectionPipeline pipeline;
-    public TeamPropDetectionPipeline.TeamPropPosition position;
+    public TeamPropDetectionPipeline pipeline;
+ //   public TeamPropDetectionPipeline.TeamPropPosition position;
 
     public TeamProp(Robot parent) {
         super(parent, "tags");
@@ -30,6 +30,7 @@ public class TeamProp extends LoopedPartImpl<Robot, ObjectUtils.Null, ObjectUtil
          pipeline = new TeamPropDetectionPipeline();
         camera.setPipeline(pipeline);
         camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
+
         {
             @Override
             public void onOpened()
@@ -48,12 +49,13 @@ public class TeamProp extends LoopedPartImpl<Robot, ObjectUtils.Null, ObjectUtil
     }
 
     @Override
-    public void onStart() {}
+    public void onStart() {
+        pipeline.position = pipeline.getAnalysis();
+
+    }
 
     @Override
     public void onRun() {
-        position = pipeline.getAnalysis();
-        parent.opMode.telemetry.addData("Team Prop Position", position);
     }
 
     @Override

@@ -18,7 +18,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package org.firstinspires.ftc.teamcode.parts.apriltags;
+package org.firstinspires.ftc.teamcode.depricated.apriltags;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 

@@ -1,8 +1,8 @@
-package org.firstinspires.ftc.teamcode.parts.lifter2;
+package org.firstinspires.ftc.teamcode.depricated.lifter2;
 
 
-import org.firstinspires.ftc.teamcode.parts.lifter2.hardware.LifterHardware;
-import org.firstinspires.ftc.teamcode.parts.lifter2.settings.LifterSettings;
+import org.firstinspires.ftc.teamcode.depricated.lifter2.hardware.LifterHardware;
+import org.firstinspires.ftc.teamcode.depricated.lifter2.settings.LifterSettings;
 
 import om.self.ezftc.core.Robot;
 import om.self.ezftc.core.part.StatefullPart;

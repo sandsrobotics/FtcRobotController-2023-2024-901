@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.parts.lifter2;
+package org.firstinspires.ftc.teamcode.depricated.lifter2;
 
 public class LifterState {
     public final int liftPosition;

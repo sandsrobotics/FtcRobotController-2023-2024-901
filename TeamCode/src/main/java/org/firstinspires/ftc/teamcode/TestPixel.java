@@ -56,7 +56,7 @@ public class TestPixel extends LinearOpMode {
         r.init();
 
         while (!isStarted()) {
-            telemetry.addData("Team Prop", tp.position);
+            telemetry.addData("Team Prop", tp.pipeline.position);
         }
 
         r.start();

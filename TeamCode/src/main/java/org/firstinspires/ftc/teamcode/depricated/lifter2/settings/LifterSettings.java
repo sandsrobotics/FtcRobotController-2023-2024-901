@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.parts.lifter2.settings;
+package org.firstinspires.ftc.teamcode.depricated.lifter2.settings;
 
 import om.self.ezftc.utils.RangeDouble;
 import om.self.ezftc.utils.RangeInt;

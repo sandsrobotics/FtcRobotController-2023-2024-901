@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.parts.lifter.settings;
+package org.firstinspires.ftc.teamcode.depricated.lifter.settings;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
 

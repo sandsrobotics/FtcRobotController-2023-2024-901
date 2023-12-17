@@ -9,8 +9,6 @@ import org.firstinspires.ftc.teamcode.parts.bulkread.BulkRead;
 import org.firstinspires.ftc.teamcode.parts.drive.Drive;
 import org.firstinspires.ftc.teamcode.parts.drive.DriveTeleop;
 import org.firstinspires.ftc.teamcode.parts.drive.settings.DriveTeleopSettings;
-import org.firstinspires.ftc.teamcode.parts.lifter.Lifter;
-import org.firstinspires.ftc.teamcode.parts.lifter.LifterTeleop;
 import org.firstinspires.ftc.teamcode.parts.positionsolver.PositionSolver;
 import org.firstinspires.ftc.teamcode.parts.positionsolver.settings.PositionSolverSettings;
 import org.firstinspires.ftc.teamcode.parts.positiontracker.PositionTracker;

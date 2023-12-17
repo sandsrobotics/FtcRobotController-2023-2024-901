@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.parts.positiontracker;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.teamcode.parts.lifter.settings.LifterSettings;
 import org.firstinspires.ftc.teamcode.parts.positiontracker.encodertracking.EncoderTracker;
 import org.firstinspires.ftc.teamcode.parts.positiontracker.hardware.PositionTrackerHardware;
 import org.firstinspires.ftc.teamcode.parts.positiontracker.odometry.Odometry;
@@ -11,7 +10,6 @@ import org.firstinspires.ftc.teamcode.parts.positiontracker.settings.PositionTra
 import org.firstinspires.ftc.teamcode.parts.positiontracker.slamra.Slamra;
 
 import java.util.Hashtable;
-import java.util.LinkedList;
 
 import om.self.ezftc.core.Robot;
 import om.self.ezftc.core.part.LoopedPartImpl;

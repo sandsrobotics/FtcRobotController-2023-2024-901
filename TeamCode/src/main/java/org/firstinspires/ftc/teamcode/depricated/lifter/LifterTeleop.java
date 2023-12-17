@@ -1,7 +1,7 @@
-package org.firstinspires.ftc.teamcode.parts.lifter;
+package org.firstinspires.ftc.teamcode.depricated.lifter;
 
 import org.apache.commons.lang3.ObjectUtils;
-import org.firstinspires.ftc.teamcode.parts.lifter.settings.LifterTeleopSettings;
+import org.firstinspires.ftc.teamcode.depricated.lifter.settings.LifterTeleopSettings;
 
 import java.util.function.Supplier;
 

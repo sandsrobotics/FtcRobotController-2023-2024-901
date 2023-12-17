@@ -1,23 +1,18 @@
-package org.firstinspires.ftc.teamcode.parts.lifter;
+package org.firstinspires.ftc.teamcode.depricated.lifter;
 
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.depricated.lifter.hardware.LifterHardware;
+import org.firstinspires.ftc.teamcode.depricated.lifter.settings.LifterSettings;
 import org.firstinspires.ftc.teamcode.parts.drive.Drive;
 import org.firstinspires.ftc.teamcode.parts.drive.DriveControl;
-import org.firstinspires.ftc.teamcode.parts.lifter.hardware.LifterHardware;
-import org.firstinspires.ftc.teamcode.parts.lifter.settings.LifterSettings;
 import org.firstinspires.ftc.teamcode.parts.positionsolver.PositionSolver;
 import org.firstinspires.ftc.teamcode.parts.positiontracker.PositionTracker;
-
-import java.lang.annotation.Annotation;
 
 import om.self.ezftc.core.Robot;
 import om.self.ezftc.core.part.ControllablePart;
 import om.self.ezftc.utils.PID;
-import om.self.ezftc.utils.Vector3;
-import om.self.ezftc.utils.VectorMath;
 import om.self.supplier.consumer.EdgeConsumer;
 import om.self.task.core.Group;
 import om.self.task.core.TaskEx;

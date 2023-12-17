@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.parts.lifter;
+package org.firstinspires.ftc.teamcode.depricated.lifter;
 
 public class LifterControl {
     public double lifterPower;

@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.teamcode.parts.apriltags.Tag;
+import org.firstinspires.ftc.teamcode.depricated.apriltags.Tag;
 import org.firstinspires.ftc.teamcode.parts.drive.Drive;
 import org.firstinspires.ftc.teamcode.parts.intake.Intake;
 import org.firstinspires.ftc.teamcode.parts.positionsolver.PositionSolver;
@@ -17,6 +17,8 @@ import org.firstinspires.ftc.teamcode.parts.positiontracker.PositionTracker;
 import org.firstinspires.ftc.teamcode.parts.positiontracker.encodertracking.EncoderTracker;
 import org.firstinspires.ftc.teamcode.parts.positiontracker.hardware.PositionTrackerHardware;
 import org.firstinspires.ftc.teamcode.parts.positiontracker.settings.PositionTrackerSettings;
+import org.firstinspires.ftc.teamcode.parts.teamprop.TeamProp;
+import org.firstinspires.ftc.teamcode.parts.teamprop.TeamPropDetectionPipeline;
 
 import java.text.DecimalFormat;
 import java.util.function.Function;
@@ -42,9 +44,10 @@ public class AutoBase extends LinearOpMode{
     PositionTracker pt;
     EncoderTracker et;
     Tag aprilTag;
+    TeamProp tp;
 
     //Vector3 centralspikemark = new Vector3(-35.25, -39.5, -90);
-    Vector3 startPosition = new Vector3(-1.5,-2.7,0);
+    Vector3 startPosition = new Vector3(-1.5,-2.7,90);
 
     public void initAuto(){
         transformFunc = (v) -> v;
@@ -68,6 +71,7 @@ public class AutoBase extends LinearOpMode{
         Robot r = new Robot(this);
         Drive d = new Drive(r);
         aprilTag = new Tag(r);
+        tp = new TeamProp(r);
 
         PositionTrackerSettings pts = new PositionTrackerSettings(AxesOrder.XYZ, false, 100, new Vector3(2,2,2), tileToInchAuto(startPosition));
         //pts = pts.withPosition(customStartPos != null ? customStartPos : transformFunc.apply(pts.startPosition));
@@ -86,7 +90,6 @@ public class AutoBase extends LinearOpMode{
             aprilTag.onRun();
             telemetry.addLine(String.format("\nDetected tag ID=%s", aprilTag.detectedID));
             telemetry.addLine(String.format("\nPark ID=%s", aprilTag.parkID));
-
             r.opMode.telemetry.update();
             sleep(50);
         }
@@ -106,6 +109,7 @@ public class AutoBase extends LinearOpMode{
         gotoTestPos(autoTask);
 
         while (opModeIsActive()) {
+            telemetry.addData("Team Prop Position", tp.pipeline.position);
             double x = pt.getCurrentPosition().X;
             double y = pt.getCurrentPosition().Y;
             double z = Math.toRadians(pt.getCurrentPosition().Z);
@@ -134,13 +138,22 @@ public class AutoBase extends LinearOpMode{
 // ********* Put the methods that do the parts of the autonomous routines here ************//
     private void gotoTestPos(TaskEx autoTask) {
         //(-1.5,-2.6,0);
+        Vector3 centralspikemark = new Vector3(-1.5, -1.69, 0);
         Vector3 pos1 = new Vector3(-1.5, 0, 90);
         Vector3 pos2 = new Vector3(-1.5, 0, 90);
         Vector3 pos3 = new Vector3(0.5,0,0);
-        Vector3 pos4 = new Vector3(1.5,-1.5,180);
-        positionSolver.addMoveToTaskEx(tileToInchAuto(pos1), autoTask);
-        positionSolver.addMoveToTaskEx(tileToInchAuto(pos2), autoTask);
-        positionSolver.addMoveToTaskEx(tileToInchAuto(pos3), autoTask);
-        positionSolver.addMoveToTaskEx(tileToInchAuto(pos4), autoTask);
+        Vector3 centerAT = new Vector3(1.5,-1.5,180);
+        Vector3 leftAT = new Vector3(1.5, -1, 180);
+        Vector3 rightAT = new Vector3(1.5, -2, 180);
+        positionSolver.addMoveToTaskEx(tileToInchAuto(centralspikemark), autoTask);
+         positionSolver.addMoveToTaskEx(tileToInchAuto(pos1), autoTask);
+         positionSolver.addMoveToTaskEx(tileToInchAuto(pos2), autoTask);
+       positionSolver.addMoveToTaskEx(tileToInchAuto(pos3), autoTask);
+        if(tp.pipeline.position == TeamPropDetectionPipeline.TeamPropPosition.CENTER)
+            positionSolver.addMoveToTaskEx(tileToInchAuto(centerAT), autoTask);
+        else if(tp.pipeline.position == TeamPropDetectionPipeline.TeamPropPosition.LEFT)
+            positionSolver.addMoveToTaskEx(tileToInchAuto(leftAT), autoTask);
+        else
+            positionSolver.addMoveToTaskEx(tileToInchAuto(rightAT), autoTask);
     }
 }
