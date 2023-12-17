@@ -62,14 +62,9 @@ public class TeleopForza extends LinearOpMode {
         PositionTracker pt = new PositionTracker(r);
         PositionSolver ps = new PositionSolver(d, PositionSolverSettings.defaultNoAlwaysRunSettings);
 
-        //Slamra s = new Slamra(pt);
         EncoderTracker et = new EncoderTracker(pt);
         Odometry odo = new Odometry(pt);
         odo.raise();
-
-        //Lifter l = new Lifter(r);
-        //new LifterTeleop(l);
-
         DecimalFormat df = new DecimalFormat("#0.0");
 
         r.init();
