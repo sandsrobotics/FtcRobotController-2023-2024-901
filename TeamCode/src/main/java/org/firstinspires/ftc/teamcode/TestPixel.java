@@ -4,6 +4,8 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+
+import org.firstinspires.ftc.teamcode.parts.apriltag.AprilTag;
 import org.firstinspires.ftc.teamcode.parts.drive.Drive;
 import org.firstinspires.ftc.teamcode.parts.drive.DriveTeleop;
 import org.firstinspires.ftc.teamcode.parts.positionsolver.XRelativeSolver;
@@ -12,6 +14,7 @@ import org.firstinspires.ftc.teamcode.parts.positiontracker.encodertracking.Enco
 import org.firstinspires.ftc.teamcode.parts.intake.Intake;
 import org.firstinspires.ftc.teamcode.parts.intake.IntakeTeleop;
 import org.firstinspires.ftc.teamcode.parts.teamprop.TeamProp;
+import org.firstinspires.ftc.teamcode.parts.teamprop.TeamPropDetectionPipeline;
 
 import java.text.DecimalFormat;
 
@@ -31,9 +34,14 @@ public class TestPixel extends LinearOpMode {
     }
 
     Vector3 fieldStartPos = new Vector3(-36,63,90);
+    AprilTag aprilTag;
+    TeamProp tp;
+    public volatile TeamPropDetectionPipeline.TeamPropPosition teamPropPosition;
+
 
     @Override
     public void runOpMode() {
+        DecimalFormat df = new DecimalFormat("#0.0");
         long start;
         FtcDashboard dashboard = FtcDashboard.getInstance();
         TelemetryPacket packet = new TelemetryPacket();
@@ -42,26 +50,35 @@ public class TestPixel extends LinearOpMode {
         new DriveTeleop(d);
 
         PositionTracker pt = new PositionTracker(r);
-        //PositionSolver ps = new PositionSolver(d, PositionSolverSettings.makeDefaultWithoutAlwaysRun());
         XRelativeSolver solver = new XRelativeSolver(d);
         EncoderTracker et = new EncoderTracker(pt);
         //Odometry odo = new Odometry(pt);
+        pt.positionSourceId = EncoderTracker.class;
 
-        Intake i = new Intake(r);
-        new IntakeTeleop(i);
-        TeamProp tp = new TeamProp(r);
-
-        DecimalFormat df = new DecimalFormat("#0.0");
-
+        tp = new TeamProp(r);
         r.init();
 
         while (!isStarted()) {
-            telemetry.addData("Team Prop", tp.pipeline.position);
+            teamPropPosition = tp.pipeline.position;
+            telemetry.addData("Team Prop", teamPropPosition);
+            dashboard.sendTelemetryPacket(packet);
+            telemetry.update();
         }
+
+        // stop team prop detection
+        tp.onStop();
+        tp = null;
+        // setup april tag
+        aprilTag = new AprilTag(r);
+        aprilTag.onInit();
 
         r.start();
 
-        pt.positionSourceId = EncoderTracker.class;
+        // needs aprilTag and drive to initialize
+        Intake i = new Intake(r);
+        new IntakeTeleop(i);
+        i.onInit();
+        i.onStart();
 
         while (opModeIsActive()) {
             start = System.currentTimeMillis();
@@ -79,6 +96,7 @@ public class TestPixel extends LinearOpMode {
             telemetry.addData("position", pt.getCurrentPosition());
             telemetry.addData("tile position", fieldToTile(pt.getCurrentPosition()));
             telemetry.addData("relative position", pt.getRelativePosition());
+            telemetry.addData("Team Prop Position", teamPropPosition);
 
             r.opMode.telemetry.addData("time", System.currentTimeMillis() - start);
 
@@ -86,6 +104,16 @@ public class TestPixel extends LinearOpMode {
                 solver.setNewTarget(10, true);
             }
 
+            telemetry.addData("target found?", aprilTag.targetFound);
+            if (aprilTag.targetFound) {
+                telemetry.addData("Found", "ID %d (%s)", aprilTag.desiredTag.id, aprilTag.desiredTag.metadata.name);
+                telemetry.addData("Range",  "%5.1f inches", aprilTag.desiredTag.ftcPose.range);
+                telemetry.addData("X", "%5.1f inches", aprilTag.desiredTag.ftcPose.x);
+                telemetry.addData("Bearing","%3.0f degrees", aprilTag.desiredTag.ftcPose.bearing);
+                telemetry.addData("Yaw","%3.0f degrees", aprilTag.desiredTag.ftcPose.yaw);
+            } else {
+                telemetry.addData("\n>","Drive using joysticks to find valid target\n");
+            }
             dashboard.sendTelemetryPacket(packet);
             telemetry.update();
         }
