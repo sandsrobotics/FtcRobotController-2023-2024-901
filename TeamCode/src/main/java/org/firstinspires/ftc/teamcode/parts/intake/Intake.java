@@ -3,15 +3,27 @@ package org.firstinspires.ftc.teamcode.parts.intake;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
+import org.firstinspires.ftc.teamcode.depricated.lifter.Lifter;
+import org.firstinspires.ftc.teamcode.parts.apriltag.AprilTag;
+import org.firstinspires.ftc.teamcode.parts.drive.Drive;
+import org.firstinspires.ftc.teamcode.parts.drive.DriveControl;
 import org.firstinspires.ftc.teamcode.parts.intake.hardware.IntakeHardware;
 import org.firstinspires.ftc.teamcode.parts.intake.settings.IntakeSettings;
 
 import om.self.ezftc.core.Robot;
 import om.self.ezftc.core.part.ControllablePart;
+import om.self.task.core.Group;
+import om.self.task.core.TaskEx;
+import om.self.task.other.TimedTask;
 
 public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardware, IntakeControl>{
     private int slideTargetPosition;
     private int liftTargetPosition;
+    AprilTag tag;
+    Drive drive;
+
+    private final Group movementTask = new Group("auto movement",getTaskManager());
+    private final TimedTask doTagRanging = new TimedTask(TaskNames.doTagRanging, movementTask);
 
     //***** Constructors *****
     public Intake(Robot parent) {
@@ -42,7 +54,7 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
     }
 
     public void sweepWithPower(double power) {
-        getHardware().sweeperMotor.setPower(.33 * power);
+        getHardware().sweeperMotor.setPower(.42 * power);
     }
 
     public void setSlidePosition(int position){
@@ -109,8 +121,7 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
 
         if (power < 0) {
             power *= getSettings().maxDownLiftSpeed;
-            //if (getHardware().robotLiftMotor.getCurrentPosition() <= getSettings().minLiftPosition)
-            if (getHardware().hangLiftLimitSwitch.getState() == true) {
+            if (getHardware().liftLowLimitSwitch.getState() == true) {
                 if (getHardware().robotLiftMotor.getCurrentPosition() != 0) {
                     getHardware().robotLiftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     getHardware().robotLiftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -128,6 +139,30 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
             setRobotLiftPositionUnsafe(getHardware().robotLiftMotor.getCurrentPosition() + (int) power);
         else
             setRobotLiftPositionUnsafe(getHardware().robotLiftMotor.getCurrentPosition() + (int) power);
+    }
+
+    public void doTagRanging(DriveControl control){
+        if(tag.desiredTag != null){
+            if (tag.desiredTag.ftcPose.x >= 5)
+                control.power = control.power.addX(0.5);
+            else if (tag.desiredTag.ftcPose.x <= 5)
+                control.power = control.power.addX(-0.5);
+        }
+        else {
+            //control.power = control.power.addY(-0.5);
+        }
+    }
+
+    public void constructTagRanging(){
+
+    }
+
+    public void addDoTagRanging(TaskEx task){
+        task.addStep(doTagRanging::restart);
+    }
+
+    public void startTagRanging(){
+        doTagRanging.restart();
     }
 
     @Override
@@ -151,7 +186,8 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
         parent.opMode.telemetry.addData("Lift height", getRobotLiftPosition());
         parent.opMode.telemetry.addData("dpad",control.robotLiftPosition);
         parent.opMode.telemetry.addData("Lift Current", getHardware().robotLiftMotor.getCurrent(CurrentUnit.MILLIAMPS));
-        parent.opMode.telemetry.addData("Lift Switch", getHardware().hangLiftLimitSwitch.getState() ? "closed" : "open");
+        parent.opMode.telemetry.addData("Low Lift Switch", getHardware().liftLowLimitSwitch.getState() ? "closed" : "open");
+        parent.opMode.telemetry.addData("High Lift Switch", getHardware().liftHighLimitSwitch.getState() ? "closed" : "open");
     }
 
     @Override
@@ -164,11 +200,23 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
 
     @Override
     public void onStart() {
+        drive = getBeanManager().getBestMatch(Drive.class, false);
+        tag = getBeanManager().getBestMatch(AprilTag.class, false);
+        drive.addController(Intake.ContollerNames.distanceContoller, (control) -> doTagRanging(control));
         setSweepPosition(1);
     }
 
     @Override
     public void onStop() {
+        drive.removeController(ContollerNames.distanceContoller);
+    }
+
+    public static final class ContollerNames {
+        public static final String distanceContoller = "distance controller"; //TODO make better
+    }
+
+    public static final class TaskNames {
+        public final static String doTagRanging = "do tag ranging";
     }
 }
 

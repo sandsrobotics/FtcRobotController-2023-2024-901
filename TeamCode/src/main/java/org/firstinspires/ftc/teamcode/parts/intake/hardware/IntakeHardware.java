@@ -20,17 +20,19 @@ public class IntakeHardware {
     public final Servo sweepLiftServo;
     public final DcMotorEx robotLiftMotor;
     public final Servo grabberServo;
-    public final DigitalChannel hangLiftLimitSwitch;
+    public final DigitalChannel liftLowLimitSwitch;
+    public final DigitalChannel liftHighLimitSwitch;
     public final Servo swingServoLeft;
     public final Servo swingServoRight;
 
-    public IntakeHardware(DcMotor sliderMotor, DcMotor sweeperMotor, Servo sweepLiftServo, DcMotorEx robotLiftMotor, Servo grabberServo, DigitalChannel hangLiftLimitSwitch,Servo swingServoLeft,Servo swingServoRight) {
+    public IntakeHardware(DcMotor sliderMotor, DcMotor sweeperMotor, Servo sweepLiftServo, DcMotorEx robotLiftMotor, Servo grabberServo, DigitalChannel liftLowLimitSwitch, DigitalChannel liftHighLImitSwitch, Servo swingServoLeft,Servo swingServoRight) {
         this.sweeperMotor = sweeperMotor;
         this.sliderMotor = sliderMotor;
         this.sweepLiftServo = sweepLiftServo;
         this.robotLiftMotor = robotLiftMotor;
         this.grabberServo = grabberServo;
-        this.hangLiftLimitSwitch = hangLiftLimitSwitch;
+        this.liftLowLimitSwitch = liftLowLimitSwitch;
+        this.liftHighLimitSwitch = liftHighLImitSwitch;
         this.swingServoLeft = swingServoLeft;
         this.swingServoRight = swingServoRight;
     }
@@ -44,8 +46,10 @@ public class IntakeHardware {
         ServoSettings swingServoLeftSettings = new ServoSettings(ServoSettings.Number.ONE, Servo.Direction.FORWARD);
         ServoSettings swingServoRightSettings = new ServoSettings(ServoSettings.Number.TWO, Servo.Direction.FORWARD);
 
-        DigitalChannel limit = hardwareMap.get(DigitalChannel.class, "digital0");
-        limit.setMode(DigitalChannel.Mode.INPUT);
+        DigitalChannel lowLimit = hardwareMap.get(DigitalChannel.class, "digital0");
+        DigitalChannel highLimit = hardwareMap.get(DigitalChannel.class, "digital1");
+        lowLimit.setMode(DigitalChannel.Mode.INPUT);
+        highLimit.setMode(DigitalChannel.Mode.INPUT);
 
         return new IntakeHardware(
                 slideMotorSettings.makeMotor(hardwareMap),
@@ -53,7 +57,8 @@ public class IntakeHardware {
                 sweepLiftServoSettings.makeServo(hardwareMap),
                 robotLiftMotorSettings.makeExMotor(hardwareMap),
                 grabberServoSettings.makeServo(hardwareMap),
-                limit,
+                lowLimit,
+                highLimit,
                 swingServoLeftSettings.makeServo(hardwareMap),
                 swingServoRightSettings.makeServo(hardwareMap)
         );

@@ -8,8 +8,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.teamcode.depricated.apriltags.Tag;
+import org.firstinspires.ftc.teamcode.parts.apriltag.AprilTag;
 import org.firstinspires.ftc.teamcode.parts.drive.Drive;
+import org.firstinspires.ftc.teamcode.parts.drive.DriveControl;
 import org.firstinspires.ftc.teamcode.parts.intake.Intake;
 import org.firstinspires.ftc.teamcode.parts.positionsolver.PositionSolver;
 import org.firstinspires.ftc.teamcode.parts.positionsolver.XRelativeSolver;
@@ -43,8 +44,10 @@ public class AutoBase extends LinearOpMode{
     PositionSolver positionSolver;
     PositionTracker pt;
     EncoderTracker et;
-    Tag aprilTag;
+    public AprilTag aprilTag;
     TeamProp tp;
+    DriveControl control;
+
 
     //Vector3 centralspikemark = new Vector3(-35.25, -39.5, -90);
     Vector3 startPosition = new Vector3(-1.5,-2.7,90);
@@ -70,7 +73,7 @@ public class AutoBase extends LinearOpMode{
         Telemetry dashboardTelemetry = dashboard.getTelemetry();
         Robot r = new Robot(this);
         Drive d = new Drive(r);
-        aprilTag = new Tag(r);
+        aprilTag = new AprilTag(r);
         tp = new TeamProp(r);
 
         PositionTrackerSettings pts = new PositionTrackerSettings(AxesOrder.XYZ, false, 100, new Vector3(2,2,2), tileToInchAuto(startPosition));
@@ -80,17 +83,16 @@ public class AutoBase extends LinearOpMode{
         XRelativeSolver solver = new XRelativeSolver(d);
         EncoderTracker et = new EncoderTracker(pt);
 
-        //intake = new Intake(r);
+        //intake = new Intake(r, aprilTag);
         //positionSolverLose = new PositionSolver(d,PositionSolverSettings.loseSettings);
         positionSolver = new PositionSolver(d);
         DecimalFormat df = new DecimalFormat("#0.0");
         r.init();
 
         while (!isStarted()) {
-            aprilTag.onRun();
-            telemetry.addLine(String.format("\nDetected tag ID=%s", aprilTag.detectedID));
-            telemetry.addLine(String.format("\nPark ID=%s", aprilTag.parkID));
-            r.opMode.telemetry.update();
+            telemetry.addData("Team Prop", tp.pipeline.position);
+            dashboard.sendTelemetryPacket(packet);
+            telemetry.update();
             sleep(50);
         }
 
@@ -128,6 +130,16 @@ public class AutoBase extends LinearOpMode{
             if(gamepad1.dpad_down) telemetry.addData("tasks", r.getTaskManager());
             if(gamepad1.dpad_down) telemetry.addData("events", r.getEventManager());
             telemetry.addData("tile position", fieldToTile(pt.getCurrentPosition()));
+            telemetry.addData("target found?", aprilTag.targetFound);
+            if (aprilTag.targetFound) {
+                telemetry.addData("Found", "ID %d (%s)", aprilTag.desiredTag.id, aprilTag.desiredTag.metadata.name);
+                telemetry.addData("Range",  "%5.1f inches", aprilTag.desiredTag.ftcPose.range);
+                telemetry.addData("X", "%5.1f inches", aprilTag.desiredTag.ftcPose.x);
+                telemetry.addData("Bearing","%3.0f degrees", aprilTag.desiredTag.ftcPose.bearing);
+                telemetry.addData("Yaw","%3.0f degrees", aprilTag.desiredTag.ftcPose.yaw);
+            } else {
+                telemetry.addData("\n>","Drive using joysticks to find valid target\n");
+            }
 
             dashboardTelemetry.update();
             telemetry.update();
@@ -137,17 +149,17 @@ public class AutoBase extends LinearOpMode{
     }
 // ********* Put the methods that do the parts of the autonomous routines here ************//
     private void gotoTestPos(TaskEx autoTask) {
-        //(-1.5,-2.6,0);
-        Vector3 centralspikemark = new Vector3(-1.5, -1.69, 0);
+        //(-1.5,-2.6,90);
+        Vector3 centralspikemark = new Vector3(-1.5, 0, 90);
         Vector3 pos1 = new Vector3(-1.5, 0, 90);
         Vector3 pos2 = new Vector3(-1.5, 0, 90);
         Vector3 pos3 = new Vector3(0.5,0,0);
-        Vector3 centerAT = new Vector3(1.5,-1.5,180);
-        Vector3 leftAT = new Vector3(1.5, -1, 180);
-        Vector3 rightAT = new Vector3(1.5, -2, 180);
+        Vector3 centerAT = new Vector3(1.5,-1.5,0);
+        Vector3 leftAT = new Vector3(1.5, -1, 0);
+        Vector3 rightAT = new Vector3(1.5, -2, 0);
         positionSolver.addMoveToTaskEx(tileToInchAuto(centralspikemark), autoTask);
-         positionSolver.addMoveToTaskEx(tileToInchAuto(pos1), autoTask);
-         positionSolver.addMoveToTaskEx(tileToInchAuto(pos2), autoTask);
+        positionSolver.addMoveToTaskEx(tileToInchAuto(pos1), autoTask);
+        positionSolver.addMoveToTaskEx(tileToInchAuto(pos2), autoTask);
        positionSolver.addMoveToTaskEx(tileToInchAuto(pos3), autoTask);
         if(tp.pipeline.position == TeamPropDetectionPipeline.TeamPropPosition.CENTER)
             positionSolver.addMoveToTaskEx(tileToInchAuto(centerAT), autoTask);
@@ -155,5 +167,6 @@ public class AutoBase extends LinearOpMode{
             positionSolver.addMoveToTaskEx(tileToInchAuto(leftAT), autoTask);
         else
             positionSolver.addMoveToTaskEx(tileToInchAuto(rightAT), autoTask);
+        intake.addDoTagRanging(autoTask);
     }
 }
