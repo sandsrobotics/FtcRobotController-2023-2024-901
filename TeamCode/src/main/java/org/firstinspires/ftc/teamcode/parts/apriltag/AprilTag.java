@@ -31,7 +31,6 @@ public class AprilTag extends LoopedPartImpl<Robot, ObjectUtils.Null, ObjectUtil
     private VisionPortal visionPortal;               // Used to manage the video source.
     private AprilTagProcessor aprilTag;              // Used for managing the AprilTag detection process.
     public AprilTagDetection desiredTag = null;     // Used to hold the data for a detected AprilTag
-    public HardwareMap hardwareMap = parent.opMode.hardwareMap;
     public boolean targetFound = false;
     public List<AprilTagDetection> currentDetections;
 
@@ -49,22 +48,22 @@ public class AprilTag extends LoopedPartImpl<Robot, ObjectUtils.Null, ObjectUtil
     public void onRun() {
         if(aprilTag.getDetections() != null){
             currentDetections = aprilTag.getDetections();
-        for (AprilTagDetection detection : currentDetections) {
-            // Look to see if we have size info on this tag.
-            if (detection.metadata != null) {
-                //  Check to see if we want to track towards this tag.
-                if ((DESIRED_TAG_ID < 0) || (detection.id == DESIRED_TAG_ID)) {
-                    // Yes, we want to use this tag.
-                    targetFound = true;
-                    desiredTag = detection;
-                    break;  // don't look any further.
+            for (AprilTagDetection detection : currentDetections) {
+                // Look to see if we have size info on this tag.
+                if (detection.metadata != null) {
+                    //  Check to see if we want to track towards this tag.
+                    if ((DESIRED_TAG_ID < 0) || (detection.id == DESIRED_TAG_ID)) {
+                        // Yes, we want to use this tag.
+                        targetFound = true;
+                        desiredTag = detection;
+                        break;  // don't look any further.
+                    } else {
+                        // This tag is in the library, but we do not want to track it right now.
+                    }
                 } else {
-                    // This tag is in the library, but we do not want to track it right now.
+                    // This tag is NOT in the library, so we don't have enough information to track to it.
                 }
-            } else {
-                // This tag is NOT in the library, so we don't have enough information to track to it.
             }
-        }
         }
         else{
             targetFound = false;
@@ -73,22 +72,23 @@ public class AprilTag extends LoopedPartImpl<Robot, ObjectUtils.Null, ObjectUtil
     }
 
     @Override
-    public void onBeanLoad() {
-
-    }
+    public void onBeanLoad() {}
 
     /**
      * WARNING: beans may not be loaded onInit, please use onStart for beans
      */
     @Override
     public void onInit() {
+        // Create the AprilTag processor the easy way.
+        aprilTag = AprilTagProcessor.easyCreateWithDefaults();
+        visionPortal = VisionPortal.easyCreateWithDefaults(parent.opMode.hardwareMap.get(WebcamName.class, "Webcam 1"), aprilTag);
+        /*
         initAprilTag();
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
+        int cameraMonitorViewId = parent.opMode.hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", parent.opMode.hardwareMap.appContext.getPackageName());
+        camera = OpenCvCameraFactory.getInstance().createWebcam(parent.opMode.hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
         pipeline = new AprilTagDetectionPipeline();
         camera.setPipeline(pipeline);
         camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
-
         {
             @Override
             public void onOpened()
@@ -99,11 +99,10 @@ public class AprilTag extends LoopedPartImpl<Robot, ObjectUtils.Null, ObjectUtil
             @Override
             public void onError(int errorCode)
             {
-                /*
-                 * This will be called if the camera could not be opened
-                 */
+                 // This will be called if the camera could not be opened
             }
         });
+        */
     }
 
     @Override
@@ -112,8 +111,7 @@ public class AprilTag extends LoopedPartImpl<Robot, ObjectUtils.Null, ObjectUtil
 
     @Override
     public void onStop() {
-        //camera.stopStreaming();
-        //camera.closeCameraDevice();
+        //visionPortal.close();
     }
 
     private void initAprilTag() {
@@ -132,7 +130,7 @@ public class AprilTag extends LoopedPartImpl<Robot, ObjectUtils.Null, ObjectUtil
         // Create the vision portal by using a builder.
         if (USE_WEBCAM) {
             visionPortal = new VisionPortal.Builder()
-                    .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
+                    .setCamera(parent.opMode.hardwareMap.get(WebcamName.class, "Webcam 1"))
                     .addProcessor(aprilTag)
                     .build();
         } else {

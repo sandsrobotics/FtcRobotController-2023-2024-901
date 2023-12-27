@@ -73,8 +73,8 @@ public class AutoBase extends LinearOpMode{
         Telemetry dashboardTelemetry = dashboard.getTelemetry();
         Robot r = new Robot(this);
         Drive d = new Drive(r);
-        aprilTag = new AprilTag(r);
         tp = new TeamProp(r);
+        intake = new Intake(r);
 
         PositionTrackerSettings pts = new PositionTrackerSettings(AxesOrder.XYZ, false, 100, new Vector3(2,2,2), tileToInchAuto(startPosition));
         //pts = pts.withPosition(customStartPos != null ? customStartPos : transformFunc.apply(pts.startPosition));
@@ -148,7 +148,7 @@ public class AutoBase extends LinearOpMode{
         r.stop();
     }
 // ********* Put the methods that do the parts of the autonomous routines here ************//
-    private void gotoTestPos(TaskEx autoTask) {
+    private void gotoTestPos(TimedTask autoTask) {
         //(-1.5,-2.6,90);
         Vector3 centralspikemark = new Vector3(-1.5, 0, 90);
         Vector3 pos1 = new Vector3(-1.5, 0, 90);
@@ -167,6 +167,7 @@ public class AutoBase extends LinearOpMode{
             positionSolver.addMoveToTaskEx(tileToInchAuto(leftAT), autoTask);
         else
             positionSolver.addMoveToTaskEx(tileToInchAuto(rightAT), autoTask);
-        intake.addDoTagRanging(autoTask);
+       // intake.addDoTagRanging(autoTask);
+        intake.addAutoDropToTask(autoTask);
     }
 }

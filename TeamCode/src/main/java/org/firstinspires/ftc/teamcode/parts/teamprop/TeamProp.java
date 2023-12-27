@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.apache.commons.lang3.ObjectUtils;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraException;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvInternalCamera;
@@ -56,7 +57,13 @@ public class TeamProp extends LoopedPartImpl<Robot, ObjectUtils.Null, ObjectUtil
 
     @Override
     public void onStop() {
-        camera.stopStreaming();
-        camera.closeCameraDevice();
+        if (camera.getClass() != null) {
+        }
+        try {
+            if (camera != null) {
+                camera.stopStreaming();
+                camera.closeCameraDevice();
+            }
+        } catch (OpenCvCameraException E) {}
     }
 }

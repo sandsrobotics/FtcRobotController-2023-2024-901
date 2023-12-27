@@ -17,11 +17,16 @@ public class IntakeSettings {
     public final double grabberOpenPosition;
     public final double grabberGripTwoPosition;
     public final double grabberGripOnePosition;
+    public final double swingLeftSafePosition;
+    public final double swingRightSafePosition;
+    public final double swingLeftDropPosition;
+    public final double swingRightDropPosition;
+
 
     public IntakeSettings(int minSlidePosition, int maxSlidePosition, int maxDownSlideSpeed, int maxUpSlideSpeed, double minRegisterVal, int maxUpLiftSpeed,
                           int maxDownLiftSpeed, double tolerance, double sweepLiftServoMinPosition, double sweepLiftServoMaxPosition,
                           double sweepLiftServoStartPosition, int maxLiftPosition, int minLiftPosition, double grabberOpenPosition, double grabberGripTwoPosition,
-                          double grabberGripOnePosition) {
+                          double grabberGripOnePosition, double swingLeftSafePosition, double swingRightSafePosition, double swingLeftDropPosition, double swingRightDropPosition) {
         this.minSlidePosition = minSlidePosition;
         this.maxSlidePosition = maxSlidePosition;
         this.maxDownSlideSpeed = maxDownSlideSpeed;
@@ -38,7 +43,14 @@ public class IntakeSettings {
         this.grabberOpenPosition = grabberOpenPosition;
         this.grabberGripTwoPosition = grabberGripTwoPosition;
         this.grabberGripOnePosition = grabberGripOnePosition;
+        this.swingLeftSafePosition = swingLeftSafePosition;
+        this.swingRightSafePosition = swingRightSafePosition;
+        this.swingLeftDropPosition = swingLeftDropPosition;
+        this.swingRightDropPosition = swingRightDropPosition;
     }
+
+    // left safe: ,.14 drop: .5
+    // right safe: .87, drop: .48
 
     public static IntakeSettings makeDefault(){
         return new IntakeSettings(
@@ -55,9 +67,13 @@ public class IntakeSettings {
                 .5,
                 8699,
                 201,
-                .95,
-                .25,
-                .78
+                .59,
+                .0,
+                .31,
+                .14,
+                .87,
+                .5,
+                .48
                 );
     }
 }

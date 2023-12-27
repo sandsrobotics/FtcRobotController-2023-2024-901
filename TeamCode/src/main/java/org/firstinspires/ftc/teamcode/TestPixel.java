@@ -25,19 +25,18 @@ import om.self.ezftc.utils.Vector3;
 public class TestPixel extends LinearOpMode {
     double tileSide = 23.5;
     boolean slideDone = false;
+
     public Vector3 tiletoField(Vector3 p){
         return new Vector3(p.X * tileSide, p.Y * tileSide, p.Z);
     }
-
     public Vector3 fieldToTile(Vector3 p){
         return new Vector3(p.X / tileSide, p.Y / tileSide, p.Z);
     }
 
-    Vector3 fieldStartPos = new Vector3(-36,63,90);
     AprilTag aprilTag;
-    TeamProp tp;
-    public volatile TeamPropDetectionPipeline.TeamPropPosition teamPropPosition;
 
+    Vector3 fieldStartPos = new Vector3(-36,63,90);
+    public volatile TeamPropDetectionPipeline.TeamPropPosition teamPropPosition;
 
     @Override
     public void runOpMode() {
@@ -45,18 +44,19 @@ public class TestPixel extends LinearOpMode {
         long start;
         FtcDashboard dashboard = FtcDashboard.getInstance();
         TelemetryPacket packet = new TelemetryPacket();
-        Robot r = new Robot(this);
-        Drive d = new Drive(r);
-        new DriveTeleop(d);
+        Robot robot = new Robot(this);
+        Drive drive = new Drive(robot);
+        new DriveTeleop(drive);
 
-        PositionTracker pt = new PositionTracker(r);
-        XRelativeSolver solver = new XRelativeSolver(d);
+        PositionTracker pt = new PositionTracker(robot);
+        XRelativeSolver solver = new XRelativeSolver(drive);
         EncoderTracker et = new EncoderTracker(pt);
         //Odometry odo = new Odometry(pt);
         pt.positionSourceId = EncoderTracker.class;
-
-        tp = new TeamProp(r);
-        r.init();
+        Intake intake = new Intake(robot);
+        new IntakeTeleop(intake);
+        TeamProp tp = new TeamProp(robot);
+        robot.init();
 
         while (!isStarted()) {
             teamPropPosition = tp.pipeline.position;
@@ -65,24 +65,15 @@ public class TestPixel extends LinearOpMode {
             telemetry.update();
         }
 
-        // stop team prop detection
-        tp.onStop();
-        tp = null;
-        // setup april tag
-        aprilTag = new AprilTag(r);
+        tp.onStop(); // stop team prop detection
+        aprilTag = new AprilTag(robot);
         aprilTag.onInit();
-
-        r.start();
+        robot.start();
 
         // needs aprilTag and drive to initialize
-        Intake i = new Intake(r);
-        new IntakeTeleop(i);
-        i.onInit();
-        i.onStart();
-
         while (opModeIsActive()) {
             start = System.currentTimeMillis();
-            r.run();
+            robot.run();
 
             double x = pt.getCurrentPosition().X;
             double y = pt.getCurrentPosition().Y;
@@ -98,14 +89,13 @@ public class TestPixel extends LinearOpMode {
             telemetry.addData("relative position", pt.getRelativePosition());
             telemetry.addData("Team Prop Position", teamPropPosition);
 
-            r.opMode.telemetry.addData("time", System.currentTimeMillis() - start);
+            robot.opMode.telemetry.addData("time", System.currentTimeMillis() - start);
 
             if(gamepad1.dpad_down) {
                 solver.setNewTarget(10, true);
             }
 
-            telemetry.addData("target found?", aprilTag.targetFound);
-            if (aprilTag.targetFound) {
+            if (aprilTag != null && aprilTag.targetFound) {
                 telemetry.addData("Found", "ID %d (%s)", aprilTag.desiredTag.id, aprilTag.desiredTag.metadata.name);
                 telemetry.addData("Range",  "%5.1f inches", aprilTag.desiredTag.ftcPose.range);
                 telemetry.addData("X", "%5.1f inches", aprilTag.desiredTag.ftcPose.x);
@@ -117,6 +107,6 @@ public class TestPixel extends LinearOpMode {
             dashboard.sendTelemetryPacket(packet);
             telemetry.update();
         }
-        r.stop();
+        robot.stop();
     }
 }

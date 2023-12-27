@@ -15,11 +15,12 @@ public class IntakeTeleopSettings {
     public final Supplier<Integer> sweepLiftSupplier;
     public final Supplier<Integer> robotLiftSupplier;
     public final Supplier<Integer> grabberSupplier;
+    public final Supplier<Integer> swingSupplier;
 
     public IntakeTeleopSettings(Supplier<Integer> heightSpeedSupplier, Supplier<Boolean> sliderTopSupplier,
                                 Supplier<Boolean> sliderBottomSupplier, Supplier<Float> sweepSpeedSupplier,
                                 Supplier<Integer> sweepLiftSupplier, Supplier<Integer> robotLiftSupplier,
-                                Supplier<Integer> grabberSupplier) {
+                                Supplier<Integer> grabberSupplier, Supplier<Integer> swingSupplier) {
         this.heightSpeedSupplier = heightSpeedSupplier;
         this.sliderBottomSupplier = sliderBottomSupplier;
         this.sliderTopSupplier = sliderTopSupplier;
@@ -27,6 +28,7 @@ public class IntakeTeleopSettings {
         this.sweepLiftSupplier = sweepLiftSupplier;
         this.robotLiftSupplier = robotLiftSupplier;
         this.grabberSupplier = grabberSupplier;
+        this.swingSupplier = swingSupplier;
     }
 
     public static IntakeTeleopSettings makeDefault(Robot robot){
@@ -44,7 +46,8 @@ public class IntakeTeleopSettings {
             () -> gamepad.left_trigger - gamepad.right_trigger,
             () -> gamepad.dpad_right ? 1 : gamepad.dpad_left ? 2 : 0,
             () -> gamepad2.dpad_down ? -1 : gamepad2.dpad_up ? 1 : 0,
-            () -> gamepad2.y ? 1 : gamepad2.b ? 2 : gamepad2.a ? 3 : 0
+            () -> gamepad2.y ? 1 : gamepad2.b ? 2 : gamepad2.a ? 3 : 0,
+                () -> gamepad2.dpad_right ? 1 : gamepad2.dpad_left ? 2 : 0
         );
     }
 }
