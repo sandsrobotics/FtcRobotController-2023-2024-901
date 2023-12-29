@@ -7,6 +7,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.depricated.lifter.Lifter;
 import org.firstinspires.ftc.teamcode.parts.drive.Drive;
 import org.firstinspires.ftc.teamcode.parts.drive.DriveControl;
+import org.firstinspires.ftc.teamcode.parts.intake.Intake;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
@@ -25,6 +26,7 @@ import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.tel
 public class AprilTag extends LoopedPartImpl<Robot, ObjectUtils.Null, ObjectUtils.Null> {
     OpenCvCamera camera;
     private Drive drive;
+    Intake intake;
     public AprilTagDetectionPipeline pipeline;
     private static final boolean USE_WEBCAM = true;  // Set true to use a webcam, or false for a phone camera
     private int DESIRED_TAG_ID = -1;     // Choose the tag you want to approach or set to -1 for ANY tag.
@@ -54,8 +56,8 @@ public class AprilTag extends LoopedPartImpl<Robot, ObjectUtils.Null, ObjectUtil
                     //  Check to see if we want to track towards this tag.
                     if ((DESIRED_TAG_ID < 0) || (detection.id == DESIRED_TAG_ID)) {
                         // Yes, we want to use this tag.
-                        targetFound = true;
-                        desiredTag = detection;
+                            targetFound = true;
+                            desiredTag = detection;
                         break;  // don't look any further.
                     } else {
                         // This tag is in the library, but we do not want to track it right now.

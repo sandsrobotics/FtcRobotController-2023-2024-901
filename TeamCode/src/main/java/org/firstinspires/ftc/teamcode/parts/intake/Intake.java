@@ -9,6 +9,7 @@ import org.firstinspires.ftc.teamcode.parts.drive.Drive;
 import org.firstinspires.ftc.teamcode.parts.drive.DriveControl;
 import org.firstinspires.ftc.teamcode.parts.intake.hardware.IntakeHardware;
 import org.firstinspires.ftc.teamcode.parts.intake.settings.IntakeSettings;
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 import java.sql.Time;
 
@@ -27,10 +28,16 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
     boolean isBottom;
     boolean isTop;
     double motorPower = 0;
+    public boolean dropComplete = true;
 
     private final Group movementTask = new Group("auto movement",getTaskManager());
+
     private final TimedTask autoDropTask = new TimedTask(TaskNames.autoDrop, movementTask);
     private final TimedTask autoGrabTask = new TimedTask(TaskNames.autoGrab, getTaskManager());
+    private final TimedTask autoHomeTask = new TimedTask(TaskNames.autoHome, movementTask);
+    private final TimedTask autoDockTask = new TimedTask(TaskNames.autoDock, getTaskManager());
+
+
 
     //***** Constructors *****
     public Intake(Robot parent) {
@@ -141,7 +148,7 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
         }
     }
 
-    public void robotLiftWithPosition(int power, boolean force) {
+ /*   public void robotLiftWithPosition(int power, boolean force) {
         if (Math.abs(power) < getSettings().minRegisterVal) return;
 
         if (power < 0) {
@@ -165,7 +172,7 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
             setRobotLiftPositionUnsafe(getHardware().robotLiftMotor.getCurrentPosition() + (int) power);
         else
             setRobotLiftPositionUnsafe(getHardware().robotLiftMotor.getCurrentPosition() + (int) power);
-    }
+    }*/
 
     public void robotLiftWithPower(int power) {
         motorPower = power;
@@ -183,7 +190,27 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
         getHardware().robotLiftMotor.setPower(motorPower);
     }
 
-    public void constructAutoGrab(){}
+    public void constructAutoGrab(){
+        autoGrabTask.autoStart = false;
+        autoGrabTask.addStep(()->setSweepPosition(2));
+        autoGrabTask.addStep(()->sweepWithPower(1));
+    }
+
+    public void constructAutoDock(){
+        autoDockTask.autoStart = false;
+
+        autoDockTask.addStep(()->setGrabPosition(1));
+        autoDockTask.addStep(()->setSwingPosition(0));
+        autoDockTask.addDelay(2000);
+        autoDockTask.addStep(()->setSlidePosition(0));
+    }
+
+    public void startAutoDock() {autoDockTask.restart();}
+
+    public void addAutoDockToTask(TimedTask task){
+        task.addStep(autoDockTask::restart);
+        task.waitForEvent(eventManager.getContainer(Events.dockComplete));
+    }
 
     public void constructAutoDrop(){
         autoDropTask.autoStart = false;
@@ -191,6 +218,7 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
         autoDropTask.addStep(()->setSlidePosition(1500));
         autoDropTask.addDelay(5000);
         autoDropTask.addStep(()->setSwingPosition(1));
+        autoDropTask.addStep(()->setGrabPosition(2));
     }
 
     public void startAutoDrop(){
@@ -202,36 +230,32 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
         task.waitForEvent(eventManager.getContainer(Events.dropComplete));
     }
 
-    public void doTagRanging(DriveControl control){
-        if(tag.desiredTag != null && tag.desiredTag.ftcPose.range <= 12.0){
-            if (tag.desiredTag.ftcPose.x >= 5)
-                control.power = control.power.addX(0.5);
-            else if (tag.desiredTag.ftcPose.x <= 5)
-                control.power = control.power.addX(-0.5);
-        }
-        else {
-            //control.power = control.power.addY(-0.5);
-        }
-    }
+    public void doTagRanging(DriveControl control) {
+        boolean doTagRange = true;
+        double xPower = 0.03;
+        double yPower = 0.03;
+        int tolerance = 1;
 
-    public void doTagRangingtjk(DriveControl control) {
-        if(tag.desiredTag != null && tag.desiredTag.ftcPose.range <= 18.0) {
-            if (tag.desiredTag.ftcPose.x > 1)
-                control.power = control.power.addX(0.5);
-            else if (tag.desiredTag.ftcPose.x < -1)
-                control.power = control.power.addX(-0.5);
+        if (tag.desiredTag != null && dropComplete) {
 
-            if (tag.desiredTag.ftcPose.range > 12)
-                control.power = control.power.addY(-0.5);
-            else if (tag.desiredTag.ftcPose.range < 12)
-                control.power = control.power.addY(-0.5);
+            tag.setDesiredTag(tag.desiredTag.id);
+            boolean inLeft = tag.desiredTag.ftcPose.x < 1;
+            boolean inRight = tag.desiredTag.ftcPose.x > -1;
+            boolean inRange = tag.desiredTag.ftcPose.range <= 24.0;
+
+           // if (inRange && getSlidePosition() > 1000) - use when i can actually use robot
+            if (inRange) {
+                if (inRight) // tag to the right (x is positive)
+                    control.power = control.power.addX(xPower);
+                else if (inLeft) //tag to the left (x is negative)
+                    control.power = control.power.addX(-xPower);
+            }
         }
     }
 
     @Override
     public void onInit() {
         constructAutoDrop();
-
         setSweepPosition(0);
     }
 
@@ -269,7 +293,7 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
     public void onStart() {
         drive = getBeanManager().getBestMatch(Drive.class, false);
         tag = getBeanManager().getBestMatch(AprilTag.class, false);
-        drive.addController(Intake.ContollerNames.distanceContoller, (control) -> doTagRangingtjk(control));
+        drive.addController(Intake.ContollerNames.distanceContoller, (control) -> doTagRanging(control));
         setSweepPosition(1);
     }
 
@@ -285,6 +309,8 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
     public static final class TaskNames {
         public final static String autoGrab = "auto grab";
         public final static String autoDrop = "auto drop";
+        public final static String autoHome = "auto home";
+        public final static String autoDock = "auto dock";
     }
 
     public static final class Events {
@@ -292,6 +318,7 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
         public static final String grabComplete = "GRAB_COMPLETE";
         public static final String preDropComplete = "PRE_DROP_COMPLETE";
         public static final String dropComplete = "DROP_COMPlETE";
+        public static  final String homeComplete = "HOME_COMPLETE";
     }
 }
 

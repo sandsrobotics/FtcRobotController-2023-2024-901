@@ -13,6 +13,7 @@ import org.firstinspires.ftc.teamcode.parts.positiontracker.PositionTracker;
 import org.firstinspires.ftc.teamcode.parts.positiontracker.encodertracking.EncoderTracker;
 import org.firstinspires.ftc.teamcode.parts.intake.Intake;
 import org.firstinspires.ftc.teamcode.parts.intake.IntakeTeleop;
+import org.firstinspires.ftc.teamcode.parts.positiontracker.odometry.Odometry;
 import org.firstinspires.ftc.teamcode.parts.teamprop.TeamProp;
 import org.firstinspires.ftc.teamcode.parts.teamprop.TeamPropDetectionPipeline;
 
@@ -51,8 +52,9 @@ public class TestPixel extends LinearOpMode {
         PositionTracker pt = new PositionTracker(robot);
         XRelativeSolver solver = new XRelativeSolver(drive);
         EncoderTracker et = new EncoderTracker(pt);
-        //Odometry odo = new Odometry(pt);
         pt.positionSourceId = EncoderTracker.class;
+/*        Odometry odo = new Odometry(pt);
+        pt.positionSourceId = Odometry.class;*/
         Intake intake = new Intake(robot);
         new IntakeTeleop(intake);
         TeamProp tp = new TeamProp(robot);
