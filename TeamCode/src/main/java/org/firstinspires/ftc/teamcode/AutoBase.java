@@ -40,7 +40,6 @@ import static om.self.ezftc.utils.Constants.tileSide;
 @Autonomous(name="AutoBase", group="Test")
 public class AutoBase extends LinearOpMode{
     public Function<Vector3, Vector3> transformFunc;
-    public boolean isRed;
     public Vector3 customStartPos;
     public boolean shutdownps;
     Intake intake;
@@ -52,6 +51,8 @@ public class AutoBase extends LinearOpMode{
     DriveControl control;
     public boolean center, left;
     public boolean midPark;
+    public boolean isRed;
+    public boolean parkOnly;
 
     //Vector3 centralspikemark = new Vector3(-35.25, -39.5, -90);
     Vector3 startPosition = new Vector3(-1.5,-2.7,90);
@@ -60,6 +61,7 @@ public class AutoBase extends LinearOpMode{
         transformFunc = (v) -> v;
         isRed = true;
         midPark = true;
+        parkOnly = false;
     }
 
     private Vector3 tileToInchAuto(Vector3 tiles){
@@ -128,10 +130,13 @@ public class AutoBase extends LinearOpMode{
         });
         // add calls to special autonomous action collections in methods below
 
-        // testRobot(autoTask);
+        if(!parkOnly)
+        testRobot(autoTask);
         // gotoTestPos(autoTask);
-        wallAuto(autoTask);
+        // wallAuto(autoTask);
         // boardAuto(autoTask);
+
+
         //parkAuto(autoTask);
 
         while (opModeIsActive()) {
@@ -181,20 +186,34 @@ public class AutoBase extends LinearOpMode{
 
     private void wallAuto(TimedTask autoTask){
         Vector3 startPos = new Vector3(-1.5, -2.6, 90);
-        Vector3 pushProp = new Vector3(-1.5, 0, 90);
+        Vector3 pushProp = new Vector3(-1.5, -1, 90);
         Vector3 dropPixCenter = new Vector3(-1.5, -1.5, 90);
         Vector3 dropPixLeft = new Vector3(-1.5, -1.5, 180);
         Vector3 dropPixRight = new Vector3(-1.5, -1.5, 0);
         Vector3 tagAngle = new Vector3(-1.5, -1.5, 0);
-        Vector3 setupTags = new Vector3(1.5, -1.5, 0);
+        Vector3 preSetupTagsMid = new Vector3(-1.5, .5, 0);
+        Vector3 setupTagsMid = new Vector3(1.5, .5, 0);
+        Vector3 preSetupTagsWall = new Vector3(-1.5, -2.5, 0);
+        Vector3 setupTagsWall = new Vector3(1.5, -2.5, 0);
+        Vector3 goToTags = new Vector3(1.5, -1.5, 0);
+        Vector3 prePark = new Vector3(1.5, -1.5, 0);
 
         positionSolver.setSettings(PositionSolverSettings.defaultSettings);
         positionSolver.addMoveToTaskEx(tileToInchAuto(pushProp), autoTask);
         positionSolver.addMoveToTaskEx(tileToInchAuto(dropPixCenter), autoTask);
         positionSolver.addMoveToTaskEx(tileToInchAuto(center ? dropPixCenter : left ? dropPixLeft : dropPixRight), autoTask);
+        intake.addAutoGrabToTask(autoTask, true);
         positionSolver.addMoveToTaskEx(tileToInchAuto(tagAngle), autoTask);
-        positionSolver.addMoveToTaskEx(tileToInchAuto(setupTags), autoTask);
+        positionSolver.addMoveToTaskEx(tileToInchAuto(preSetupTagsWall), autoTask);
+        positionSolver.addMoveToTaskEx(tileToInchAuto(setupTagsWall), autoTask);
+        positionSolver.addMoveToTaskEx(tileToInchAuto(goToTags), autoTask);
         positionSolver.setSettings(PositionSolverSettings.defaultNoAlwaysRunSettings);
+        autoTask.addDelay(1000);
+        intake.addAutoDropToTask(autoTask);
+        autoTask.addDelay(3000);
+        intake.addAutoDockToTask(autoTask);
+        positionSolver.setSettings(PositionSolverSettings.defaultSettings);
+        positionSolver.addMoveToTaskEx(tileToInchAuto(prePark), autoTask);
 
     }
 
@@ -204,10 +223,24 @@ public class AutoBase extends LinearOpMode{
         Vector3 dropPixCenter = new Vector3(.5, -1.5, 90);
         Vector3 dropPixLeft = new Vector3(.5, -1.5, 180);
         Vector3 dropPixRight = new Vector3(.5, -1.5, 0);
+        Vector3 tagAngle = new Vector3(.5, -1.5, 0);
+        Vector3 setupTags = new Vector3(1.5, -2.5, 0);
+        Vector3 prePark = new Vector3(1.5, -1.5, 0);
 
         positionSolver.setSettings(PositionSolverSettings.defaultSettings);
+        //if its in the center we need to push the prop out of the way and then place it or place it on the right side. if its on the left side normal place and back up to april tags, if its on the right side then back up first then place it on the thing, but also need to get rid of team prop somehow
         positionSolver.addMoveToTaskEx(tileToInchAuto(pushProp), autoTask);
         positionSolver.addMoveToTaskEx(tileToInchAuto(center ? dropPixCenter : left ? dropPixLeft : dropPixRight), autoTask);
+        positionSolver.addMoveToTaskEx(tileToInchAuto(tagAngle), autoTask);
+        positionSolver.addMoveToTaskEx(tileToInchAuto(setupTags), autoTask);
+        positionSolver.setSettings(PositionSolverSettings.defaultNoAlwaysRunSettings);
+        autoTask.addDelay(1000);
+        intake.addAutoDropToTask(autoTask);
+        autoTask.addDelay(3000);
+        intake.addAutoDockToTask(autoTask);
+        positionSolver.setSettings(PositionSolverSettings.defaultSettings);
+        positionSolver.addMoveToTaskEx(tileToInchAuto(prePark), autoTask);
+
     }
 
     private void testRobot(TimedTask autoTask){
@@ -215,8 +248,14 @@ public class AutoBase extends LinearOpMode{
         Vector3 testPos = new Vector3(1, .5, 90);
 
         intake.addAutoDropToTask(autoTask);
+        autoTask.addDelay(3000);
         positionSolver.addMoveToTaskEx(tileToInchAuto(testPos), autoTask);
+        autoTask.addDelay(3000);
         intake.addAutoDockToTask(autoTask);
+        autoTask.addDelay(3000);
+        intake.addAutoGrabToTask(autoTask, true);
+        autoTask.addDelay(3000);
+        intake.addAutoGrabToTask(autoTask, false);
     }
 
 // ********* Put the methods that do the parts of the autonomous routines here ************//
@@ -229,8 +268,6 @@ public class AutoBase extends LinearOpMode{
         Vector3 centerAT = new Vector3(1.85,-1.5,0);
         Vector3 leftAT = new Vector3(1.85, -1.3, 0);
         Vector3 rightAT = new Vector3(1.85, -2, 0);
-
-
 
         positionSolver.setSettings(PositionSolverSettings.loseSettings);
         positionSolver.addMoveToTaskEx(tileToInchAuto(centralspikemark), autoTask);

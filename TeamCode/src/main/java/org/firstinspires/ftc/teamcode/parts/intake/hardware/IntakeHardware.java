@@ -1,11 +1,14 @@
 package org.firstinspires.ftc.teamcode.parts.intake.hardware;
 
+import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+
+import org.openftc.i2cdrivers.QwiicLEDStick;
 
 import om.self.ezftc.utils.hardware.motor.MotorSettings;
 import om.self.ezftc.utils.hardware.servo.ServoSettings;
@@ -26,8 +29,14 @@ public class IntakeHardware {
     public final DigitalChannel slideLowLimitSwitch;
     public final Servo swingServoLeft;
     public final Servo swingServoRight;
+    public final Servo launchServoAngle;
+    public final Servo launchServoRelease;
+    public final RevColorSensorV3 botSensor;
+    public final RevColorSensorV3 topSensor;
 
-    public IntakeHardware(DcMotor sliderMotor, DcMotor sweeperMotor, Servo sweepLiftServo, DcMotorEx robotLiftMotor, Servo grabberServo, DigitalChannel liftLowLimitSwitch, DigitalChannel liftHighLImitSwitch, DigitalChannel slideLowLimitSwitch, Servo swingServoLeft,Servo swingServoRight) {
+
+
+    public IntakeHardware(DcMotor sliderMotor, DcMotor sweeperMotor, Servo sweepLiftServo, DcMotorEx robotLiftMotor, Servo grabberServo, DigitalChannel liftLowLimitSwitch, DigitalChannel liftHighLImitSwitch, DigitalChannel slideLowLimitSwitch, Servo swingServoLeft,Servo swingServoRight, Servo launchServoAngle, Servo launchServoRelease, RevColorSensorV3 botSensor, RevColorSensorV3 topSensor) {
         this.sweeperMotor = sweeperMotor;
         this.sliderMotor = sliderMotor;
         this.sweepLiftServo = sweepLiftServo;
@@ -38,17 +47,24 @@ public class IntakeHardware {
         this.slideLowLimitSwitch = slideLowLimitSwitch;
         this.swingServoLeft = swingServoLeft;
         this.swingServoRight = swingServoRight;
+        this.launchServoAngle = launchServoAngle;
+        this.launchServoRelease = launchServoRelease;
+        this.botSensor = botSensor;
+        this.topSensor = topSensor;
     }
 
     public static IntakeHardware makeDefault(HardwareMap hardwareMap) {
-        MotorSettings slideMotorSettings = new MotorSettings(MotorSettings.Number.ZERO_B, DcMotorSimple.Direction.REVERSE, DcMotor.ZeroPowerBehavior.BRAKE, DcMotor.RunMode.RUN_TO_POSITION, slideHoldPower);
+        MotorSettings slideMotorSettings = new MotorSettings(MotorSettings.Number.ZERO_B, DcMotorSimple.Direction.FORWARD, DcMotor.ZeroPowerBehavior.BRAKE, DcMotor.RunMode.RUN_TO_POSITION, slideHoldPower);
         MotorSettings sweepMotorSettings = new MotorSettings(MotorSettings.Number.ONE_B, DcMotorSimple.Direction.FORWARD, DcMotor.ZeroPowerBehavior.BRAKE, DcMotor.RunMode.RUN_WITHOUT_ENCODER, sweepHoldPower);
         ServoSettings sweepLiftServoSettings = new ServoSettings(ServoSettings.Number.ZERO_B, Servo.Direction.FORWARD);
         MotorSettings robotLiftMotorSettings = new MotorSettings(MotorSettings.Number.TWO_B, DcMotorSimple.Direction.FORWARD, DcMotor.ZeroPowerBehavior.BRAKE, DcMotor.RunMode.RUN_WITHOUT_ENCODER, robotLiftHoldPower);
         ServoSettings grabberServoSettings = new ServoSettings(ServoSettings.Number.ZERO, Servo.Direction.FORWARD);
         ServoSettings swingServoLeftSettings = new ServoSettings(ServoSettings.Number.ONE, Servo.Direction.FORWARD);
-        ServoSettings swingServoRightSettings = new ServoSettings(ServoSettings.Number.TWO, Servo.Direction.FORWARD);
-
+        ServoSettings swingServoRightSettings = new ServoSettings(ServoSettings.Number.TWO, Servo.Direction.REVERSE);
+        ServoSettings launchServoAngleSettings = new ServoSettings(ServoSettings.Number.THREE, Servo.Direction.FORWARD);
+        ServoSettings launchServoReleaseSettings = new ServoSettings(ServoSettings.Number.THREE_B, Servo.Direction.FORWARD);
+        RevColorSensorV3 botSensor = hardwareMap.get(RevColorSensorV3.class, "botSensor");
+        RevColorSensorV3 topSensor = hardwareMap.get(RevColorSensorV3.class, "topSensor");
         DigitalChannel lowLiftLimit = hardwareMap.get(DigitalChannel.class, "digital0");
         DigitalChannel highLiftLimit = hardwareMap.get(DigitalChannel.class, "digital1");
         DigitalChannel lowSlideLimit = hardwareMap.get(DigitalChannel.class, "digital2");
@@ -66,7 +82,11 @@ public class IntakeHardware {
                 highLiftLimit,
                 lowSlideLimit,
                 swingServoLeftSettings.makeServo(hardwareMap),
-                swingServoRightSettings.makeServo(hardwareMap)
+                swingServoRightSettings.makeServo(hardwareMap),
+                launchServoAngleSettings.makeServo(hardwareMap),
+                launchServoReleaseSettings.makeServo(hardwareMap),
+                botSensor,
+                topSensor
         );
     }
 }

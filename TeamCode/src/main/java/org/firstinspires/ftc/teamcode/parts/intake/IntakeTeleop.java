@@ -7,6 +7,8 @@ import om.self.ezftc.core.part.LoopedPartImpl;
 
 public class IntakeTeleop extends LoopedPartImpl<Intake, IntakeTeleopSettings, ObjectUtils.Null> {
     private IntakeTeleopSettings settings;
+    private int pix;
+
 
     public IntakeTeleop(Intake parent) {
         super(parent, "Intake teleop");
@@ -41,16 +43,31 @@ public class IntakeTeleop extends LoopedPartImpl<Intake, IntakeTeleopSettings, O
                 (int) settings.sweepLiftSupplier.get(),
                 (int) settings.robotLiftSupplier.get(),
                 (int) settings.grabberSupplier.get(),
-                (int) settings.swingSupplier.get()
+                (int) settings.swingSupplier.get(),
+                (int) settings.pixChangeSupplier.get(),
+        (int) settings.pixChangeSupplier.get(),
+                (int) settings.launchAngleSupplier.get(),
+                (int) settings.launchReleaseSupplier.get()
         ), true);
     }
 
     @Override
     public void onRun() {
+        if (settings.pixChangeSupplier.get() != 0) {
+            pix = settings.pixChangeSupplier.get();
+            parent.setPix(pix);
+        }
+
         if(settings.sliderBottomSupplier.get())
             parent.setLiftToBottom();
         else if (settings.sliderTopSupplier.get())
             parent.setLiftToTop();
+        else if(settings.autoDropSupplier.get())
+            parent.startAutoDrop();
+        else if(settings.autoDockSupplier.get())
+            parent.startAutoDock();
+
+        parent.parent.opMode.telemetry.addData("pix", parent.getPix() + 1);
     }
 
     @Override

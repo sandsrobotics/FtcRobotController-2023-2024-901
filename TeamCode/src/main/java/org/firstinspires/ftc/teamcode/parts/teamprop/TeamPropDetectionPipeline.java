@@ -26,13 +26,14 @@ public class TeamPropDetectionPipeline extends OpenCvPipeline
     static final Scalar BLUE = new Scalar(0, 0, 255);
     static final Scalar GREEN = new Scalar(0, 255, 0);
     static final Scalar BLOCK = new Scalar(76,166,40);
+    static final Scalar WHITE = new Scalar(255,255,255);
 
     /*
      * The core values which define the location and size of the sample regions
      */
-    static final Point REGION1_TOPLEFT_ANCHOR_POINT = new Point(100,400);
-    static final Point REGION2_TOPLEFT_ANCHOR_POINT = new Point(550,400);
-    static final Point REGION3_TOPLEFT_ANCHOR_POINT = new Point(1000,400);
+    static final Point REGION1_TOPLEFT_ANCHOR_POINT = new Point(0,400);
+    static final Point REGION2_TOPLEFT_ANCHOR_POINT = new Point(550,350);
+    static final Point REGION3_TOPLEFT_ANCHOR_POINT = new Point(1080,400);
     static final int REGION_WIDTH = 200;
     static final int REGION_HEIGHT = 200;
 
@@ -75,9 +76,9 @@ public class TeamPropDetectionPipeline extends OpenCvPipeline
     /*
      * Working variables
      */
-    Mat region1_Cb, region2_Cb, region3_Cb;
-    Mat YCrCb = new Mat();
-    Mat Cb = new Mat();
+    Mat region1, region2, region3;
+    Mat inputConv = new Mat();
+    Mat extracted = new Mat();
     int avg1, avg2, avg3;
 
     // Volatile since accessed by OpMode thread w/o synchronization
@@ -91,8 +92,14 @@ public class TeamPropDetectionPipeline extends OpenCvPipeline
      */
     void inputToCb(Mat input)
     {
-        Imgproc.cvtColor(input, YCrCb, Imgproc.COLOR_RGB2YCrCb);
-        Core.extractChannel(YCrCb, Cb, 2);
+        Imgproc.cvtColor(input, inputConv, Imgproc.COLOR_RGB2YCrCb);
+        Core.extractChannel(inputConv, extracted, 2);
+    }
+
+    void inputToSat(Mat input)
+    {
+        Imgproc.cvtColor(input, inputConv, Imgproc.COLOR_RGB2HSV);
+        Core.extractChannel(inputConv, extracted, 1);
     }
 
     @Override
@@ -107,22 +114,24 @@ public class TeamPropDetectionPipeline extends OpenCvPipeline
          * buffer would be re-allocated the first time a real frame
          * was crunched)
          */
-        inputToCb(firstFrame);
+        //inputToCb(firstFrame);
+        inputToSat(firstFrame);
 
         /*
          * Submats are a persistent reference to a region of the parent
          * buffer. Any changes to the child affect the parent, and the
          * reverse also holds true.
          */
-        region1_Cb = Cb.submat(new Rect(region1_pointA, region1_pointB));
-        region2_Cb = Cb.submat(new Rect(region2_pointA, region2_pointB));
-        region3_Cb = Cb.submat(new Rect(region3_pointA, region3_pointB));
+        region1 = extracted.submat(new Rect(region1_pointA, region1_pointB));
+        region2 = extracted.submat(new Rect(region2_pointA, region2_pointB));
+        region3 = extracted.submat(new Rect(region3_pointA, region3_pointB));
     }
 
     @Override
     public Mat processFrame(Mat input)
     {
-        inputToCb(input);
+        //inputToCb(input);
+        inputToSat(input);
         /*
          * Compute the average pixel value of each submat region. We're
          * taking the average of a single channel buffer, so the value
@@ -130,9 +139,9 @@ public class TeamPropDetectionPipeline extends OpenCvPipeline
          * pixel value of the 3-channel image, and referenced the value
          * at index 2 here.
          */
-        avg1 = (int) Core.mean(region1_Cb).val[0];
-        avg2 = (int) Core.mean(region2_Cb).val[0];
-        avg3 = (int) Core.mean(region3_Cb).val[0];
+        avg1 = (int) Core.mean(region1).val[0];
+        avg2 = (int) Core.mean(region2).val[0];
+        avg3 = (int) Core.mean(region3).val[0];
         /*
          * Draw a rectangle showing sample region 1 on the screen.
          * Simply a visual aid. Serves no functional purpose.
@@ -143,8 +152,15 @@ public class TeamPropDetectionPipeline extends OpenCvPipeline
                 region1_pointB, // Second point which defines the rectangle
                 BLOCK, // The color the rectangle is drawn in
                 2); // Thickness of the rectangle lines
+        Imgproc.putText(input, // Buffer to draw on
+                String.valueOf(avg1), // string
+                region1_pointA, // position point
+                Imgproc.FONT_HERSHEY_SIMPLEX,      // font face
+                4,                               // font scale
+                WHITE,             // Scalar object for color
+                4); // tickness
 
-        /*
+                /*
          * Draw a rectangle showing sample region 2 on the screen.
          * Simply a visual aid. Serves no functional purpose.
          */
@@ -154,6 +170,13 @@ public class TeamPropDetectionPipeline extends OpenCvPipeline
                 region2_pointB, // Second point which defines the rectangle
                 BLOCK, // The color the rectangle is drawn in
                 2); // Thickness of the rectangle lines
+        Imgproc.putText(input, // Buffer to draw on
+                String.valueOf(avg2), // string
+                region2_pointA, // position point
+                Imgproc.FONT_HERSHEY_SIMPLEX,      // font face
+                4,                               // font scale
+                WHITE,             // Scalar object for color
+                4); // tickness
 
         /*
          * Draw a rectangle showing sample region 3 on the screen.
@@ -165,13 +188,19 @@ public class TeamPropDetectionPipeline extends OpenCvPipeline
                 region3_pointB, // Second point which defines the rectangle
                 BLOCK, // The color the rectangle is drawn in
                 2); // Thickness of the rectangle lines
-
+        Imgproc.putText(input, // Buffer to draw on
+                String.valueOf(avg3), // string
+                region3_pointA, // position point
+                Imgproc.FONT_HERSHEY_SIMPLEX,      // font face
+                4,                               // font scale
+                WHITE,             // Scalar object for color
+                4); // tickness
 
         /*
          * Find the max of the 3 averages
          */
-        int maxOneTwo = Math.min(avg1, avg2);
-        int max = Math.min(maxOneTwo, avg3);
+        int maxOneTwo = Math.max(avg1, avg2);
+        int max = Math.max(maxOneTwo, avg3);
 
         /*
          * Now that we found the max, we actually need to go and
@@ -190,7 +219,7 @@ public class TeamPropDetectionPipeline extends OpenCvPipeline
                     region1_pointA, // First point which defines the rectangle
                     region1_pointB, // Second point which defines the rectangle
                     GREEN, // The color the rectangle is drawn in
-                    -1); // Negative thickness means solid fill
+                    5); // Negative thickness means solid fill
         }
         else if(max == avg2) // Was it from region 2?
         {
@@ -205,7 +234,7 @@ public class TeamPropDetectionPipeline extends OpenCvPipeline
                     region2_pointA, // First point which defines the rectangle
                     region2_pointB, // Second point which defines the rectangle
                     GREEN, // The color the rectangle is drawn in
-                    -1); // Negative thickness means solid fill
+                    5); // Negative thickness means solid fill
         }
         else if(max == avg3) // Was it from region 3?
         {
@@ -220,7 +249,7 @@ public class TeamPropDetectionPipeline extends OpenCvPipeline
                     region3_pointA, // First point which defines the rectangle
                     region3_pointB, // Second point which defines the rectangle
                     GREEN, // The color the rectangle is drawn in
-                    -1); // Negative thickness means solid fill
+                    5); // Negative thickness means solid fill
         }
 
         /*
@@ -234,5 +263,15 @@ public class TeamPropDetectionPipeline extends OpenCvPipeline
     public TeamPropPosition getAnalysis()
     {
         return position;
+    }
+
+    public int getAvg1() {
+        return avg1;
+    }
+    public int getAvg2() {
+        return avg2;
+    }
+    public int getAvg3() {
+        return avg3;
     }
 }

@@ -21,12 +21,19 @@ public class IntakeSettings {
     public final double swingRightSafePosition;
     public final double swingLeftDropPosition;
     public final double swingRightDropPosition;
+    public final int maxPix;
+    public final int maxPixLine;
+    public final double launchAngleStorePosition;
+    public final double launchAngleArmPosition;
+    public final double launchReleaseLockPosition;
+    public final double launchReleaseUnlockPosition;
+
 
 
     public IntakeSettings(int minSlidePosition, int maxSlidePosition, int maxDownSlideSpeed, int maxUpSlideSpeed, double minRegisterVal, int maxUpLiftSpeed,
                           int maxDownLiftSpeed, double tolerance, double sweepLiftServoMinPosition, double sweepLiftServoMaxPosition,
                           double sweepLiftServoStartPosition, int maxLiftPosition, int minLiftPosition, double grabberOpenPosition, double grabberGripTwoPosition,
-                          double grabberGripOnePosition, double swingLeftSafePosition, double swingRightSafePosition, double swingLeftDropPosition, double swingRightDropPosition) {
+                          double grabberGripOnePosition, double swingLeftSafePosition, double swingRightSafePosition, double swingLeftDropPosition, double swingRightDropPosition, int maxPix, int maxPixLine, double launchAngleStorePosition, double launchAngleArmPosition, double launchReleaseLockPosition, double launchReleaseUnlockPosition) {
         this.minSlidePosition = minSlidePosition;
         this.maxSlidePosition = maxSlidePosition;
         this.maxDownSlideSpeed = maxDownSlideSpeed;
@@ -47,6 +54,12 @@ public class IntakeSettings {
         this.swingRightSafePosition = swingRightSafePosition;
         this.swingLeftDropPosition = swingLeftDropPosition;
         this.swingRightDropPosition = swingRightDropPosition;
+        this.maxPix = maxPix;
+        this.maxPixLine = maxPixLine;
+        this.launchAngleStorePosition = launchAngleStorePosition;
+        this.launchAngleArmPosition = launchAngleArmPosition;
+        this.launchReleaseLockPosition = launchReleaseLockPosition;
+        this.launchReleaseUnlockPosition = launchReleaseUnlockPosition;
     }
 
     // left safe: ,.14 drop: .5
@@ -54,26 +67,32 @@ public class IntakeSettings {
 
     public static IntakeSettings makeDefault(){
         return new IntakeSettings(
-                20,
+                0,
                 3350,
                 300,
                 300,
                 0.05,
                 300,
                 300,
-                20,
+                2,
                 0,
                 1,
                 .5,
                 8699,
                 201,
-                .59,
-                .0,
-                .31,
-                .14,
-                .87,
-                .5,
-                .48
+                1.00,
+                .24,
+                .85,
+                .144,
+                .86,
+                .492,
+                .48,
+                12,
+                2,
+                .468,
+                .6,
+                .482,
+                .702
                 );
     }
 }

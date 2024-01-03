@@ -6,8 +6,10 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.parts.apriltag.AprilTag;
+import org.firstinspires.ftc.teamcode.parts.bulkread.BulkRead;
 import org.firstinspires.ftc.teamcode.parts.drive.Drive;
 import org.firstinspires.ftc.teamcode.parts.drive.DriveTeleop;
+import org.firstinspires.ftc.teamcode.parts.led.Led;
 import org.firstinspires.ftc.teamcode.parts.positionsolver.XRelativeSolver;
 import org.firstinspires.ftc.teamcode.parts.positiontracker.PositionTracker;
 import org.firstinspires.ftc.teamcode.parts.positiontracker.encodertracking.EncoderTracker;
@@ -46,15 +48,17 @@ public class TestPixel extends LinearOpMode {
         FtcDashboard dashboard = FtcDashboard.getInstance();
         TelemetryPacket packet = new TelemetryPacket();
         Robot robot = new Robot(this);
+        new BulkRead(robot);
         Drive drive = new Drive(robot);
         new DriveTeleop(drive);
+        //Led ledStick = new Led(robot);
 
         PositionTracker pt = new PositionTracker(robot);
         XRelativeSolver solver = new XRelativeSolver(drive);
         EncoderTracker et = new EncoderTracker(pt);
         pt.positionSourceId = EncoderTracker.class;
-/*        Odometry odo = new Odometry(pt);
-        pt.positionSourceId = Odometry.class;*/
+        //Odometry odo = new Odometry(pt);
+        //pt.positionSourceId = Odometry.class;
         Intake intake = new Intake(robot);
         new IntakeTeleop(intake);
         TeamProp tp = new TeamProp(robot);
@@ -63,6 +67,9 @@ public class TestPixel extends LinearOpMode {
         while (!isStarted()) {
             teamPropPosition = tp.pipeline.position;
             telemetry.addData("Team Prop", teamPropPosition);
+            telemetry.addData("left:", tp.pipeline.getAvg1());
+            telemetry.addData("center:", tp.pipeline.getAvg2());
+            telemetry.addData("right:", tp.pipeline.getAvg3());
             dashboard.sendTelemetryPacket(packet);
             telemetry.update();
         }
@@ -80,7 +87,6 @@ public class TestPixel extends LinearOpMode {
             double x = pt.getCurrentPosition().X;
             double y = pt.getCurrentPosition().Y;
             double z = Math.toRadians(pt.getCurrentPosition().Z);
-
             double x1 = Math.cos(z)*8;
             double y1 = Math.sin(z)*8;
             packet.fieldOverlay().setFill("blue").fillCircle(x,y,6);
@@ -89,13 +95,12 @@ public class TestPixel extends LinearOpMode {
             telemetry.addData("position", pt.getCurrentPosition());
             telemetry.addData("tile position", fieldToTile(pt.getCurrentPosition()));
             telemetry.addData("relative position", pt.getRelativePosition());
-            telemetry.addData("Team Prop Position", teamPropPosition);
-
-            robot.opMode.telemetry.addData("time", System.currentTimeMillis() - start);
 
             if(gamepad1.dpad_down) {
                 solver.setNewTarget(10, true);
             }
+
+            telemetry.addData("Team Prop Position", teamPropPosition);
 
             if (aprilTag != null && aprilTag.targetFound) {
                 telemetry.addData("Found", "ID %d (%s)", aprilTag.desiredTag.id, aprilTag.desiredTag.metadata.name);
@@ -103,9 +108,9 @@ public class TestPixel extends LinearOpMode {
                 telemetry.addData("X", "%5.1f inches", aprilTag.desiredTag.ftcPose.x);
                 telemetry.addData("Bearing","%3.0f degrees", aprilTag.desiredTag.ftcPose.bearing);
                 telemetry.addData("Yaw","%3.0f degrees", aprilTag.desiredTag.ftcPose.yaw);
-            } else {
-                telemetry.addData("\n>","Drive using joysticks to find valid target\n");
             }
+
+            robot.opMode.telemetry.addData("time", System.currentTimeMillis() - start);
             dashboard.sendTelemetryPacket(packet);
             telemetry.update();
         }

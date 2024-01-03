@@ -9,5 +9,6 @@ public class AutoBlueTest extends AutoBase{
         transformFunc = (v) -> v.withX(-v.X).withY(v.Y).withZ(-180 - v.Z);
         midPark = true;
         isRed = false;
+        parkOnly = false;
     }
 }
