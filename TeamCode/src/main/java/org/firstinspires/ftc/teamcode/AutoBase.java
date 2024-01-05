@@ -55,7 +55,7 @@ public class AutoBase extends LinearOpMode{
     public boolean parkOnly;
 
     //Vector3 centralspikemark = new Vector3(-35.25, -39.5, -90);
-    Vector3 startPosition = new Vector3(-1.5,-2.7,90);
+    Vector3 startPosition = new Vector3(-1.5,-2.7,-90);
 
     public void initAuto(){
         transformFunc = (v) -> v;
@@ -131,9 +131,9 @@ public class AutoBase extends LinearOpMode{
         // add calls to special autonomous action collections in methods below
 
         if(!parkOnly)
-        testRobot(autoTask);
+        //testRobot(autoTask);
         // gotoTestPos(autoTask);
-        // wallAuto(autoTask);
+         wallAuto(autoTask);
         // boardAuto(autoTask);
 
 
@@ -185,18 +185,18 @@ public class AutoBase extends LinearOpMode{
     }
 
     private void wallAuto(TimedTask autoTask){
-        Vector3 startPos = new Vector3(-1.5, -2.6, 90);
-        Vector3 pushProp = new Vector3(-1.5, -1, 90);
+        Vector3 startPos = new Vector3(-1.5, -2.6, -90);
+        Vector3 pushProp = new Vector3(-1.5, -1.5, -90);
         Vector3 dropPixCenter = new Vector3(-1.5, -1.5, 90);
         Vector3 dropPixLeft = new Vector3(-1.5, -1.5, 180);
         Vector3 dropPixRight = new Vector3(-1.5, -1.5, 0);
-        Vector3 tagAngle = new Vector3(-1.5, -1.5, 0);
-        Vector3 preSetupTagsMid = new Vector3(-1.5, .5, 0);
-        Vector3 setupTagsMid = new Vector3(1.5, .5, 0);
-        Vector3 preSetupTagsWall = new Vector3(-1.5, -2.5, 0);
-        Vector3 setupTagsWall = new Vector3(1.5, -2.5, 0);
-        Vector3 goToTags = new Vector3(1.5, -1.5, 0);
-        Vector3 prePark = new Vector3(1.5, -1.5, 0);
+        Vector3 tagAngle = new Vector3(-1.5, -1.5, 180);
+        Vector3 preSetupTagsMid = new Vector3(-1.5, .5, 180);
+        Vector3 setupTagsMid = new Vector3(1.5, .5, 180);
+        Vector3 preSetupTagsWall = new Vector3(-1.5, -2.5, 180);
+        Vector3 setupTagsWall = new Vector3(1.5, -2.5, 180);
+        Vector3 goToTags = new Vector3(1.5, -1.5, 180);
+        Vector3 prePark = new Vector3(1.5, -1.5, 180);
 
         positionSolver.setSettings(PositionSolverSettings.defaultSettings);
         positionSolver.addMoveToTaskEx(tileToInchAuto(pushProp), autoTask);

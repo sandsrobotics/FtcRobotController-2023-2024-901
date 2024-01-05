@@ -23,6 +23,7 @@ public class IntakeTeleopSettings {
     public final Supplier<Boolean> autoDockSupplier;
     public final Supplier<Integer> launchAngleSupplier;
     public final Supplier<Integer> launchReleaseSupplier;
+    public final Supplier<Boolean> autoHomeSupplier;
 
 
 
@@ -32,7 +33,7 @@ public class IntakeTeleopSettings {
                                 Supplier<Integer> grabberSupplier, Supplier<Integer> swingSupplier,
                                 Supplier<Integer> pixChangeSupplier, Supplier<Boolean> autoDropSupplier,
                                 Supplier<Boolean> autoDockSupplier, Supplier<Integer> launchAngleSupplier,
-                                Supplier<Integer> launchReleaseSupplier) {
+                                Supplier<Integer> launchReleaseSupplier, Supplier<Boolean> autoHomeSupplier){
         this.heightSpeedSupplier = heightSpeedSupplier;
         this.sliderBottomSupplier = sliderBottomSupplier;
         this.sliderTopSupplier = sliderTopSupplier;
@@ -46,11 +47,18 @@ public class IntakeTeleopSettings {
         this.autoDockSupplier = autoDockSupplier;
         this.launchAngleSupplier = launchAngleSupplier;
         this.launchReleaseSupplier = launchReleaseSupplier;
+        this.autoHomeSupplier = autoHomeSupplier;
     }
 
     public static IntakeTeleopSettings makeDefault(Robot robot){
         Gamepad gamepad = robot.opMode.gamepad1;
         Gamepad gamepad2 = robot.opMode.gamepad2;
+
+        EdgeSupplier downSupplier = new EdgeSupplier();
+        downSupplier.setBase(() -> gamepad2.left_bumper);
+
+        EdgeSupplier upSupplier = new EdgeSupplier();
+        upSupplier.setBase(() -> gamepad2.right_bumper);
 
         EdgeSupplier sliderTop = new EdgeSupplier();
         sliderTop.setBase(() -> gamepad.y);
@@ -73,11 +81,12 @@ public class IntakeTeleopSettings {
             () -> gamepad.left_bumper ? -1 : gamepad.right_bumper ? 1 : 0,
             () -> gamepad2.y ? 1 : gamepad2.b ? 2 : gamepad2.a ? 3 : 0,
             () -> gamepad.dpad_right ? 1 : gamepad.dpad_left ? 2 : 0,
-            () -> gamepad2.left_bumper ? -1 : gamepad2.right_bumper ? 1 : 0,
+                () -> downSupplier.isRisingEdge() ? -1 : upSupplier.isRisingEdge() ? 1 : 0,
             autoDrop::isRisingEdge,
             autoDock::isRisingEdge,
             () -> gamepad2.dpad_right ? 1 : gamepad2.dpad_left ? 2 : 0,
-            () -> gamepad2.x ? 1 : 0
+            () -> gamepad2.x ? 1 : 0,
+                new EdgeSupplier(()-> robot.opMode.gamepad1.dpad_down).getRisingEdgeSupplier()
         );
     }
 }

@@ -52,7 +52,7 @@ public class IntakeHardware {
         this.botSensor = botSensor;
         this.topSensor = topSensor;
     }
-
+//beans
     public static IntakeHardware makeDefault(HardwareMap hardwareMap) {
         MotorSettings slideMotorSettings = new MotorSettings(MotorSettings.Number.ZERO_B, DcMotorSimple.Direction.FORWARD, DcMotor.ZeroPowerBehavior.BRAKE, DcMotor.RunMode.RUN_TO_POSITION, slideHoldPower);
         MotorSettings sweepMotorSettings = new MotorSettings(MotorSettings.Number.ONE_B, DcMotorSimple.Direction.FORWARD, DcMotor.ZeroPowerBehavior.BRAKE, DcMotor.RunMode.RUN_WITHOUT_ENCODER, sweepHoldPower);
@@ -67,7 +67,7 @@ public class IntakeHardware {
         RevColorSensorV3 topSensor = hardwareMap.get(RevColorSensorV3.class, "topSensor");
         DigitalChannel lowLiftLimit = hardwareMap.get(DigitalChannel.class, "digital0");
         DigitalChannel highLiftLimit = hardwareMap.get(DigitalChannel.class, "digital1");
-        DigitalChannel lowSlideLimit = hardwareMap.get(DigitalChannel.class, "digital2");
+        DigitalChannel lowSlideLimit = hardwareMap.get(DigitalChannel.class, "digital3");
         lowLiftLimit.setMode(DigitalChannel.Mode.INPUT);
         highLiftLimit.setMode(DigitalChannel.Mode.INPUT);
         lowSlideLimit.setMode(DigitalChannel.Mode.INPUT);

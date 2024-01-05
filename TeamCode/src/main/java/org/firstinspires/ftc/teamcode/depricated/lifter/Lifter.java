@@ -379,7 +379,7 @@ public class Lifter extends ControllablePart<Robot, LifterSettings, LifterHardwa
             setMotorsToHomeConfig();
         });
         autoHomeTask.addTimedStep(() -> {
-            parent.opMode.telemetry.addData("homing", ")");
+            parent.opMode.telemetry.addData("homing", getHardware().limitSwitch.getState());
         }, () -> !getHardware().limitSwitch.getState(), 5000);
         autoHomeTask.addStep(() -> {
             getHardware().leftLiftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

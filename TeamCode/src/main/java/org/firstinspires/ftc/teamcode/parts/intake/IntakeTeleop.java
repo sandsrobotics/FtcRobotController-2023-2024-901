@@ -7,8 +7,6 @@ import om.self.ezftc.core.part.LoopedPartImpl;
 
 public class IntakeTeleop extends LoopedPartImpl<Intake, IntakeTeleopSettings, ObjectUtils.Null> {
     private IntakeTeleopSettings settings;
-    private int pix;
-
 
     public IntakeTeleop(Intake parent) {
         super(parent, "Intake teleop");
@@ -53,9 +51,9 @@ public class IntakeTeleop extends LoopedPartImpl<Intake, IntakeTeleopSettings, O
 
     @Override
     public void onRun() {
-        if (settings.pixChangeSupplier.get() != 0) {
-            pix = settings.pixChangeSupplier.get();
-            parent.setPix(pix);
+        int pix = settings.pixChangeSupplier.get();
+        if(pix != 0){
+            parent.setPix(parent.getPix() + pix);
         }
 
         if(settings.sliderBottomSupplier.get())
@@ -66,6 +64,8 @@ public class IntakeTeleop extends LoopedPartImpl<Intake, IntakeTeleopSettings, O
             parent.startAutoDrop();
         else if(settings.autoDockSupplier.get())
             parent.startAutoDock();
+        else if(settings.autoHomeSupplier.get())
+            parent.startAutoHome();
 
         parent.parent.opMode.telemetry.addData("pix", parent.getPix() + 1);
     }
