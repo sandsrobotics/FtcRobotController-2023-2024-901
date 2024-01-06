@@ -44,8 +44,8 @@ public class IntakeTeleop extends LoopedPartImpl<Intake, IntakeTeleopSettings, O
                 (int) settings.swingSupplier.get(),
                 (int) settings.pixChangeSupplier.get(),
         (int) settings.pixChangeSupplier.get(),
-                (int) settings.launchAngleSupplier.get(),
-                (int) settings.launchReleaseSupplier.get()
+                (int) settings.launchReleaseSupplier.get(),
+        (int) settings.startTagRanging.get()
         ), true);
     }
 
@@ -66,6 +66,10 @@ public class IntakeTeleop extends LoopedPartImpl<Intake, IntakeTeleopSettings, O
             parent.startAutoDock();
         else if(settings.autoHomeSupplier.get())
             parent.startAutoHome();
+        else if(settings.autoArmSupplier.get())
+            parent.startAutoArm();
+        else if(settings.autoStoreSupplier.get())
+            parent.startAutoStore();
 
         parent.parent.opMode.telemetry.addData("pix", parent.getPix() + 1);
     }

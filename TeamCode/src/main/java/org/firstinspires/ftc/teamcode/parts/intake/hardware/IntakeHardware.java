@@ -34,8 +34,6 @@ public class IntakeHardware {
     public final RevColorSensorV3 botSensor;
     public final RevColorSensorV3 topSensor;
 
-
-
     public IntakeHardware(DcMotor sliderMotor, DcMotor sweeperMotor, Servo sweepLiftServo, DcMotorEx robotLiftMotor, Servo grabberServo, DigitalChannel liftLowLimitSwitch, DigitalChannel liftHighLImitSwitch, DigitalChannel slideLowLimitSwitch, Servo swingServoLeft,Servo swingServoRight, Servo launchServoAngle, Servo launchServoRelease, RevColorSensorV3 botSensor, RevColorSensorV3 topSensor) {
         this.sweeperMotor = sweeperMotor;
         this.sliderMotor = sliderMotor;

@@ -21,9 +21,11 @@ public class IntakeTeleopSettings {
     public final Supplier<Integer> pixChangeSupplier;
     public final Supplier<Boolean> autoDropSupplier;
     public final Supplier<Boolean> autoDockSupplier;
-    public final Supplier<Integer> launchAngleSupplier;
     public final Supplier<Integer> launchReleaseSupplier;
     public final Supplier<Boolean> autoHomeSupplier;
+    public final Supplier<Boolean> autoArmSupplier;
+    public final Supplier<Boolean> autoStoreSupplier;
+    public final Supplier<Integer> startTagRanging;
 
 
 
@@ -32,8 +34,9 @@ public class IntakeTeleopSettings {
                                 Supplier<Integer> sweepLiftSupplier, Supplier<Integer> robotLiftSupplier,
                                 Supplier<Integer> grabberSupplier, Supplier<Integer> swingSupplier,
                                 Supplier<Integer> pixChangeSupplier, Supplier<Boolean> autoDropSupplier,
-                                Supplier<Boolean> autoDockSupplier, Supplier<Integer> launchAngleSupplier,
-                                Supplier<Integer> launchReleaseSupplier, Supplier<Boolean> autoHomeSupplier){
+                                Supplier<Boolean> autoDockSupplier, Supplier<Integer> launchReleaseSupplier,
+                                Supplier<Boolean> autoHomeSupplier, Supplier<Boolean> autoArmSupplier, Supplier<Boolean> autoStoreSupplier,
+                                Supplier<Integer> startTagRanging){
         this.heightSpeedSupplier = heightSpeedSupplier;
         this.sliderBottomSupplier = sliderBottomSupplier;
         this.sliderTopSupplier = sliderTopSupplier;
@@ -45,9 +48,11 @@ public class IntakeTeleopSettings {
         this.pixChangeSupplier = pixChangeSupplier;
         this.autoDropSupplier = autoDropSupplier;
         this.autoDockSupplier = autoDockSupplier;
-        this.launchAngleSupplier = launchAngleSupplier;
         this.launchReleaseSupplier = launchReleaseSupplier;
         this.autoHomeSupplier = autoHomeSupplier;
+        this.autoArmSupplier = autoArmSupplier;
+        this.autoStoreSupplier = autoStoreSupplier;
+        this.startTagRanging = startTagRanging;
     }
 
     public static IntakeTeleopSettings makeDefault(Robot robot){
@@ -72,6 +77,11 @@ public class IntakeTeleopSettings {
         EdgeSupplier autoDock = new EdgeSupplier();
         autoDock.setBase(()-> gamepad2.dpad_down);
 
+        EdgeSupplier autoArm = new EdgeSupplier();
+        autoArm.setBase(()->gamepad2.dpad_right);
+        EdgeSupplier autoStore = new EdgeSupplier();
+        autoStore.setBase(()->gamepad2.dpad_left);
+
         return new IntakeTeleopSettings(
             () -> gamepad.dpad_down ? -1 : gamepad.dpad_up ? 1 : 0,
             sliderTop::isRisingEdge,
@@ -84,9 +94,11 @@ public class IntakeTeleopSettings {
                 () -> downSupplier.isRisingEdge() ? -1 : upSupplier.isRisingEdge() ? 1 : 0,
             autoDrop::isRisingEdge,
             autoDock::isRisingEdge,
-            () -> gamepad2.dpad_right ? 1 : gamepad2.dpad_left ? 2 : 0,
             () -> gamepad2.x ? 1 : 0,
-                new EdgeSupplier(()-> robot.opMode.gamepad1.dpad_down).getRisingEdgeSupplier()
+                new EdgeSupplier(()-> robot.opMode.gamepad1.dpad_down).getRisingEdgeSupplier(),
+                autoArm::isRisingEdge,
+                autoStore::isRisingEdge,
+        ()-> gamepad.b ? 1 : 0
         );
     }
 }

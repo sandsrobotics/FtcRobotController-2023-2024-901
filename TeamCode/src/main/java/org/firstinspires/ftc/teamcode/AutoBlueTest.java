@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 
-@Autonomous(name="Auto-BLUE-Mid", group="Test")
+@Autonomous(name="Auto-BLUE-WALL", group="Test")
 public class AutoBlueTest extends AutoBase{
     @Override
     public void initAuto(){
@@ -10,5 +10,6 @@ public class AutoBlueTest extends AutoBase{
         midPark = true;
         isRed = false;
         parkOnly = false;
+        isBoard = false;
     }
 }

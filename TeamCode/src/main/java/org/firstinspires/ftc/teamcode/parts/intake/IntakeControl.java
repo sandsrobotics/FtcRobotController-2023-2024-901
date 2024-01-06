@@ -8,11 +8,11 @@ public class IntakeControl {
     public int swingPosition;
     public int pix;
     public int pixLine;
-    public int launchPosition;
     public int launchState;
+    public int ranging;
 
     public IntakeControl(double sliderPower, double sweeperPower, int sweeperLiftPosition,
-                         int robotLiftPosition, int grabberPosition, int swingPosition, int pix, int pixLIne, int launchPos, int launchState) {
+                         int robotLiftPosition, int grabberPosition, int swingPosition, int pix, int pixLIne, int launchState, int ranging) {
         this.sliderPower = sliderPower;
         this.sweeperPower = sweeperPower;
         this.sweepLiftPosition = sweeperLiftPosition;
@@ -22,6 +22,6 @@ public class IntakeControl {
         this.pix = pix;
         this.pixLine = pixLIne;
         this.launchState = launchState;
-        this.launchPosition = launchPos;
+        this.ranging = ranging;
     }
 }

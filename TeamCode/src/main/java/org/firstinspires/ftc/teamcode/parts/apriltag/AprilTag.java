@@ -61,9 +61,13 @@ public class AprilTag extends LoopedPartImpl<Robot, ObjectUtils.Null, ObjectUtil
                         break;  // don't look any further.
                     } else {
                         // This tag is in the library, but we do not want to track it right now.
+                        targetFound = false;
+                        desiredTag = null;
                     }
                 } else {
                     // This tag is NOT in the library, so we don't have enough information to track to it.
+                    targetFound = false;
+                    desiredTag = null;
                 }
             }
         }

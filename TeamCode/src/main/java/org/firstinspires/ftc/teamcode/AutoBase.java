@@ -12,12 +12,14 @@ import org.firstinspires.ftc.teamcode.parts.apriltag.AprilTag;
 import org.firstinspires.ftc.teamcode.parts.drive.Drive;
 import org.firstinspires.ftc.teamcode.parts.drive.DriveControl;
 import org.firstinspires.ftc.teamcode.parts.intake.Intake;
+import org.firstinspires.ftc.teamcode.parts.led.Led;
 import org.firstinspires.ftc.teamcode.parts.positionsolver.PositionSolver;
 import org.firstinspires.ftc.teamcode.parts.positionsolver.XRelativeSolver;
 import org.firstinspires.ftc.teamcode.parts.positionsolver.settings.PositionSolverSettings;
 import org.firstinspires.ftc.teamcode.parts.positiontracker.PositionTracker;
 import org.firstinspires.ftc.teamcode.parts.positiontracker.encodertracking.EncoderTracker;
 import org.firstinspires.ftc.teamcode.parts.positiontracker.hardware.PositionTrackerHardware;
+import org.firstinspires.ftc.teamcode.parts.positiontracker.odometry.Odometry;
 import org.firstinspires.ftc.teamcode.parts.positiontracker.settings.PositionTrackerSettings;
 import org.firstinspires.ftc.teamcode.parts.teamprop.TeamProp;
 import org.firstinspires.ftc.teamcode.parts.teamprop.TeamPropDetectionPipeline;
@@ -37,7 +39,7 @@ import om.self.task.other.TimedTask;
 import static om.self.ezftc.utils.Constants.tileSide;
 
 @Config
-@Autonomous(name="AutoBase", group="Test")
+@Autonomous(name="Auto-Red-wall-and-ALL", group="Test")
 public class AutoBase extends LinearOpMode{
     public Function<Vector3, Vector3> transformFunc;
     public Vector3 customStartPos;
@@ -49,19 +51,23 @@ public class AutoBase extends LinearOpMode{
     public AprilTag aprilTag;
     TeamProp tp;
     DriveControl control;
+    Led leds;
     public boolean center, left;
     public boolean midPark;
     public boolean isRed;
     public boolean parkOnly;
+    public boolean isBoard;
 
     //Vector3 centralspikemark = new Vector3(-35.25, -39.5, -90);
-    Vector3 startPosition = new Vector3(-1.5,-2.7,-90);
+   // Vector3 startPosition = new Vector3(-1.5,-2.7,-90);
+    Vector3 startPosition = new Vector3(-1.5 * 23.5,-62,-90);
 
     public void initAuto(){
         transformFunc = (v) -> v;
         isRed = true;
         midPark = true;
         parkOnly = false;
+        isBoard = false;
     }
 
     private Vector3 tileToInchAuto(Vector3 tiles){
@@ -82,13 +88,17 @@ public class AutoBase extends LinearOpMode{
         Drive d = new Drive(r);
         tp = new TeamProp(r);
         intake = new Intake(r);
+        leds = new Led(r);
 
-        PositionTrackerSettings pts = new PositionTrackerSettings(AxesOrder.XYZ, false, 100, new Vector3(2,2,2), tileToInchAuto(startPosition));
+
+        PositionTrackerSettings pts = new PositionTrackerSettings(AxesOrder.XYZ, false, 100, new Vector3(2,2,2), startPosition);
         //pts = pts.withPosition(customStartPos != null ? customStartPos : transformFunc.apply(pts.startPosition));
         pt = new PositionTracker(r, pts, PositionTrackerHardware.makeDefault(r));
 
         XRelativeSolver solver = new XRelativeSolver(d);
         EncoderTracker et = new EncoderTracker(pt);
+//        Odometry odo = new Odometry(pt);
+        pt.positionSourceId = EncoderTracker.class;
 
         //intake = new Intake(r, aprilTag);
         //positionSolverLose = new PositionSolver(d,PositionSolverSettings.loseSettings);
@@ -130,12 +140,13 @@ public class AutoBase extends LinearOpMode{
         });
         // add calls to special autonomous action collections in methods below
 
-        if(!parkOnly)
-        //testRobot(autoTask);
-        // gotoTestPos(autoTask);
-         wallAuto(autoTask);
-        // boardAuto(autoTask);
+//        testRobot(autoTask);
 
+        if(!parkOnly) {
+            if (isBoard) boardAuto(autoTask);
+            else wallAuto(autoTask);
+            parkAuto(autoTask);
+        }
 
         //parkAuto(autoTask);
 
@@ -178,43 +189,51 @@ public class AutoBase extends LinearOpMode{
     }
 
     private void parkAuto(TimedTask autoTask){
-        Vector3 parkMid = new Vector3(2, -.5, 0);
-        Vector3 parkSide = new Vector3(2, -2.5, 0);
+        Vector3 parkMid = new Vector3(2, -.5, 180);
+        Vector3 parkSide = new Vector3(2, -2.5, 180);
 
         positionSolver.addMoveToTaskEx(tileToInchAuto(midPark ? parkMid : parkSide), autoTask);
     }
 
-    private void wallAuto(TimedTask autoTask){
+    private void wallAuto(TimedTask autoTask) {
         Vector3 startPos = new Vector3(-1.5, -2.6, -90);
         Vector3 pushProp = new Vector3(-1.5, -1.5, -90);
-        Vector3 dropPixCenter = new Vector3(-1.5, -1.5, 90);
-        Vector3 dropPixLeft = new Vector3(-1.5, -1.5, 180);
-        Vector3 dropPixRight = new Vector3(-1.5, -1.5, 0);
+        Vector3 dropCenter = new Vector3(-1.5, -.5, -90);
+        Vector3 dropPixCenter = new Vector3(-1.5, -1.5, -90);
+        Vector3 dropPixLeft = new Vector3(-1.5, -1.6, 180);
+        Vector3 dropPixRight = new Vector3(-1.5, -1.6, 0);
         Vector3 tagAngle = new Vector3(-1.5, -1.5, 180);
-        Vector3 preSetupTagsMid = new Vector3(-1.5, .5, 180);
-        Vector3 setupTagsMid = new Vector3(1.5, .5, 180);
+        Vector3 centerTagAngle = new Vector3(-1.5, .5, 180);
+        Vector3 preSetupTagsMid = new Vector3(-1.5, 0, 180);
+        Vector3 setupTagsMid = new Vector3(1.5, 0, 180);
         Vector3 preSetupTagsWall = new Vector3(-1.5, -2.5, 180);
         Vector3 setupTagsWall = new Vector3(1.5, -2.5, 180);
         Vector3 goToTags = new Vector3(1.5, -1.5, 180);
+        Vector3 goCloseToTags = new Vector3(1.8, -1.5, 180);
         Vector3 prePark = new Vector3(1.5, -1.5, 180);
 
         positionSolver.setSettings(PositionSolverSettings.defaultSettings);
-        positionSolver.addMoveToTaskEx(tileToInchAuto(pushProp), autoTask);
-        positionSolver.addMoveToTaskEx(tileToInchAuto(dropPixCenter), autoTask);
-        positionSolver.addMoveToTaskEx(tileToInchAuto(center ? dropPixCenter : left ? dropPixLeft : dropPixRight), autoTask);
-        intake.addAutoGrabToTask(autoTask, true);
-        positionSolver.addMoveToTaskEx(tileToInchAuto(tagAngle), autoTask);
-        positionSolver.addMoveToTaskEx(tileToInchAuto(preSetupTagsWall), autoTask);
-        positionSolver.addMoveToTaskEx(tileToInchAuto(setupTagsWall), autoTask);
+        if (center){
+            positionSolver.addMoveToTaskEx(tileToInchAuto(dropCenter), autoTask);
+        }
+        else {
+            positionSolver.addMoveToTaskEx(tileToInchAuto(pushProp), autoTask);
+            positionSolver.addMoveToTaskEx(tileToInchAuto(left ? dropPixLeft : dropPixRight), autoTask);
+        }
+        intake.addAutoGrabToTask(autoTask, true, 8000); // make work laterr
+        positionSolver.addMoveToTaskEx(tileToInchAuto(preSetupTagsMid), autoTask);
+        positionSolver.addMoveToTaskEx(tileToInchAuto(setupTagsMid), autoTask);
         positionSolver.addMoveToTaskEx(tileToInchAuto(goToTags), autoTask);
+        positionSolver.addMoveToTaskEx(tileToInchAuto(goCloseToTags), autoTask); // take out once cone ranging works, might have to get specific positions for each tag if not
         positionSolver.setSettings(PositionSolverSettings.defaultNoAlwaysRunSettings);
         autoTask.addDelay(1000);
         intake.addAutoDropToTask(autoTask);
-        autoTask.addDelay(3000);
+        autoTask.addDelay(2000);
+        intake.addFinishDropToTask(autoTask);
+        autoTask.addDelay(1000);
         intake.addAutoDockToTask(autoTask);
         positionSolver.setSettings(PositionSolverSettings.defaultSettings);
         positionSolver.addMoveToTaskEx(tileToInchAuto(prePark), autoTask);
-
     }
 
     private void boardAuto(TimedTask autoTask){
@@ -247,15 +266,17 @@ public class AutoBase extends LinearOpMode{
         Vector3 startPos = new Vector3(1, 0, 90);
         Vector3 testPos = new Vector3(1, .5, 90);
 
-        intake.addAutoDropToTask(autoTask);
-        autoTask.addDelay(3000);
-        positionSolver.addMoveToTaskEx(tileToInchAuto(testPos), autoTask);
-        autoTask.addDelay(3000);
-        intake.addAutoDockToTask(autoTask);
-        autoTask.addDelay(3000);
-        intake.addAutoGrabToTask(autoTask, true);
-        autoTask.addDelay(3000);
-        intake.addAutoGrabToTask(autoTask, false);
+        intake.addAutoGrabToTask(autoTask, true, 8000);
+//        autoTask.addDelay(3000);
+//        intake.addAutoDropToTask(autoTask);
+//        autoTask.addDelay(3000);
+//        intake.addFinishDropToTask(autoTask);
+//        autoTask.addDelay(3000);
+//        intake.addAutoDockToTask(autoTask);
+//        autoTask.addDelay(3000);
+//        intake.addAutoGrabToTask(autoTask, 2000);
+//        autoTask.addDelay(3000);
+//        intake.addAutoGrabToTask(autoTask, 2000);
     }
 
 // ********* Put the methods that do the parts of the autonomous routines here ************//

@@ -5,6 +5,7 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.teamcode.parts.apriltag.AprilTag;
 import org.firstinspires.ftc.teamcode.parts.bulkread.BulkRead;
 import org.firstinspires.ftc.teamcode.parts.drive.Drive;
@@ -15,13 +16,16 @@ import org.firstinspires.ftc.teamcode.parts.positiontracker.PositionTracker;
 import org.firstinspires.ftc.teamcode.parts.positiontracker.encodertracking.EncoderTracker;
 import org.firstinspires.ftc.teamcode.parts.intake.Intake;
 import org.firstinspires.ftc.teamcode.parts.intake.IntakeTeleop;
+import org.firstinspires.ftc.teamcode.parts.positiontracker.hardware.PositionTrackerHardware;
 import org.firstinspires.ftc.teamcode.parts.positiontracker.odometry.Odometry;
+import org.firstinspires.ftc.teamcode.parts.positiontracker.settings.PositionTrackerSettings;
 import org.firstinspires.ftc.teamcode.parts.teamprop.TeamProp;
 import org.firstinspires.ftc.teamcode.parts.teamprop.TeamPropDetectionPipeline;
 
 import java.text.DecimalFormat;
 
 import om.self.ezftc.core.Robot;
+import om.self.ezftc.utils.Constants;
 import om.self.ezftc.utils.Vector3;
 
 @TeleOp(name="Test Pixel", group="Linear Opmode")
@@ -38,7 +42,8 @@ public class TestPixel extends LinearOpMode {
 
     AprilTag aprilTag;
 
-    Vector3 fieldStartPos = new Vector3(-36,63,90);
+    //Vector3 fieldStartPos = new Vector3(11.75,-63,-90);
+    Vector3 fieldStartPos = new Vector3(11.75,+63,90);
     public volatile TeamPropDetectionPipeline.TeamPropPosition teamPropPosition;
 
     @Override
@@ -51,14 +56,20 @@ public class TestPixel extends LinearOpMode {
         new BulkRead(robot);
         Drive drive = new Drive(robot);
         new DriveTeleop(drive);
-        //Led ledStick = new Led(robot);
+        Led ledStick = new Led(robot);
 
-        PositionTracker pt = new PositionTracker(robot);
+        PositionTrackerSettings pts = new PositionTrackerSettings(AxesOrder.XYZ, false, 100, new Vector3(2,2,2), fieldStartPos);
+//        pts.withPosition(transformFunc.apply(pts.startPosition));
+        //pts = pts.withPosition(customStartPos != null ? customStartPos : transformFunc.apply(pts.startPosition));
+        //pt = new PositionTracker(r, pts, PositionTrackerHardware.makeDefault(r));
+        PositionTracker pt = new PositionTracker(robot,pts,PositionTrackerHardware.makeDefault(robot));
+        //PositionTracker pt = new PositionTracker(robot);
+
         XRelativeSolver solver = new XRelativeSolver(drive);
         EncoderTracker et = new EncoderTracker(pt);
         pt.positionSourceId = EncoderTracker.class;
-        //Odometry odo = new Odometry(pt);
-        //pt.positionSourceId = Odometry.class;
+//        Odometry odo = new Odometry(pt); // warning: breaks robot lifter and sweeper cause of something with encoders
+//        pt.positionSourceId = Odometry.class;
         Intake intake = new Intake(robot);
         new IntakeTeleop(intake);
         TeamProp tp = new TeamProp(robot);

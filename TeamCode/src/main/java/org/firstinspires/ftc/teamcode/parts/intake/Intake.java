@@ -3,29 +3,47 @@ package org.firstinspires.ftc.teamcode.parts.intake;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.depricated.lifter.Lifter;
 import org.firstinspires.ftc.teamcode.parts.apriltag.AprilTag;
 import org.firstinspires.ftc.teamcode.parts.drive.Drive;
 import org.firstinspires.ftc.teamcode.parts.drive.DriveControl;
 import org.firstinspires.ftc.teamcode.parts.intake.hardware.IntakeHardware;
 import org.firstinspires.ftc.teamcode.parts.intake.settings.IntakeSettings;
+import org.firstinspires.ftc.teamcode.parts.led.Led;
+
 import om.self.ezftc.core.Robot;
 import om.self.ezftc.core.part.ControllablePart;
 import om.self.task.core.Group;
 import om.self.task.other.TimedTask;
 
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
+
 public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardware, IntakeControl>{
     private int slideTargetPosition;
     private int liftTargetPosition;
-    boolean doTagRange = true;
+    public boolean doTagRange = false;
+    public boolean doTagCenter = false;
+    private boolean armed;
     private int swingTargetPosition;
     private int slideSafePos = 970;
+    private int ranging = 0;
+    boolean inLeft;
+    boolean inRight;
+    boolean atTag;
+    boolean tooClose;
+    boolean inRange;
+    double currentDist;
     private boolean reverse;
     AprilTag tag;
     Drive drive;
+    Led led;
     boolean isTop;
     double motorPower = 0;
     public boolean dropComplete = true;
     private int pix = 0;
+    int grabTime;
+    boolean botPixel, topPixel = false;
     private int pixLine = 0;
     private final int[] pixToPos = {1000,1100,1360,1600,1860}; //TODO move to settings, need 12 of these
     private final int[] pixLineToPos = {1000, 2000, 3000};
@@ -35,11 +53,13 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
     private final TimedTask autoHomeTask = new TimedTask(TaskNames.autoHome, movementTask);
     private final TimedTask autoDockTask = new TimedTask(TaskNames.autoDock, getTaskManager());
     private final TimedTask autoArmTask = new TimedTask(TaskNames.autoArm, getTaskManager());
+    private final TimedTask autoStoreTask = new TimedTask(TaskNames.autoStore, getTaskManager());
+    private  final TimedTask finishDropTask = new TimedTask(TaskNames.autoFinishDrop, movementTask);
 
 
     //***** Constructors *****
     public Intake(Robot parent) {
-        super(parent, "Slider", () -> new IntakeControl(0, 0,0, 0,0, 0, 0, 0, 0, 0));
+        super(parent, "Slider", () -> new IntakeControl(0, 0,0, 0,0, 0, 0, 0, 0,0));
         setConfig(
                 IntakeSettings.makeDefault(),
                 IntakeHardware.makeDefault(parent.opMode.hardwareMap)
@@ -47,8 +67,15 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
     }
 
     public Intake(Robot parent, IntakeSettings settings, IntakeHardware hardware){
-        super(parent, "slider", () -> new IntakeControl(0, 0,0, 0,0, 0, 0,0, 0, 0));
+        super(parent, "slider", () -> new IntakeControl(0, 0,0, 0,0, 0, 0,0, 0,0));
         setConfig(settings, hardware);
+    }
+
+    private void preAutoMove(){
+        triggerEvent(ControllablePart.Events.stopControllers);
+    }
+    private void postAutoMove(){
+        triggerEvent(ControllablePart.Events.startControllers);
     }
 
     private void setSlideToHomeConfig(){
@@ -137,6 +164,26 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
 
     public double getBottomPixelDist() { return getHardware().botSensor.getDistance(DistanceUnit.CM);}
 
+    public int hasPixels(){
+        if (getTopPixelDist() < 1 && getBottomPixelDist() < 1)
+            return 2;
+        else if (getTopPixelDist() < 6 && getBottomPixelDist() < 1)
+            return 1;
+        else
+            return 0;
+    }
+
+    public void setLeds(int pixels){
+        if(pixels == 1)
+            led.setBottomGroup(true);
+        else if(pixels == 2)
+            led.setTopGroup(true);
+        else {
+            led.setBottomGroup(false);
+            led.setTopGroup(false);
+        }
+    }
+
     public void setLaunchAngle(int position) {
         switch (position) {
             case 1:
@@ -145,6 +192,17 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
             case 2:
                 getHardware().launchServoAngle.setPosition(getSettings().launchAngleStorePosition);
                 break;
+        }
+    }
+
+    public void setLaunchState(int state){
+        switch (state){
+            case 1:
+                if(armed)
+                    getHardware().launchServoRelease.setPosition(getSettings().launchReleaseUnlockPosition);
+                break;
+            case 0:
+                getHardware().launchServoRelease.setPosition(getSettings().launchReleaseLockPosition);
         }
     }
 
@@ -158,6 +216,9 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
                 break;
             case 3:
                 getHardware().grabberServo.setPosition(getSettings().grabberGripTwoPosition);
+                break;
+            case 4:
+                getHardware().grabberServo.setPosition(getSettings().grabberPrimePosition);
                 break;
         }
     }
@@ -194,9 +255,7 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
 
         autoHomeTask.addStep(()->setSlideToHomeConfig());
 
-        autoHomeTask.addTimedStep(() -> {
-            parent.opMode.telemetry.addData("homing", getHardware().slideLowLimitSwitch.getState());
-        }, () -> !getHardware().slideLowLimitSwitch.getState(), 10000);
+        autoHomeTask.addTimedStep(() -> {parent.opMode.telemetry.addData("homing", getHardware().slideLowLimitSwitch.getState());}, () -> !getHardware().slideLowLimitSwitch.getState(), 10000);
         autoHomeTask.addStep(() -> {
             getHardware().sliderMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             //getHardware().rightLiftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -219,23 +278,63 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
     public void constructAutoArm(){
         autoArmTask.autoStart = false;
 
-        autoArmTask.addStep(()->robotLiftWithPower(1));
+        autoArmTask.addStep(this::preAutoMove);
+//        autoArmTask.addStep(()->setRobotLiftPositionUnsafe(50));
         autoArmTask.addStep(()->setLaunchAngle(1));
+        autoArmTask.addStep(this::postAutoMove);
+        autoArmTask.addStep(()->triggerEvent(Events.armComplete));
     }
 
-    public void startAutoArm() {autoArmTask.restart();}
+    public void startAutoArm() {
+        armed = true;
+        autoArmTask.restart();
+    }
+
+    public void constructAutoStore(){
+        autoStoreTask.autoStart = false;
+
+        autoStoreTask.addStep(this::preAutoMove);
+        autoStoreTask.addStep(()->setLaunchAngle(2));
+        autoStoreTask.addStep(this::postAutoMove);
+        autoStoreTask.addStep(()->triggerEvent(Events.storeComplete));
+    }
+
+    public void startAutoStore(){
+        armed = false;
+        autoStoreTask.restart();
+    }
 
     public void constructAutoGrab(){
         autoGrabTask.autoStart = false;
 
-        autoGrabTask.addTimedStep(()->sweepWithPower(reverse ? -.5 : 1), 5000);
+        autoGrabTask.addStep(this::preAutoMove);
+        // autoGrabTask.addTimedStep(()-> sweepWithPix(2), grabTime);
+        autoGrabTask.addStep(()->sweepWithPower(1));
+        autoGrabTask.addDelay(8000);
+        autoGrabTask.addStep(()->sweepWithPower(0));
         autoGrabTask.addStep(()->setGrabPosition(3));
+        reverse = false;
+        autoGrabTask.addStep(this::postAutoMove);
+        autoGrabTask.addStep(()->triggerEvent(Events.grabComplete));
     }
+
+//    public void constructAutoGrab() {
+//        autoGrabTask.addStep(()-> sweepWithPower(.5), ()->hasPixels() == 2);
+//        autoGrabTask.addDelay(1000);
+//        autoGrabTask.addStep(()-> sweepWithPower(0));
+//    }
 
     public void startAutoGrab() {autoGrabTask.restart();}
 
-    public void addAutoGrabToTask(TimedTask task, boolean rev){
+    public void addAutoGrabToTask(TimedTask task, int time){
+        grabTime = time;
+        task.addStep(autoGrabTask::restart);
+        task.waitForEvent(eventManager.getContainer(Events.grabComplete));
+    }
+
+    public void addAutoGrabToTask(TimedTask task, boolean rev, int time){
         reverse = rev;
+        grabTime = time;
         task.addStep(autoGrabTask::restart);
         task.waitForEvent(eventManager.getContainer(Events.grabComplete));
     }
@@ -243,10 +342,13 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
     public void constructAutoDock(){
         autoDockTask.autoStart = false;
 
+        autoDockTask.addStep(this::preAutoMove);
         autoDockTask.addStep(()->setGrabPosition(1));
         autoDockTask.addStep(()->setSwingPosition(2));
         autoDockTask.addDelay(500);
         autoDockTask.addStep(()->setSlidePosition(0));
+        autoDockTask.addStep(this::postAutoMove);
+        autoDockTask.addStep(() -> triggerEvent(Lifter.Events.dockComplete));
     }
 
     public void startAutoDock() {autoDockTask.restart();}
@@ -258,10 +360,14 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
 
     public void constructAutoDrop(){
         autoDropTask.autoStart = false;
+
+        autoDropTask.addStep(this::preAutoMove);
         autoDropTask.addStep(()->setSlidePosition(pixToPos[pix]));
         autoDropTask.addDelay(1000);
-        if(getSlidePosition() > slideSafePos)
-            autoDropTask.addStep(()->setSwingPosition(1));
+        autoDropTask.addStep(()->setSwingPosition(1));
+        autoDropTask.addStep(()->setGrabPosition(4));
+        autoDropTask.addStep(this::postAutoMove);
+        autoDropTask.addStep(() -> triggerEvent(Lifter.Events.dropComplete));
     }
 
     public void startAutoDrop(){
@@ -273,34 +379,109 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
         task.waitForEvent(eventManager.getContainer(Events.dropComplete));
     }
 
+    public void constructFinishDrop(){
+        finishDropTask.autoStart = false;
+
+        finishDropTask.addStep(this::preAutoMove);
+        finishDropTask.addStep(()->setGrabPosition(1));
+        // dont need this in auto
+      //  finishDropTask.addStep((()->
+      //          drive.addController("Move to closer pixel drop position", (control) -> control.power = control.power.addY(-.1))));
+      //  finishDropTask.addStep(()->setGrabPosition(1));
+        finishDropTask.addStep(this::postAutoMove);
+        finishDropTask.addStep(()->triggerEvent(Events.finishDropComplete));
+    }
+
+    public void startFinishDrop(){
+        finishDropTask.restart();
+    }
+
+    public void addFinishDropToTask(TimedTask task){
+        task.addStep(finishDropTask::restart);
+        task.waitForEvent(eventManager.getContainer(Events.finishDropComplete));
+    }
+
+
+
     public void doDummyRanging(DriveControl control) {}
 
+    public void setRanging(int doRanging){
+        ranging = doRanging;
+        switch(ranging){
+            case 0:
+                doTagRange = false;
+                break;
+            case 1:
+                doTagRange = true;
+                break;
+        }
+    }
+
     public void doTagRanging(DriveControl control) {
-        double xPower = 0.03;
-        double yPower = 0.03;
-        int tolerance = 1;
+        final double desiredDistance = 7.5;
+        final double startDistance = 15.0;
+        final double xPower = 0.1;
+        final double yPower = 0.03;
+        final int tolerance = 1;
 
-        if (tag.desiredTag != null && doTagRange) {
-            boolean inLeft = tag.desiredTag.ftcPose.x < 2;
-            boolean inRight = tag.desiredTag.ftcPose.x > -2;
-            boolean inRange = tag.desiredTag.ftcPose.range <= 15.0;
-            boolean tooClose = tag.desiredTag.ftcPose.range <= 5.0;
+        if (tag.desiredTag != null) {
+             inLeft = tag.desiredTag.ftcPose.x < 2;
+             inRight = tag.desiredTag.ftcPose.x > -2;
+             inRange = tag.desiredTag.ftcPose.range <= 15;
+             currentDist = tag.desiredTag.ftcPose.range;
+             atTag = tag.desiredTag.ftcPose.range <= 8.4;
+             tooClose = tag.desiredTag.ftcPose.range <= 5.0;
 
-           if (inRange && getSlidePosition() > 2500) {
-               tag.setDesiredTag(tag.desiredTag.id); //lock the currrent tag
-                    if(tag.targetFound) {
+           if (doTagCenter && inRange) {
+                    if(tag.targetFound) { //are we seeing the tag?
                         if (inRight) // tag to the right (x is positive)
                             control.power = control.power.addX(xPower);
                         else if (inLeft) //tag to the left (x is negative)
                             control.power = control.power.addX(-xPower);
+                        else
+                            doTagCenter = false;
                     }
             }
+           else if(doTagRange && inRange){
+               if (tag.targetFound) {
+                   if (!atTag)
+                       control.power = control.power.addY((currentDist - desiredDistance) * -.03);
+                   else {
+                       doTagRange = false;
+                   }
+               }
+           }
            else if (tooClose){
                drive.stopRobot();
                doTagRange = false;
+               doTagCenter = false;
            }
         }
+        else{
+            inLeft = false;
+            inRight = false;
+            inRange = false;
+            currentDist = 0;
+            atTag = false;
+            tooClose = false;
+            doTagRange = false;
+            doTagCenter = false;
+        }
     }
+
+//    public void watchPixelBucket() {
+//        if(getBottomPixelDist() < 2){
+//            led.setBottomGroup(TRUE);
+//        } else {
+//            led.setBottomGroup(FALSE);
+//        }
+//        if(getTopPixelDist() < 2) {
+//            led.setTopGroup(TRUE);
+//        } else {
+//            led.setTopGroup(FALSE);
+//        }
+//
+//    }
 
     @Override
     public void onInit() {
@@ -309,10 +490,13 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
         constructAutoGrab();
         constructAutoHome();
         constructAutoArm();
+        constructAutoStore();
+        constructFinishDrop();
 
         //setSweepPosition(0);
         setSwingPosition(2);
         setLaunchAngle(2);
+        setLaunchState(0);
     }
 
     @Override
@@ -321,14 +505,19 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
 
     @Override
     public void onRun(IntakeControl control) { //TODO separate keeping Slider motor position from onRun
-        slideWithPower(control.sliderPower,false);
+        // slideWithPower(control.sliderPower,false);
         sweepWithPower(control.sweeperPower);
         setGrabPosition(control.grabberPosition);
         robotLiftWithPower(control.robotLiftPosition);
-        setLaunchAngle(control.launchPosition);
-        //setSwingPosition(control.swingPosition);
+        setLaunchState(control.launchState);
+        //watchPixelBucket();
+        // setSwingPosition(control.swingPosition);
+        if(control.ranging != 0)
+            setRanging(control.ranging);
+        setLeds(hasPixels());
 
-        parent.opMode.telemetry.addData("homing", getHardware().slideLowLimitSwitch.getState());
+//        parent.opMode.telemetry.addData("lifter pos", getRobotLiftPosition());
+        parent.opMode.telemetry.addData("how many pixels", hasPixels());
         parent.opMode.telemetry.addData("Top Pixel (cm)", getTopPixelDist());
         parent.opMode.telemetry.addData("Bottom Pixel (cm)", getBottomPixelDist());
         //parent.opMode.telemetry.addData("Sweep Speed", control.sweeperPower);
@@ -349,6 +538,7 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
     public void onStart() {
         drive = getBeanManager().getBestMatch(Drive.class, false);
         tag = getBeanManager().getBestMatch(AprilTag.class, false);
+        led = getBeanManager().getBestMatch(Led.class, false);
         drive.addController(Intake.ContollerNames.distanceContoller, (control) -> doTagRanging(control));
         //setSweepPosition(1);
     }
@@ -368,15 +558,18 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
         public final static String autoHome = "auto home";
         public final static String autoDock = "auto dock";
         public final static String autoArm = "auto arm";
+        public final static String autoStore = "auto store";
+        public final static String autoFinishDrop = "auto finish drop";
     }
 
     public static final class Events {
         public static final String dockComplete = "DOCK_COMPLETE";
         public static final String grabComplete = "GRAB_COMPLETE";
-        public static final String preDropComplete = "PRE_DROP_COMPLETE";
         public static final String dropComplete = "DROP_COMPlETE";
         public static  final String homeComplete = "HOME_COMPLETE";
         public static final String armComplete = "ARM_COMPLETE";
+        public static final String storeComplete = "STORE_COMPLETE";
+        public static final String finishDropComplete = "DROP_FINISH_COMPLETE";
     }
 }
 

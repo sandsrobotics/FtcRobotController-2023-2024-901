@@ -27,13 +27,15 @@ public class IntakeSettings {
     public final double launchAngleArmPosition;
     public final double launchReleaseLockPosition;
     public final double launchReleaseUnlockPosition;
+    public final double grabberPrimePosition;
 
 
 
     public IntakeSettings(int minSlidePosition, int maxSlidePosition, int maxDownSlideSpeed, int maxUpSlideSpeed, double minRegisterVal, int maxUpLiftSpeed,
                           int maxDownLiftSpeed, double tolerance, double sweepLiftServoMinPosition, double sweepLiftServoMaxPosition,
                           double sweepLiftServoStartPosition, int maxLiftPosition, int minLiftPosition, double grabberOpenPosition, double grabberGripTwoPosition,
-                          double grabberGripOnePosition, double swingLeftSafePosition, double swingRightSafePosition, double swingLeftDropPosition, double swingRightDropPosition, int maxPix, int maxPixLine, double launchAngleStorePosition, double launchAngleArmPosition, double launchReleaseLockPosition, double launchReleaseUnlockPosition) {
+                          double grabberGripOnePosition, double swingLeftSafePosition, double swingRightSafePosition, double swingLeftDropPosition, double swingRightDropPosition, int maxPix, int maxPixLine, double launchAngleStorePosition,
+                          double launchAngleArmPosition, double launchReleaseLockPosition, double launchReleaseUnlockPosition, double grabberPrimePosition) {
         this.minSlidePosition = minSlidePosition;
         this.maxSlidePosition = maxSlidePosition;
         this.maxDownSlideSpeed = maxDownSlideSpeed;
@@ -60,6 +62,7 @@ public class IntakeSettings {
         this.launchAngleArmPosition = launchAngleArmPosition;
         this.launchReleaseLockPosition = launchReleaseLockPosition;
         this.launchReleaseUnlockPosition = launchReleaseUnlockPosition;
+        this.grabberPrimePosition = grabberPrimePosition;
     }
 
     // left safe: ,.14 drop: .5
@@ -81,7 +84,7 @@ public class IntakeSettings {
                 8699,
                 201,
                 1.00,
-                .4,
+                .33,
                 .85,
                 .144,
                 .86,
@@ -89,10 +92,11 @@ public class IntakeSettings {
                 .48,
                 4,
                 2,
-                .468,
+                .46,
                 .6,
                 .482,
-                .702
+                .702,
+                        .70
                 );
     }
 }
