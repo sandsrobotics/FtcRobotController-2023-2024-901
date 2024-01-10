@@ -121,7 +121,6 @@ public class AutoBase extends LinearOpMode{
         center = (tp.pipeline.position == TeamPropDetectionPipeline.TeamPropPosition.CENTER);
         left = (tp.pipeline.position == TeamPropDetectionPipeline.TeamPropPosition.LEFT);
 
-
         if(shutdownps)
             positionSolver.triggerEvent(Robot.Events.STOP);
 
@@ -220,7 +219,7 @@ public class AutoBase extends LinearOpMode{
             positionSolver.addMoveToTaskEx(tileToInchAuto(pushProp), autoTask);
             positionSolver.addMoveToTaskEx(tileToInchAuto(left ? dropPixLeft : dropPixRight), autoTask);
         }
-        intake.addAutoGrabToTask(autoTask, true, 8000); // make work laterr
+        intake.addAutoGrabToTask(autoTask, true, 2000); // make work laterr
         positionSolver.addMoveToTaskEx(tileToInchAuto(preSetupTagsMid), autoTask);
         positionSolver.addMoveToTaskEx(tileToInchAuto(setupTagsMid), autoTask);
         positionSolver.addMoveToTaskEx(tileToInchAuto(goToTags), autoTask);
@@ -228,7 +227,7 @@ public class AutoBase extends LinearOpMode{
         positionSolver.setSettings(PositionSolverSettings.defaultNoAlwaysRunSettings);
         autoTask.addDelay(1000);
         intake.addAutoDropToTask(autoTask);
-        autoTask.addDelay(2000);
+        autoTask.addDelay(5000);
         intake.addFinishDropToTask(autoTask);
         autoTask.addDelay(1000);
         intake.addAutoDockToTask(autoTask);
@@ -239,23 +238,30 @@ public class AutoBase extends LinearOpMode{
     private void boardAuto(TimedTask autoTask){
         Vector3 startPos = new Vector3(.5, -2.6, 90);
         Vector3 pushProp = new Vector3(.5, 0, 90);
+        Vector3 preDrop = new Vector3(.5, -1.5, -90);
         Vector3 dropPixCenter = new Vector3(.5, -1.5, 90);
         Vector3 dropPixLeft = new Vector3(.5, -1.5, 180);
-        Vector3 dropPixRight = new Vector3(.5, -1.5, 0);
+        Vector3 dropPixRight = new Vector3(1.5, -1.5, 0);
         Vector3 tagAngle = new Vector3(.5, -1.5, 0);
-        Vector3 setupTags = new Vector3(1.5, -2.5, 0);
-        Vector3 prePark = new Vector3(1.5, -1.5, 0);
+        Vector3 setupTags = new Vector3(1.5, -1.5, 0);
+        Vector3 prePark = new Vector3(1.5, -2.5, 0);
+        Vector3 goCloseToTags = new Vector3(1.8, -1.5, 180);
 
         positionSolver.setSettings(PositionSolverSettings.defaultSettings);
         //if its in the center we need to push the prop out of the way and then place it or place it on the right side. if its on the left side normal place and back up to april tags, if its on the right side then back up first then place it on the thing, but also need to get rid of team prop somehow
-        positionSolver.addMoveToTaskEx(tileToInchAuto(pushProp), autoTask);
+        positionSolver.addMoveToTaskEx(tileToInchAuto(preDrop), autoTask);
         positionSolver.addMoveToTaskEx(tileToInchAuto(center ? dropPixCenter : left ? dropPixLeft : dropPixRight), autoTask);
-        positionSolver.addMoveToTaskEx(tileToInchAuto(tagAngle), autoTask);
+        intake.addAutoGrabToTask(autoTask, true, 2000);
+        if(!center && !left)
+            positionSolver.addMoveToTaskEx(tileToInchAuto(tagAngle), autoTask);
         positionSolver.addMoveToTaskEx(tileToInchAuto(setupTags), autoTask);
+        positionSolver.addMoveToTaskEx(tileToInchAuto(goCloseToTags), autoTask);
         positionSolver.setSettings(PositionSolverSettings.defaultNoAlwaysRunSettings);
         autoTask.addDelay(1000);
         intake.addAutoDropToTask(autoTask);
         autoTask.addDelay(3000);
+        intake.addFinishDropToTask(autoTask);
+        autoTask.addDelay(1000);
         intake.addAutoDockToTask(autoTask);
         positionSolver.setSettings(PositionSolverSettings.defaultSettings);
         positionSolver.addMoveToTaskEx(tileToInchAuto(prePark), autoTask);

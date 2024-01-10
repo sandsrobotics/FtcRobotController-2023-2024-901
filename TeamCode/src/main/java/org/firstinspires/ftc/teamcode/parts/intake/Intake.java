@@ -26,8 +26,9 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
     public boolean doTagCenter = false;
     private boolean armed;
     private int swingTargetPosition;
-    private int slideSafePos = 970;
-    private int ranging = 0;
+    private final int slideSafePos = 970;
+    private int ranging = 1;
+    private int launchState;
     boolean inLeft;
     boolean inRight;
     boolean atTag;
@@ -59,7 +60,7 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
 
     //***** Constructors *****
     public Intake(Robot parent) {
-        super(parent, "Slider", () -> new IntakeControl(0, 0,0, 0,0, 0, 0, 0, 0,0));
+        super(parent, "Slider", () -> new IntakeControl(0, 0,0, 0,0, 0, 0, 0, 0,1));
         setConfig(
                 IntakeSettings.makeDefault(),
                 IntakeHardware.makeDefault(parent.opMode.hardwareMap)
@@ -165,20 +166,22 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
     public double getBottomPixelDist() { return getHardware().botSensor.getDistance(DistanceUnit.CM);}
 
     public int hasPixels(){
-        if (getTopPixelDist() < 1 && getBottomPixelDist() < 1)
+        if (getTopPixelDist() < 2 && getBottomPixelDist() < 2)
             return 2;
-        else if (getTopPixelDist() < 6 && getBottomPixelDist() < 1)
+        else if (getTopPixelDist() > 2 && getBottomPixelDist() < 2)
             return 1;
         else
             return 0;
     }
 
-    public void setLeds(int pixels){
-        if(pixels == 1)
+    public void setLeds(int pixels) {
+        if (pixels == 1) {
             led.setBottomGroup(true);
-        else if(pixels == 2)
+            led.setTopGroup(false);
+        } else if(pixels == 2) {
             led.setTopGroup(true);
-        else {
+            led.setBottomGroup(true);
+        } else {
             led.setBottomGroup(false);
             led.setTopGroup(false);
         }
@@ -279,7 +282,7 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
         autoArmTask.autoStart = false;
 
         autoArmTask.addStep(this::preAutoMove);
-//        autoArmTask.addStep(()->setRobotLiftPositionUnsafe(50));
+        autoArmTask.addTimedStep(()->robotLiftWithPower(1), 2000);;
         autoArmTask.addStep(()->setLaunchAngle(1));
         autoArmTask.addStep(this::postAutoMove);
         autoArmTask.addStep(()->triggerEvent(Events.armComplete));
@@ -310,7 +313,7 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
         autoGrabTask.addStep(this::preAutoMove);
         // autoGrabTask.addTimedStep(()-> sweepWithPix(2), grabTime);
         autoGrabTask.addStep(()->sweepWithPower(1));
-        autoGrabTask.addDelay(8000);
+        autoGrabTask.addDelay(2000);
         autoGrabTask.addStep(()->sweepWithPower(0));
         autoGrabTask.addStep(()->setGrabPosition(3));
         reverse = false;
@@ -364,7 +367,7 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
         autoDropTask.addStep(this::preAutoMove);
         autoDropTask.addStep(()->setSlidePosition(pixToPos[pix]));
         autoDropTask.addDelay(1000);
-        autoDropTask.addStep(()->setSwingPosition(1));
+        autoDropTask.addTimedStep(()->setSwingPosition(1),1000);
         autoDropTask.addStep(()->setGrabPosition(4));
         autoDropTask.addStep(this::postAutoMove);
         autoDropTask.addStep(() -> triggerEvent(Lifter.Events.dropComplete));
@@ -402,7 +405,6 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
     }
 
 
-
     public void doDummyRanging(DriveControl control) {}
 
     public void setRanging(int doRanging){
@@ -420,7 +422,7 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
     public void doTagRanging(DriveControl control) {
         final double desiredDistance = 7.5;
         final double startDistance = 15.0;
-        final double xPower = 0.1;
+        final double xPower = 0.01;
         final double yPower = 0.03;
         final int tolerance = 1;
 
@@ -429,15 +431,16 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
              inRight = tag.desiredTag.ftcPose.x > -2;
              inRange = tag.desiredTag.ftcPose.range <= 15;
              currentDist = tag.desiredTag.ftcPose.range;
+             double xDist = tag.desiredTag.ftcPose.x;
              atTag = tag.desiredTag.ftcPose.range <= 8.4;
-             tooClose = tag.desiredTag.ftcPose.range <= 5.0;
+             tooClose = tag.desiredTag.ftcPose.range <= 8.0;
 
            if (doTagCenter && inRange) {
-                    if(tag.targetFound) { //are we seeing the tag?
+                    if(tag.targetFound) { //are we seeing the tag we want?
                         if (inRight) // tag to the right (x is positive)
-                            control.power = control.power.addX(xPower);
+                            control.power = control.power.addX(xDist * xPower);
                         else if (inLeft) //tag to the left (x is negative)
-                            control.power = control.power.addX(-xPower);
+                            control.power = control.power.addX(xDist * -xPower);
                         else
                             doTagCenter = false;
                     }

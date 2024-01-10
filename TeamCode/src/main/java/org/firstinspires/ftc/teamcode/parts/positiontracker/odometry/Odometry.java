@@ -71,16 +71,16 @@ public class Odometry extends LoopedPartImpl<PositionTracker, OdometrySettings, 
 
         parent.parent.opMode.telemetry.addData("imu accurate", imuAccurate);
         parent.parent.opMode.telemetry.addData("odo angle", odoAngle);
-        parent.parent.opMode.telemetry.addData("cumulitave angle", cumulativeOdoAngle);
+        parent.parent.opMode.telemetry.addData("cumulative angle", cumulativeOdoAngle);
 
         double angle = odoAngle;
 
-        double XMove = XDiff / getSettings().ticksPerInch;
+        double XMove = (XDiff) / getSettings().ticksPerInch;
         double YMove = (leftYDiff + rightYDiff) / (2 * getSettings().ticksPerInch);
 
         cumulativeDistance += YMove;
 
-        parent.addPositionTicket(Odometry.class, new PositionTicket(VectorMath.translateAsVector2(pos.withZ(imuAng), XMove, YMove), new Vector2(XMove, YMove)));
+        parent.addPositionTicket(Odometry.class, new PositionTicket(VectorMath.translateAsVector2(pos.withZ(angle), XMove, YMove), new Vector2(XMove, YMove)));
 
         lastLeftYPos = currLeftY;
         lastRightYPos = currRightY;

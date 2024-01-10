@@ -31,8 +31,10 @@ public class OdometryHardware {
 
     public static OdometryHardware makeForOdoBot(HardwareMap map){
         return new OdometryHardware(
-                new MotorSettings(MotorSettings.Number.ONE_B, DcMotorSimple.Direction.FORWARD).makeMotor(map),
-                new MotorSettings(MotorSettings.Number.TWO_B, DcMotorSimple.Direction.FORWARD).makeMotor(map),
+                (DcMotor) map.get(MotorSettings.Number.ONE_B.getValue()),
+                (DcMotor) map.get(MotorSettings.Number.TWO_B.getValue()),
+                //new MotorSettings(MotorSettings.Number.ONE_B, DcMotorSimple.Direction.FORWARD).makeMotor(map),
+                //new MotorSettings(MotorSettings.Number.TWO_B, DcMotorSimple.Direction.FORWARD).makeMotor(map),
                 new MotorSettings(MotorSettings.Number.THREE_B, DcMotorSimple.Direction.FORWARD).makeMotor(map),
                 new ServoSettings(ServoSettings.Number.THREE_B).makeServo(map),
                 new ServoSettings(ServoSettings.Number.ONE_B).makeServo(map),
