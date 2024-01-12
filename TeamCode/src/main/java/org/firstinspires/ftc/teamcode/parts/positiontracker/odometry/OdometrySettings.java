@@ -30,7 +30,7 @@ public class OdometrySettings {
         return new OdometrySettings(
                 (222965+222523+222522)/(117.5*3), //82300 / 48.0,
                 (440928+440498+438639+438909)/16, //169619,
-                new Vector3(-2.25, 10,0),
+                new Vector3(-2.25, 4,0),
                 .57,
                 1,
                 .485,

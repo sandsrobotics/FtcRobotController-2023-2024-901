@@ -75,8 +75,11 @@ public class Odometry extends LoopedPartImpl<PositionTracker, OdometrySettings, 
 
         double angle = odoAngle;
 
-        double XMove = (XDiff) / getSettings().ticksPerInch;
-        double YMove = (leftYDiff + rightYDiff) / (2 * getSettings().ticksPerInch);
+        double XMove = ((XDiff) / getSettings().ticksPerInch);
+        double YMove = ((leftYDiff + rightYDiff) / (2 * getSettings().ticksPerInch));
+
+        parent.parent.opMode.telemetry.addData("x move", XMove);
+        parent.parent.opMode.telemetry.addData("y move", YMove);
 
         cumulativeDistance += YMove;
 
@@ -101,6 +104,11 @@ public class Odometry extends LoopedPartImpl<PositionTracker, OdometrySettings, 
         getHardware().XWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         getHardware().leftYWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         getHardware().rightYWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        // run without encoder needed so it doesn't break the robot lift/sweep
+        getHardware().XWheel.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        getHardware().leftYWheel.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        getHardware().rightYWheel.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
         lastXPos = getHardware().XWheel.getCurrentPosition();
         lastLeftYPos = getHardware().leftYWheel.getCurrentPosition();
         lastRightYPos = getHardware().rightYWheel.getCurrentPosition();

@@ -43,7 +43,7 @@ public class TestPixel extends LinearOpMode {
     AprilTag aprilTag;
 
     //Vector3 fieldStartPos = new Vector3(11.75,-63,-90);
-    Vector3 fieldStartPos = new Vector3(11.75,+63,90);
+    Vector3 fieldStartPos = new Vector3(11.75,-63,90);
     public volatile TeamPropDetectionPipeline.TeamPropPosition teamPropPosition;
 
     @Override
@@ -66,10 +66,10 @@ public class TestPixel extends LinearOpMode {
         //PositionTracker pt = new PositionTracker(robot);
 
         XRelativeSolver solver = new XRelativeSolver(drive);
-        EncoderTracker et = new EncoderTracker(pt);
-        pt.positionSourceId = EncoderTracker.class;
-//        Odometry odo = new Odometry(pt); // warning: breaks robot lifter and sweeper cause of something with encoders
-//        pt.positionSourceId = Odometry.class;
+//        EncoderTracker et = new EncoderTracker(pt);
+//        pt.positionSourceId = EncoderTracker.class;
+        Odometry odo = new Odometry(pt); // THIS MAY BE FIXED (warning: breaks robot lifter and sweeper cause of something with encoders)
+        pt.positionSourceId = Odometry.class;
         Intake intake = new Intake(robot);
         new IntakeTeleop(intake);
         TeamProp tp = new TeamProp(robot);
@@ -95,23 +95,24 @@ public class TestPixel extends LinearOpMode {
             start = System.currentTimeMillis();
             robot.run();
 
-            double x = pt.getCurrentPosition().X;
-            double y = pt.getCurrentPosition().Y;
-            double z = Math.toRadians(pt.getCurrentPosition().Z);
-            double x1 = Math.cos(z)*8;
-            double y1 = Math.sin(z)*8;
-            packet.fieldOverlay().setFill("blue").fillCircle(x,y,6);
-            packet.fieldOverlay().setStroke("red").strokeLine(x,y,x+x1,y+y1);
+            // Dashboard stuff
+//            double x = pt.getCurrentPosition().X;
+//            double y = pt.getCurrentPosition().Y;
+//            double z = Math.toRadians(pt.getCurrentPosition().Z);
+//            double x1 = Math.cos(z)*8;
+//            double y1 = Math.sin(z)*8;
+//            packet.fieldOverlay().setFill("blue").fillCircle(x,y,6);
+//            packet.fieldOverlay().setStroke("red").strokeLine(x,y,x+x1,y+y1);
 
             telemetry.addData("position", pt.getCurrentPosition());
             telemetry.addData("tile position", fieldToTile(pt.getCurrentPosition()));
             telemetry.addData("relative position", pt.getRelativePosition());
 
-            if(gamepad1.dpad_down) {
-                solver.setNewTarget(10, true);
-            }
+//            if(gamepad1.dpad_down) {
+//                solver.setNewTarget(10, true);
+//            }
 
-            telemetry.addData("Team Prop Position", teamPropPosition);
+//            telemetry.addData("Team Prop Position", teamPropPosition);
 
             if (aprilTag != null && aprilTag.targetFound) {
                 telemetry.addData("Found", "ID %d (%s)", aprilTag.desiredTag.id, aprilTag.desiredTag.metadata.name);
@@ -122,7 +123,7 @@ public class TestPixel extends LinearOpMode {
             }
 
             robot.opMode.telemetry.addData("time", System.currentTimeMillis() - start);
-            dashboard.sendTelemetryPacket(packet);
+//            dashboard.sendTelemetryPacket(packet);
             telemetry.update();
         }
         robot.stop();

@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.parts.intake;
 
+import android.graphics.Color;
+
 import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -22,19 +24,18 @@ import static java.lang.Boolean.TRUE;
 public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardware, IntakeControl>{
     private int slideTargetPosition;
     private int liftTargetPosition;
-    public boolean doTagRange = false;
+    public boolean doTagRange = true;
     public boolean doTagCenter = false;
     private boolean armed;
     private int swingTargetPosition;
     private final int slideSafePos = 970;
     private int ranging = 1;
     private int launchState;
-    boolean inLeft;
-    boolean inRight;
     boolean atTag;
     boolean tooClose;
     boolean inRange;
     double currentDist;
+    boolean inCenter;
     private boolean reverse;
     AprilTag tag;
     Drive drive;
@@ -162,8 +163,26 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
     }
 
     public double getTopPixelDist() { return getHardware().topSensor.getDistance(DistanceUnit.CM);}
-
     public double getBottomPixelDist() { return getHardware().botSensor.getDistance(DistanceUnit.CM);}
+
+//    public double getBottomPixelColor() { return getHardware().botSensor.
+////        // hsvValues is an array that will hold the hue, saturation, and value information.
+////        float hsvValues[] = {0F, 0F, 0F};
+////        // values is a reference to the hsvValues array.
+////        final float values[] = hsvValues;
+////        // sometimes it helps to multiply the raw RGB values with a scale factor
+////        // to amplify/attentuate the measured values.
+////        final double SCALE_FACTOR = 255;
+////            Color.RGBToHSV((int) (robot.sensorColor.red() * SCALE_FACTOR),
+////                    (int) (robot.sensorColor.green() * SCALE_FACTOR),
+////                    (int) (robot.sensorColor.blue() * SCALE_FACTOR),
+////                    hsvValues);
+//                    return Color.RGBToHSV((int) (getHardware().botSensor.red() * 255),
+//                    (int) (getHardware().botSensor.green() * 255),
+//                    (int) (getHardware().botSensor.blue() * 255),
+//                    hsvValues);
+//    }
+//
 
     public int hasPixels(){
         if (getTopPixelDist() < 2 && getBottomPixelDist() < 2)
@@ -313,7 +332,7 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
         autoGrabTask.addStep(this::preAutoMove);
         // autoGrabTask.addTimedStep(()-> sweepWithPix(2), grabTime);
         autoGrabTask.addStep(()->sweepWithPower(1));
-        autoGrabTask.addDelay(2000);
+        autoGrabTask.addDelay(1000);
         autoGrabTask.addStep(()->sweepWithPower(0));
         autoGrabTask.addStep(()->setGrabPosition(3));
         reverse = false;
@@ -421,34 +440,29 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
 
     public void doTagRanging(DriveControl control) {
         final double desiredDistance = 7.5;
-        final double startDistance = 15.0;
         final double xPower = 0.01;
-        final double yPower = 0.03;
-        final int tolerance = 1;
+        final double yPower = 0.02;
 
         if (tag.desiredTag != null) {
-             inLeft = tag.desiredTag.ftcPose.x < 2;
-             inRight = tag.desiredTag.ftcPose.x > -2;
-             inRange = tag.desiredTag.ftcPose.range <= 15;
+            inCenter = tag.desiredTag.ftcPose.x > -2 && tag.desiredTag.ftcPose.x < 2;
+             inRange = tag.desiredTag.ftcPose.range <= 20;
              currentDist = tag.desiredTag.ftcPose.range;
              double xDist = tag.desiredTag.ftcPose.x;
              atTag = tag.desiredTag.ftcPose.range <= 8.4;
              tooClose = tag.desiredTag.ftcPose.range <= 8.0;
 
-           if (doTagCenter && inRange) {
-                    if(tag.targetFound) { //are we seeing the tag we want?
-                        if (inRight) // tag to the right (x is positive)
-                            control.power = control.power.addX(xDist * xPower);
-                        else if (inLeft) //tag to the left (x is negative)
-                            control.power = control.power.addX(xDist * -xPower);
-                        else
-                            doTagCenter = false;
-                    }
-            }
-           else if(doTagRange && inRange){
+//           if (inRange) {
+//                    if(tag.targetFound) { //are we seeing the tag we want?
+//                        if (!inCenter) // tag to the right (x is positive) tag to the left (x is negative)
+//                            control.power = control.power.addX(xDist * xPower);
+//                        else
+//                            doTagCenter = false;
+//                    }
+//            }
+           if(doTagRange && inRange){
                if (tag.targetFound) {
                    if (!atTag)
-                       control.power = control.power.addY((currentDist - desiredDistance) * -.03);
+                       control.power = control.power.addY((currentDist - desiredDistance) * -yPower);
                    else {
                        doTagRange = false;
                    }
@@ -461,8 +475,7 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
            }
         }
         else{
-            inLeft = false;
-            inRight = false;
+            inCenter = false;
             inRange = false;
             currentDist = 0;
             atTag = false;
@@ -515,12 +528,10 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
         setLaunchState(control.launchState);
         //watchPixelBucket();
         // setSwingPosition(control.swingPosition);
-        if(control.ranging != 0)
-            setRanging(control.ranging);
         setLeds(hasPixels());
 
 //        parent.opMode.telemetry.addData("lifter pos", getRobotLiftPosition());
-        parent.opMode.telemetry.addData("how many pixels", hasPixels());
+//        parent.opMode.telemetry.addData("how many pixels", hasPixels());
         parent.opMode.telemetry.addData("Top Pixel (cm)", getTopPixelDist());
         parent.opMode.telemetry.addData("Bottom Pixel (cm)", getBottomPixelDist());
         //parent.opMode.telemetry.addData("Sweep Speed", control.sweeperPower);

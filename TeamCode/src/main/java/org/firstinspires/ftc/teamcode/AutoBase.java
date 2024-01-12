@@ -197,7 +197,7 @@ public class AutoBase extends LinearOpMode{
     private void wallAuto(TimedTask autoTask) {
         Vector3 startPos = new Vector3(-1.5, -2.6, -90);
         Vector3 pushProp = new Vector3(-1.5, -1.5, -90);
-        Vector3 dropCenter = new Vector3(-1.5, -.5, -90);
+        Vector3 dropCenter = new Vector3(-1.5, -.6, -90);
         Vector3 dropPixCenter = new Vector3(-1.5, -1.5, -90);
         Vector3 dropPixLeft = new Vector3(-1.5, -1.6, 180);
         Vector3 dropPixRight = new Vector3(-1.5, -1.6, 0);
@@ -208,7 +208,7 @@ public class AutoBase extends LinearOpMode{
         Vector3 preSetupTagsWall = new Vector3(-1.5, -2.5, 180);
         Vector3 setupTagsWall = new Vector3(1.5, -2.5, 180);
         Vector3 goToTags = new Vector3(1.5, -1.5, 180);
-        Vector3 goCloseToTags = new Vector3(1.8, -1.5, 180);
+        Vector3 goCloseToTags = new Vector3(2.0, -1.5, 180);
         Vector3 prePark = new Vector3(1.5, -1.5, 180);
 
         positionSolver.setSettings(PositionSolverSettings.defaultSettings);
@@ -220,10 +220,11 @@ public class AutoBase extends LinearOpMode{
             positionSolver.addMoveToTaskEx(tileToInchAuto(left ? dropPixLeft : dropPixRight), autoTask);
         }
         intake.addAutoGrabToTask(autoTask, true, 2000); // make work laterr
+        autoTask.addDelay(1000);
         positionSolver.addMoveToTaskEx(tileToInchAuto(preSetupTagsMid), autoTask);
         positionSolver.addMoveToTaskEx(tileToInchAuto(setupTagsMid), autoTask);
         positionSolver.addMoveToTaskEx(tileToInchAuto(goToTags), autoTask);
-        positionSolver.addMoveToTaskEx(tileToInchAuto(goCloseToTags), autoTask); // take out once cone ranging works, might have to get specific positions for each tag if not
+        positionSolver.addMoveToTaskEx(tileToInchAuto(goCloseToTags), autoTask); // take out once cone centering works, might have to get specific positions for each tag if not
         positionSolver.setSettings(PositionSolverSettings.defaultNoAlwaysRunSettings);
         autoTask.addDelay(1000);
         intake.addAutoDropToTask(autoTask);
