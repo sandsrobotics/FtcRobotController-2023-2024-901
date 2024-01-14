@@ -2,7 +2,10 @@ package org.firstinspires.ftc.teamcode.parts.intake;
 
 import android.graphics.Color;
 
+import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.NormalizedRGBA;
+
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.depricated.lifter.Lifter;
@@ -185,9 +188,9 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
 //
 
     public int hasPixels(){
-        if (getTopPixelDist() < 2 && getBottomPixelDist() < 2)
+        if (getTopPixelDist() < 2.5 && getBottomPixelDist() < 2.5)
             return 2;
-        else if (getTopPixelDist() > 2 && getBottomPixelDist() < 2)
+        else if (getTopPixelDist() > 2.5 && getBottomPixelDist() < 2.5)
             return 1;
         else
             return 0;
@@ -203,6 +206,31 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
         } else {
             led.setBottomGroup(false);
             led.setTopGroup(false);
+        }
+    }
+
+    public int getLedBucket(RevColorSensorV3 sensor) {
+        float[] hsvValues = new float[3];
+        NormalizedRGBA colors = sensor.getNormalizedColors();
+        Color.colorToHSV(colors.toColor(), hsvValues);
+        //parent.opMode.telemetry.addData("Hue", hsvValues[0]);
+        int hue = (int) hsvValues[0];
+        if (hue < 120) return 1; //yellow
+        if (hue >= 120 && hue <= 150) return 2; //green
+        if (hue > 180) return 3; //purple
+        else return 4; //white
+    }
+
+    public void setLeds2(int pixels){
+        if (pixels == 1) {
+            led.setBottomGroup2(getLedBucket(getHardware().botSensor));
+            led.setTopGroup2(0);
+        } else if(pixels == 2) {
+            led.setBottomGroup2(getLedBucket(getHardware().botSensor));
+            led.setTopGroup2(getLedBucket(getHardware().topSensor));
+        } else {
+            led.setBottomGroup2(0);
+            led.setTopGroup2(0);
         }
     }
 
@@ -485,6 +513,20 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
         }
     }
 
+    public void setSweepPosition(int position) {
+        switch (position) {
+            case 0:
+                getHardware().sweepLiftServo.setPosition(getSettings().sweepLiftServoStorePosition);
+                break;
+            case 1:
+                getHardware().sweepLiftServo.setPosition(getSettings().sweepLiftServoDownPosition);
+                break;
+            case 2:
+                getHardware().sweepLiftServo.setPosition(getSettings().sweepLiftServoStackPosition);
+                break;
+        }
+    }
+
 //    public void watchPixelBucket() {
 //        if(getBottomPixelDist() < 2){
 //            led.setBottomGroup(TRUE);
@@ -528,7 +570,8 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
         setLaunchState(control.launchState);
         //watchPixelBucket();
         // setSwingPosition(control.swingPosition);
-        setLeds(hasPixels());
+        setLeds2(hasPixels());
+        setSweepPosition(control.sweepLiftPosition);
 
 //        parent.opMode.telemetry.addData("lifter pos", getRobotLiftPosition());
 //        parent.opMode.telemetry.addData("how many pixels", hasPixels());
@@ -554,7 +597,7 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
         tag = getBeanManager().getBestMatch(AprilTag.class, false);
         led = getBeanManager().getBestMatch(Led.class, false);
         drive.addController(Intake.ContollerNames.distanceContoller, (control) -> doTagRanging(control));
-        //setSweepPosition(1);
+        setSweepPosition(0);
     }
 
     @Override

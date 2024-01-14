@@ -87,7 +87,7 @@ public class IntakeTeleopSettings {
             sliderTop::isRisingEdge,
             sliderBottom::isRisingEdge,
             ()-> gamepad.left_trigger - gamepad.right_trigger,
-            () -> 0,
+            () -> gamepad2.right_stick_button ? 1 : gamepad2.left_stick_button ? 2 : 0, //sweep lift supplier
             () -> gamepad.left_bumper ? -1 : gamepad.right_bumper ? 1 : 0,
             () -> gamepad2.y ? 1 : gamepad2.b ? 2 : gamepad2.a ? 3 : 0,
             () -> gamepad.dpad_right ? 1 : gamepad.dpad_left ? 2 : 0,

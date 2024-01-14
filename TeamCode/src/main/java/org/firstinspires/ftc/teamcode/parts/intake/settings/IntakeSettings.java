@@ -7,9 +7,9 @@ public class IntakeSettings {
     public final int maxUpSlideSpeed;
     public final double minRegisterVal;
     public final double tolerance;
-    public final double sweepLiftServoMinPosition;
-    public final double sweepLiftServoMaxPosition;
-    public final double sweepLiftServoStartPosition;
+    public final double sweepLiftServoStorePosition;
+    public final double sweepLiftServoDownPosition;
+    public final double sweepLiftServoStackPosition;
     public final int maxDownLiftSpeed;
     public final int maxUpLiftSpeed;
     public final int maxLiftPosition;
@@ -32,8 +32,8 @@ public class IntakeSettings {
 
 
     public IntakeSettings(int minSlidePosition, int maxSlidePosition, int maxDownSlideSpeed, int maxUpSlideSpeed, double minRegisterVal, int maxUpLiftSpeed,
-                          int maxDownLiftSpeed, double tolerance, double sweepLiftServoMinPosition, double sweepLiftServoMaxPosition,
-                          double sweepLiftServoStartPosition, int maxLiftPosition, int minLiftPosition, double grabberOpenPosition, double grabberGripTwoPosition,
+                          int maxDownLiftSpeed, double tolerance, double sweepLiftServoDownPosition, double sweepLiftServoStackPosition,
+                          double sweepLiftServoStorePosition, int maxLiftPosition, int minLiftPosition, double grabberOpenPosition, double grabberGripTwoPosition,
                           double grabberGripOnePosition, double swingLeftSafePosition, double swingRightSafePosition, double swingLeftDropPosition, double swingRightDropPosition, int maxPix, int maxPixLine, double launchAngleStorePosition,
                           double launchAngleArmPosition, double launchReleaseLockPosition, double launchReleaseUnlockPosition, double grabberPrimePosition) {
         this.minSlidePosition = minSlidePosition;
@@ -44,9 +44,9 @@ public class IntakeSettings {
         this.maxDownLiftSpeed = maxDownLiftSpeed;
         this.maxUpLiftSpeed = maxUpLiftSpeed;
         this.tolerance = tolerance;
-        this.sweepLiftServoMaxPosition = sweepLiftServoMaxPosition;
-        this.sweepLiftServoMinPosition = sweepLiftServoMinPosition;
-        this.sweepLiftServoStartPosition = sweepLiftServoStartPosition;
+        this.sweepLiftServoStorePosition = sweepLiftServoStorePosition;
+        this.sweepLiftServoDownPosition = sweepLiftServoDownPosition;
+        this.sweepLiftServoStackPosition = sweepLiftServoStackPosition;
         this.maxLiftPosition = maxLiftPosition;
         this.minLiftPosition = minLiftPosition;
         this.grabberOpenPosition = grabberOpenPosition;
@@ -78,9 +78,9 @@ public class IntakeSettings {
                 300,
                 300,
                 2,
-                0,
-                1,
-                .5,
+                0.209,
+                0.360,
+                0.776,
                 8699,
                 201,
                 1.00,

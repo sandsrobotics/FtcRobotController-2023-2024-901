@@ -42,7 +42,7 @@ import static om.self.ezftc.utils.Constants.tileSide;
 @Autonomous(name="Auto-Red-wall-and-ALL", group="Test")
 public class AutoBase extends LinearOpMode{
     public Function<Vector3, Vector3> transformFunc;
-    public Vector3 customStartPos;
+    //public Vector3 customStartPos;
     public boolean shutdownps;
     Intake intake;
     PositionSolver positionSolver;
@@ -50,7 +50,7 @@ public class AutoBase extends LinearOpMode{
     EncoderTracker et;
     public AprilTag aprilTag;
     TeamProp tp;
-    DriveControl control;
+    //DriveControl control;
     Led leds;
     public boolean center, left;
     public boolean midPark;
@@ -96,7 +96,7 @@ public class AutoBase extends LinearOpMode{
         pt = new PositionTracker(r, pts, PositionTrackerHardware.makeDefault(r));
 
         XRelativeSolver solver = new XRelativeSolver(d);
-        EncoderTracker et = new EncoderTracker(pt);
+        et = new EncoderTracker(pt);
 //        Odometry odo = new Odometry(pt);
         pt.positionSourceId = EncoderTracker.class;
 
