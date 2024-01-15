@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.parts.intake;
 import android.graphics.Color;
 
 import com.qualcomm.hardware.rev.RevColorSensorV3;
-import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
@@ -87,8 +87,8 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
     private void setSlideToHomeConfig(){
         double power = -0.125;
 
-        getHardware().sliderMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        //getHardware().rightLiftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        getHardware().sliderMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        //getHardware().rightLiftMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
         getHardware().sliderMotor.setPower(power);
         //getHardware().rightLiftMotor.setPower(power);
@@ -97,8 +97,8 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
     private void setMotorsToRunConfig(){
         getHardware().sliderMotor.setPower(IntakeHardware.slideHoldPower);
         //getHardware().rightLiftMotor.setPower(LifterHardware.liftHoldPower);
-        getHardware().sliderMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        //getHardware().rightLiftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        getHardware().sliderMotor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+        //getHardware().rightLiftMotor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
     }
 
     public void slideWithPower(double power, boolean force){
@@ -153,19 +153,15 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
     public void setLiftToTop(){
         setSlidePosition(getSettings().maxSlidePosition);
     }
-
     public void setLiftToBottom(){
         setSlidePosition(getSettings().minSlidePosition);
     }
-
     public int getSlidePosition(){
         return getHardware().sliderMotor.getCurrentPosition();
     }
-
     public int getRobotLiftPosition(){
         return getHardware().robotLiftMotor.getCurrentPosition();
     }
-
     public double getTopPixelDist() { return getHardware().topSensor.getDistance(DistanceUnit.CM);}
     public double getBottomPixelDist() { return getHardware().botSensor.getDistance(DistanceUnit.CM);}
     public double getBackDist() { return getHardware().backSensor.getDistance(DistanceUnit.INCH);}
@@ -309,8 +305,8 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
 
         autoHomeTask.addTimedStep(() -> {parent.opMode.telemetry.addData("homing", getHardware().slideLowLimitSwitch.getState());}, () -> !getHardware().slideLowLimitSwitch.getState(), 10000);
         autoHomeTask.addStep(() -> {
-            getHardware().sliderMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            //getHardware().rightLiftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            getHardware().sliderMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+            //getHardware().rightLiftMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
 
             getHardware().sliderMotor.setTargetPosition(0);
             //getHardware().rightLiftMotor.setTargetPosition(0);

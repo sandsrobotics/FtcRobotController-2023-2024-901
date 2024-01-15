@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.parts.intake.hardware;
 
 import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
@@ -20,8 +19,8 @@ public class IntakeHardware {
     public static final double robotLiftHoldPower = 1;
     public static final double swingHoldPower = 1;
 
-    public final DcMotor sliderMotor;
-    public final DcMotor sweeperMotor;
+    public final DcMotorEx sliderMotor;
+    public final DcMotorEx sweeperMotor;
     public final Servo sweepLiftServo;
     public final DcMotorEx robotLiftMotor;
     public final Servo grabberServo;
@@ -36,7 +35,7 @@ public class IntakeHardware {
     public final RevColorSensorV3 topSensor;
     public final Rev2mDistanceSensor backSensor;
 
-    public IntakeHardware(DcMotor sliderMotor, DcMotor sweeperMotor, Servo sweepLiftServo, DcMotorEx robotLiftMotor, Servo grabberServo, DigitalChannel liftLowLimitSwitch, DigitalChannel liftHighLImitSwitch, DigitalChannel slideLowLimitSwitch, Servo swingServoLeft,Servo swingServoRight, Servo launchServoAngle, Servo launchServoRelease, RevColorSensorV3 botSensor, RevColorSensorV3 topSensor, Rev2mDistanceSensor backSensor) {
+    public IntakeHardware(DcMotorEx sliderMotor, DcMotorEx sweeperMotor, Servo sweepLiftServo, DcMotorEx robotLiftMotor, Servo grabberServo, DigitalChannel liftLowLimitSwitch, DigitalChannel liftHighLImitSwitch, DigitalChannel slideLowLimitSwitch, Servo swingServoLeft,Servo swingServoRight, Servo launchServoAngle, Servo launchServoRelease, RevColorSensorV3 botSensor, RevColorSensorV3 topSensor, Rev2mDistanceSensor backSensor) {
         this.sweeperMotor = sweeperMotor;
         this.sliderMotor = sliderMotor;
         this.sweepLiftServo = sweepLiftServo;
@@ -55,10 +54,10 @@ public class IntakeHardware {
     }
 //beans
     public static IntakeHardware makeDefault(HardwareMap hardwareMap) {
-        MotorSettings slideMotorSettings = new MotorSettings(MotorSettings.Number.ZERO_B, DcMotorSimple.Direction.FORWARD, DcMotor.ZeroPowerBehavior.BRAKE, DcMotor.RunMode.RUN_TO_POSITION, slideHoldPower);
-        MotorSettings sweepMotorSettings = new MotorSettings(MotorSettings.Number.ONE_B, DcMotorSimple.Direction.FORWARD, DcMotor.ZeroPowerBehavior.BRAKE, DcMotor.RunMode.RUN_WITHOUT_ENCODER, sweepHoldPower);
+        MotorSettings slideMotorSettings = new MotorSettings(MotorSettings.Number.ZERO_B, DcMotorSimple.Direction.FORWARD, DcMotorEx.ZeroPowerBehavior.BRAKE, DcMotorEx.RunMode.RUN_TO_POSITION, slideHoldPower);
+        MotorSettings sweepMotorSettings = new MotorSettings(MotorSettings.Number.ONE_B, DcMotorSimple.Direction.FORWARD, DcMotorEx.ZeroPowerBehavior.BRAKE, DcMotorEx.RunMode.RUN_WITHOUT_ENCODER, sweepHoldPower);
         ServoSettings sweepLiftServoSettings = new ServoSettings(ServoSettings.Number.ZERO_B, Servo.Direction.FORWARD);
-        MotorSettings robotLiftMotorSettings = new MotorSettings(MotorSettings.Number.TWO_B, DcMotorSimple.Direction.FORWARD, DcMotor.ZeroPowerBehavior.BRAKE, DcMotor.RunMode.RUN_WITHOUT_ENCODER, robotLiftHoldPower);
+        MotorSettings robotLiftMotorSettings = new MotorSettings(MotorSettings.Number.TWO_B, DcMotorSimple.Direction.FORWARD, DcMotorEx.ZeroPowerBehavior.BRAKE, DcMotorEx.RunMode.RUN_WITHOUT_ENCODER, robotLiftHoldPower);
         ServoSettings grabberServoSettings = new ServoSettings(ServoSettings.Number.ZERO, Servo.Direction.FORWARD);
         ServoSettings swingServoLeftSettings = new ServoSettings(ServoSettings.Number.ONE, Servo.Direction.FORWARD);
         ServoSettings swingServoRightSettings = new ServoSettings(ServoSettings.Number.TWO, Servo.Direction.REVERSE);
@@ -75,8 +74,8 @@ public class IntakeHardware {
         lowSlideLimit.setMode(DigitalChannel.Mode.INPUT);
 
         return new IntakeHardware(
-                slideMotorSettings.makeMotor(hardwareMap),
-                sweepMotorSettings.makeMotor(hardwareMap),
+                slideMotorSettings.makeExMotor(hardwareMap),
+                sweepMotorSettings.makeExMotor(hardwareMap),
                 sweepLiftServoSettings.makeServo(hardwareMap),
                 robotLiftMotorSettings.makeExMotor(hardwareMap),
                 grabberServoSettings.makeServo(hardwareMap),

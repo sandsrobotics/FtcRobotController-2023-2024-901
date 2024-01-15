@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.parts.drive.hardware;
 
 import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
-import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -12,19 +12,19 @@ public class DriveHardware {
     ///////////
     //objects//
     ///////////
-    public final DcMotor topLeftMotor;
-    public final DcMotor topRightMotor;
-    public final DcMotor bottomLeftMotor;
-    public final DcMotor bottomRightMotor;
+    public final DcMotorEx topLeftMotor;
+    public final DcMotorEx topRightMotor;
+    public final DcMotorEx bottomLeftMotor;
+    public final DcMotorEx bottomRightMotor;
 
     public DriveHardware(HardwareMap hardwareMap, MotorSettings topLeftMotorSettings, MotorSettings topRightMotorSettings, MotorSettings bottomLeftMotorSettings, MotorSettings bottomRightMotorSettings) {
-        topLeftMotor = topLeftMotorSettings.makeMotor(hardwareMap);
-        topRightMotor = topRightMotorSettings.makeMotor(hardwareMap);
-        bottomLeftMotor = bottomLeftMotorSettings.makeMotor(hardwareMap);
-        bottomRightMotor = bottomRightMotorSettings.makeMotor(hardwareMap);
+        topLeftMotor = topLeftMotorSettings.makeExMotor(hardwareMap);
+        topRightMotor = topRightMotorSettings.makeExMotor(hardwareMap);
+        bottomLeftMotor = bottomLeftMotorSettings.makeExMotor(hardwareMap);
+        bottomRightMotor = bottomRightMotorSettings.makeExMotor(hardwareMap);
     }
 
-    public DriveHardware(DcMotor topLeftMotor, DcMotor topRightMotor, DcMotor bottomLeftMotor, DcMotor bottomRightMotor){
+    public DriveHardware(DcMotorEx topLeftMotor, DcMotorEx topRightMotor, DcMotorEx bottomLeftMotor, DcMotorEx bottomRightMotor){
         this.topLeftMotor = topLeftMotor;
         this.topRightMotor = topRightMotor;
         this.bottomLeftMotor = bottomLeftMotor;
@@ -35,10 +35,10 @@ public class DriveHardware {
         ////////////
         //settings//
         ////////////
-        MotorSettings topLeftMotorSettings = new MotorSettings(MotorSettings.Number.ZERO, DcMotorSimple.Direction.REVERSE, DcMotor.ZeroPowerBehavior.BRAKE, DcMotor.RunMode.RUN_USING_ENCODER, 0);
-        MotorSettings topRightMotorSettings = new MotorSettings(MotorSettings.Number.ONE, DcMotorSimple.Direction.FORWARD, DcMotor.ZeroPowerBehavior.BRAKE, DcMotor.RunMode.RUN_USING_ENCODER, 0);
-        MotorSettings bottomLeftMotorSettings = new MotorSettings(MotorSettings.Number.TWO, DcMotorSimple.Direction.REVERSE, DcMotor.ZeroPowerBehavior.BRAKE, DcMotor.RunMode.RUN_USING_ENCODER, 0);
-        MotorSettings bottomRightMotorSettings = new MotorSettings(MotorSettings.Number.THREE, DcMotorSimple.Direction.FORWARD, DcMotor.ZeroPowerBehavior.BRAKE, DcMotor.RunMode.RUN_USING_ENCODER, 0);
+        MotorSettings topLeftMotorSettings = new MotorSettings(MotorSettings.Number.ZERO, DcMotorSimple.Direction.REVERSE, DcMotorEx.ZeroPowerBehavior.BRAKE, DcMotorEx.RunMode.RUN_USING_ENCODER, 0);
+        MotorSettings topRightMotorSettings = new MotorSettings(MotorSettings.Number.ONE, DcMotorSimple.Direction.FORWARD, DcMotorEx.ZeroPowerBehavior.BRAKE, DcMotorEx.RunMode.RUN_USING_ENCODER, 0);
+        MotorSettings bottomLeftMotorSettings = new MotorSettings(MotorSettings.Number.TWO, DcMotorSimple.Direction.REVERSE, DcMotorEx.ZeroPowerBehavior.BRAKE, DcMotorEx.RunMode.RUN_USING_ENCODER, 0);
+        MotorSettings bottomRightMotorSettings = new MotorSettings(MotorSettings.Number.THREE, DcMotorSimple.Direction.FORWARD, DcMotorEx.ZeroPowerBehavior.BRAKE, DcMotorEx.RunMode.RUN_USING_ENCODER, 0);
 
         return new DriveHardware(hardwareMap, topLeftMotorSettings, topRightMotorSettings, bottomLeftMotorSettings, bottomRightMotorSettings);
     }
