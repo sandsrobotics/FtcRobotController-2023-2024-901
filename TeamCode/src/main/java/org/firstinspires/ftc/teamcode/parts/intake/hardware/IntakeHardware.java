@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.parts.intake.hardware;
 
+import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -33,8 +34,9 @@ public class IntakeHardware {
     public final Servo launchServoRelease;
     public final RevColorSensorV3 botSensor;
     public final RevColorSensorV3 topSensor;
+    public final Rev2mDistanceSensor backSensor;
 
-    public IntakeHardware(DcMotor sliderMotor, DcMotor sweeperMotor, Servo sweepLiftServo, DcMotorEx robotLiftMotor, Servo grabberServo, DigitalChannel liftLowLimitSwitch, DigitalChannel liftHighLImitSwitch, DigitalChannel slideLowLimitSwitch, Servo swingServoLeft,Servo swingServoRight, Servo launchServoAngle, Servo launchServoRelease, RevColorSensorV3 botSensor, RevColorSensorV3 topSensor) {
+    public IntakeHardware(DcMotor sliderMotor, DcMotor sweeperMotor, Servo sweepLiftServo, DcMotorEx robotLiftMotor, Servo grabberServo, DigitalChannel liftLowLimitSwitch, DigitalChannel liftHighLImitSwitch, DigitalChannel slideLowLimitSwitch, Servo swingServoLeft,Servo swingServoRight, Servo launchServoAngle, Servo launchServoRelease, RevColorSensorV3 botSensor, RevColorSensorV3 topSensor, Rev2mDistanceSensor backSensor) {
         this.sweeperMotor = sweeperMotor;
         this.sliderMotor = sliderMotor;
         this.sweepLiftServo = sweepLiftServo;
@@ -49,6 +51,7 @@ public class IntakeHardware {
         this.launchServoRelease = launchServoRelease;
         this.botSensor = botSensor;
         this.topSensor = topSensor;
+        this.backSensor = backSensor;
     }
 //beans
     public static IntakeHardware makeDefault(HardwareMap hardwareMap) {
@@ -63,6 +66,7 @@ public class IntakeHardware {
         ServoSettings launchServoReleaseSettings = new ServoSettings(ServoSettings.Number.THREE_B, Servo.Direction.FORWARD);
         RevColorSensorV3 botSensor = hardwareMap.get(RevColorSensorV3.class, "botSensor");
         RevColorSensorV3 topSensor = hardwareMap.get(RevColorSensorV3.class, "topSensor");
+        Rev2mDistanceSensor backSensor = hardwareMap.get(Rev2mDistanceSensor.class, "backSensor");
         DigitalChannel lowLiftLimit = hardwareMap.get(DigitalChannel.class, "digital0");
         DigitalChannel highLiftLimit = hardwareMap.get(DigitalChannel.class, "digital1");
         DigitalChannel lowSlideLimit = hardwareMap.get(DigitalChannel.class, "digital3");
@@ -84,7 +88,8 @@ public class IntakeHardware {
                 launchServoAngleSettings.makeServo(hardwareMap),
                 launchServoReleaseSettings.makeServo(hardwareMap),
                 botSensor,
-                topSensor
+                topSensor,
+                backSensor
         );
     }
 }

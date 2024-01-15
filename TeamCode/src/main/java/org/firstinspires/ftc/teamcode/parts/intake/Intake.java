@@ -49,6 +49,7 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
     private int pix = 0;
     int grabTime;
     boolean botPixel, topPixel = false;
+    private int lastPixels = 0;
     private int pixLine = 0;
     private final int[] pixToPos = {1000,1100,1360,1600,1860}; //TODO move to settings, need 12 of these
     private final int[] pixLineToPos = {1000, 2000, 3000};
@@ -167,6 +168,7 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
 
     public double getTopPixelDist() { return getHardware().topSensor.getDistance(DistanceUnit.CM);}
     public double getBottomPixelDist() { return getHardware().botSensor.getDistance(DistanceUnit.CM);}
+    public double getBackDist() { return getHardware().backSensor.getDistance(DistanceUnit.INCH);}
 
 //    public double getBottomPixelColor() { return getHardware().botSensor.
 ////        // hsvValues is an array that will hold the hue, saturation, and value information.
@@ -575,8 +577,9 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
 
 //        parent.opMode.telemetry.addData("lifter pos", getRobotLiftPosition());
 //        parent.opMode.telemetry.addData("how many pixels", hasPixels());
-        parent.opMode.telemetry.addData("Top Pixel (cm)", getTopPixelDist());
-        parent.opMode.telemetry.addData("Bottom Pixel (cm)", getBottomPixelDist());
+        //parent.opMode.telemetry.addData("Top Pixel (cm)", getTopPixelDist());
+        //parent.opMode.telemetry.addData("Bottom Pixel (cm)", getBottomPixelDist());
+        //parent.opMode.telemetry.addData("Back Board (In)", getBackDist());
         //parent.opMode.telemetry.addData("Sweep Speed", control.sweeperPower);
         //parent.opMode.telemetry.addData("Lift height", getRobotLiftPosition());
         //parent.opMode.telemetry.addData("dpad",control.robotLiftPosition);
