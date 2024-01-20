@@ -20,6 +20,7 @@ import org.firstinspires.ftc.teamcode.parts.positiontracker.PositionTracker;
 import org.firstinspires.ftc.teamcode.parts.positiontracker.encodertracking.EncoderTracker;
 import org.firstinspires.ftc.teamcode.parts.positiontracker.hardware.PositionTrackerHardware;
 import org.firstinspires.ftc.teamcode.parts.positiontracker.odometry.Odometry;
+import org.firstinspires.ftc.teamcode.parts.positiontracker.odometry.Odometry24;
 import org.firstinspires.ftc.teamcode.parts.positiontracker.settings.PositionTrackerSettings;
 import org.firstinspires.ftc.teamcode.parts.teamprop.TeamProp;
 import org.firstinspires.ftc.teamcode.parts.teamprop.TeamPropDetectionPipeline;
@@ -42,7 +43,7 @@ import static om.self.ezftc.utils.Constants.tileSide;
 @Autonomous(name="Auto-Red-wall-and-ALL", group="Test")
 public class AutoBase extends LinearOpMode{
     public Function<Vector3, Vector3> transformFunc;
-    //public Vector3 customStartPos;
+    public Vector3 customStartPos;
     public boolean shutdownps;
     Intake intake;
     PositionSolver positionSolver;
@@ -74,6 +75,10 @@ public class AutoBase extends LinearOpMode{
         return Constants.tileToInch(transformFunc.apply(tiles));
     }
 
+    private Vector3 tileToInchAutoNoZ(Vector3 tiles){
+        return Constants.tileToInch(transformFunc.apply(tiles)).withZ(tiles.Z);
+    }
+
     public Vector3 fieldToTile(Vector3 p){
         return new Vector3(p.X / tileSide, p.Y / tileSide, p.Z);
     }
@@ -90,14 +95,14 @@ public class AutoBase extends LinearOpMode{
         intake = new Intake(r);
         leds = new Led(r);
 
-
         PositionTrackerSettings pts = new PositionTrackerSettings(AxesOrder.XYZ, false, 100, new Vector3(2,2,2), startPosition);
-        //pts = pts.withPosition(customStartPos != null ? customStartPos : transformFunc.apply(pts.startPosition));
+        pts = pts.withPosition(customStartPos != null ? customStartPos : transformFunc.apply(pts.startPosition));
         pt = new PositionTracker(r, pts, PositionTrackerHardware.makeDefault(r));
 
         XRelativeSolver solver = new XRelativeSolver(d);
         et = new EncoderTracker(pt);
-//        Odometry odo = new Odometry(pt);
+////        Odometry odo = new Odometry(pt);
+//        Odometry24 odo = new Odometry24(pt);
         pt.positionSourceId = EncoderTracker.class;
 
         //intake = new Intake(r, aprilTag);
@@ -124,7 +129,6 @@ public class AutoBase extends LinearOpMode{
         if(shutdownps)
             positionSolver.triggerEvent(Robot.Events.STOP);
 
-
         if(isRed)
             aprilTag.setDesiredTag(center ? 5 : left ? 4 : 6);
         else
@@ -139,27 +143,27 @@ public class AutoBase extends LinearOpMode{
         });
         // add calls to special autonomous action collections in methods below
 
-//        testRobot(autoTask);
-
-        if(!parkOnly) {
-            if (isBoard) boardAuto(autoTask);
-            else wallAuto(autoTask);
-            parkAuto(autoTask);
-        }
+        testRobot(autoTask);
+//
+//        if(!parkOnly) {
+//            if (isBoard) boardAuto(autoTask);
+//            else wallAuto(autoTask);
+//            parkAuto(autoTask);
+//        }
 
         //parkAuto(autoTask);
 
         while (opModeIsActive()) {
             telemetry.addData("Team Prop Position", tp.pipeline.position);
-            double x = pt.getCurrentPosition().X;
-            double y = pt.getCurrentPosition().Y;
-            double z = Math.toRadians(pt.getCurrentPosition().Z);
-
-            double x1 = Math.cos(z)*8;
-            double y1 = Math.sin(z)*8;
-            packet.fieldOverlay().setFill("blue").fillCircle(x,y,6);
-            packet.fieldOverlay().setStroke("red").strokeLine(x,y,x+x1,y+y1);
-            packet.fieldOverlay().fillCircle(1, 1, 1);
+//            double x = pt.getCurrentPosition().X;
+//            double y = pt.getCurrentPosition().Y;
+//            double z = Math.toRadians(pt.getCurrentPosition().Z);
+//
+//            double x1 = Math.cos(z)*8;
+//            double y1 = Math.sin(z)*8;
+//            packet.fieldOverlay().setFill("blue").fillCircle(x,y,6);
+//            packet.fieldOverlay().setStroke("red").strokeLine(x,y,x+x1,y+y1);
+//            packet.fieldOverlay().fillCircle(1, 1, 1);
 
             telemetry.addData("pos id", pt.positionSourceId);
 
@@ -180,7 +184,7 @@ public class AutoBase extends LinearOpMode{
                 telemetry.addData("\n>","Drive using joysticks to find valid target\n");
             }
 
-            dashboardTelemetry.update();
+//            dashboardTelemetry.update();
             telemetry.update();
 
         }
@@ -199,17 +203,20 @@ public class AutoBase extends LinearOpMode{
         Vector3 pushProp = new Vector3(-1.5, -1.5, -90);
         Vector3 dropCenter = new Vector3(-1.5, -.6, -90);
         Vector3 dropPixCenter = new Vector3(-1.5, -1.5, -90);
-        Vector3 dropPixLeft = new Vector3(-1.5, -1.6, 180);
-        Vector3 dropPixRight = new Vector3(-1.5, -1.6, 0);
+        Vector3 dropPixLeft = new Vector3(-1.5, -1.38, 180);
+        Vector3 dropPixRight = new Vector3(-1.5, -1.38, 0);
         Vector3 tagAngle = new Vector3(-1.5, -1.5, 180);
         Vector3 centerTagAngle = new Vector3(-1.5, .5, 180);
-        Vector3 preSetupTagsMid = new Vector3(-1.5, 0, 180);
-        Vector3 setupTagsMid = new Vector3(1.5, 0, 180);
+        Vector3 preSetupTagsMid = new Vector3(-1.5, -.5, 180); // tjk not over center
+        Vector3 setupTagsMid = new Vector3(1.5, -.5, 180); // tjk not over center
         Vector3 preSetupTagsWall = new Vector3(-1.5, -2.5, 180);
         Vector3 setupTagsWall = new Vector3(1.5, -2.5, 180);
         Vector3 goToTags = new Vector3(1.5, -1.5, 180);
-        Vector3 goCloseToTags = new Vector3(2.0, -1.5, 180);
+        Vector3 goCloseToTags = new Vector3(1.9, -1.5, 180); // tjk closer to board for testing
         Vector3 prePark = new Vector3(1.5, -1.5, 180);
+        Vector3 centerAT = new Vector3(1.8,-1.5,180);
+        Vector3 leftAT = new Vector3(1.8, -1.3, 180);
+        Vector3 rightAT = new Vector3(1.8, -2, 180);
 
         positionSolver.setSettings(PositionSolverSettings.defaultSettings);
         if (center){
@@ -224,11 +231,16 @@ public class AutoBase extends LinearOpMode{
         positionSolver.addMoveToTaskEx(tileToInchAuto(preSetupTagsMid), autoTask);
         positionSolver.addMoveToTaskEx(tileToInchAuto(setupTagsMid), autoTask);
         positionSolver.addMoveToTaskEx(tileToInchAuto(goToTags), autoTask);
-        positionSolver.addMoveToTaskEx(tileToInchAuto(goCloseToTags), autoTask); // take out once cone centering works, might have to get specific positions for each tag if not
         positionSolver.setSettings(PositionSolverSettings.defaultNoAlwaysRunSettings);
-        autoTask.addDelay(1000);
+        if(center)
+            positionSolver.addMoveToTaskEx(tileToInchAuto(centerAT), autoTask);
+        else if(left)
+            positionSolver.addMoveToTaskEx(tileToInchAuto(leftAT), autoTask);
+        else
+            positionSolver.addMoveToTaskEx(tileToInchAuto(rightAT), autoTask);
+        autoTask.addDelay(3000);
         intake.addAutoDropToTask(autoTask);
-        autoTask.addDelay(5000);
+        autoTask.addDelay(2000);
         intake.addFinishDropToTask(autoTask);
         autoTask.addDelay(1000);
         intake.addAutoDockToTask(autoTask);
@@ -247,18 +259,26 @@ public class AutoBase extends LinearOpMode{
         Vector3 setupTags = new Vector3(1.5, -1.5, 0);
         Vector3 prePark = new Vector3(1.5, -2.5, 0);
         Vector3 goCloseToTags = new Vector3(1.8, -1.5, 180);
+        Vector3 centerAT = new Vector3(1.8,-1.5,0);
+        Vector3 leftAT = new Vector3(1.8, -1.3, 0);
+        Vector3 rightAT = new Vector3(1.8, -2, 0);
 
         positionSolver.setSettings(PositionSolverSettings.defaultSettings);
         //if its in the center we need to push the prop out of the way and then place it or place it on the right side. if its on the left side normal place and back up to april tags, if its on the right side then back up first then place it on the thing, but also need to get rid of team prop somehow
         positionSolver.addMoveToTaskEx(tileToInchAuto(preDrop), autoTask);
         positionSolver.addMoveToTaskEx(tileToInchAuto(center ? dropPixCenter : left ? dropPixLeft : dropPixRight), autoTask);
         intake.addAutoGrabToTask(autoTask, true, 2000);
+        positionSolver.setSettings(PositionSolverSettings.defaultNoAlwaysRunSettings); // let ranging take over
         if(!center && !left)
             positionSolver.addMoveToTaskEx(tileToInchAuto(tagAngle), autoTask);
         positionSolver.addMoveToTaskEx(tileToInchAuto(setupTags), autoTask);
-        positionSolver.addMoveToTaskEx(tileToInchAuto(goCloseToTags), autoTask);
-        positionSolver.setSettings(PositionSolverSettings.defaultNoAlwaysRunSettings);
-        autoTask.addDelay(1000);
+        if(center)
+            positionSolver.addMoveToTaskEx(tileToInchAuto(centerAT), autoTask);
+        else if(left)
+            positionSolver.addMoveToTaskEx(tileToInchAuto(leftAT), autoTask);
+        else
+            positionSolver.addMoveToTaskEx(tileToInchAuto(rightAT), autoTask);
+        autoTask.addDelay(10000);
         intake.addAutoDropToTask(autoTask);
         autoTask.addDelay(3000);
         intake.addFinishDropToTask(autoTask);
@@ -273,8 +293,12 @@ public class AutoBase extends LinearOpMode{
         Vector3 startPos = new Vector3(1, 0, 90);
         Vector3 testPos = new Vector3(1, .5, 90);
 
-        intake.addAutoGrabToTask(autoTask, true, 8000);
-//        autoTask.addDelay(3000);
+        positionSolver.setSettings(PositionSolverSettings.defaultNoAlwaysRunSettings);
+        autoTask.addTimedStep(() -> {}, ()->intake.getBackDist() <= 7, 5000);
+        intake.addAutoDropToTask(autoTask);
+
+//        intake.addAutoGrabToTask(autoTask, true, 8000);
+        autoTask.addDelay(3000);
 //        intake.addAutoDropToTask(autoTask);
 //        autoTask.addDelay(3000);
 //        intake.addFinishDropToTask(autoTask);

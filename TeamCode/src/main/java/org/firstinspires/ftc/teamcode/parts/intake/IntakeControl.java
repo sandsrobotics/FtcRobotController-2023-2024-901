@@ -5,20 +5,18 @@ public class IntakeControl {
     public int sweepLiftPosition;
     public int robotLiftPosition;
     public int grabberPosition;
-    public int swingPosition;
     public int pix;
     public int pixLine;
     public int launchState;
     public int ranging;
 
     public IntakeControl(double sliderPower, double sweeperPower, int sweeperLiftPosition,
-                         int robotLiftPosition, int grabberPosition, int swingPosition, int pix, int pixLIne, int launchState, int ranging) {
+                         int robotLiftPosition, int grabberPosition, int pix, int pixLIne, int launchState, int ranging) {
         this.sliderPower = sliderPower;
         this.sweeperPower = sweeperPower;
         this.sweepLiftPosition = sweeperLiftPosition;
         this.robotLiftPosition = robotLiftPosition;
         this.grabberPosition = grabberPosition;
-        this.swingPosition = swingPosition;
         this.pix = pix;
         this.pixLine = pixLIne;
         this.launchState = launchState;

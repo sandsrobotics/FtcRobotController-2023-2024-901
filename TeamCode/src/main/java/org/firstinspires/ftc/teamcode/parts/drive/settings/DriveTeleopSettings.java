@@ -21,16 +21,14 @@ public class DriveTeleopSettings {
     public final Supplier<Boolean> slowModeSupplier;
     public final double slowModeSpeed;
 
-    public final Supplier<Boolean> invertSupplier;
 
-    public DriveTeleopSettings(Supplier<Vector3> powerSupplier, Supplier<Boolean> stopSupplier, Supplier<Boolean> midModeSupplier, double midModeSpeed, Supplier<Boolean> slowModeSupplier, double slowModeSpeed, Supplier<Boolean> invertSupplier) {
+    public DriveTeleopSettings(Supplier<Vector3> powerSupplier, Supplier<Boolean> stopSupplier, Supplier<Boolean> midModeSupplier, double midModeSpeed, Supplier<Boolean> slowModeSupplier, double slowModeSpeed) {
         this.powerSupplier = powerSupplier;
         this.stopSupplier = stopSupplier;
         this.midModeSupplier = midModeSupplier;
         this.midModeSpeed = midModeSpeed;
         this.slowModeSupplier = slowModeSupplier;
         this.slowModeSpeed = slowModeSpeed;
-        this.invertSupplier = invertSupplier;
     }
 
     public static DriveTeleopSettings makeDefault(Robot robot){
@@ -47,8 +45,7 @@ public class DriveTeleopSettings {
                 0.7,
                 //new LatchedModifier().toSupplier(() -> gamepad.b),
                 () -> gamepad.right_trigger > 0.5,
-                0.5,
-                new LatchedModifier(false).toSupplier(() -> gamepad.left_bumper)
+                0.5
         );
     }
 
@@ -66,8 +63,7 @@ public class DriveTeleopSettings {
                 0.7,
                 //new LatchedModifier().toSupplier(() -> gamepad.b),
                 () -> false,
-                0.5,
-                new LatchedModifier(false).toSupplier(() -> gamepad.left_bumper)
+                0.5
         );
     }
 }

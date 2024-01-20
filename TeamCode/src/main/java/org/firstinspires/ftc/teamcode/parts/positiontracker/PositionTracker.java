@@ -28,6 +28,9 @@ public class PositionTracker extends LoopedPartImpl<Robot, PositionTrackerSettin
     private Hashtable<Class, PositionTicket> tickets = new Hashtable();
     private double imuAngle = 0;
 
+    public double lkRawImuAngle = 0; // LK
+    public Vector3 lkStartPosition; // LK
+
     public PositionTracker(Robot robot) {
         super(robot, "position tracker", robot.startTaskManager);
         setConfig(PositionTrackerSettings.makeDefault(), PositionTrackerHardware.makeDefault(robot));
@@ -78,6 +81,7 @@ public class PositionTracker extends LoopedPartImpl<Robot, PositionTrackerSettin
     private void updateAngle() {
         if(getHardware() != null) {
             double angle = getHardware().imu.getAngularOrientation(AxesReference.EXTRINSIC, getSettings().axesOrder, AngleUnit.DEGREES).thirdAngle;
+            lkRawImuAngle = AngleMath.scaleAngle(angle); //LK
             if (getSettings().flipAngle)
                 angle *= -1;
             angle -= offset;
@@ -117,6 +121,7 @@ public class PositionTracker extends LoopedPartImpl<Robot, PositionTrackerSettin
     public void onSettingsUpdate(PositionTrackerSettings positionTrackerSettings) {
         setAngle(positionTrackerSettings.startPosition.Z);
         currentPosition = positionTrackerSettings.startPosition;
+        lkStartPosition = positionTrackerSettings.startPosition; // LK
     }
 
     @Override

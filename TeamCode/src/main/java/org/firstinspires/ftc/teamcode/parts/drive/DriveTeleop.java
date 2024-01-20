@@ -41,7 +41,7 @@ public class DriveTeleop extends LoopedPartImpl<Drive, DriveTeleopSettings, Obje
         parent.setBaseController(() -> new DriveControl(
                 getSettings().slowModeSupplier.get() ? VectorMath.multiply(getSettings().powerSupplier.get(), getSettings().slowModeSpeed) :
                 getSettings().midModeSupplier.get() ? VectorMath.multiply(getSettings().powerSupplier.get(), getSettings().midModeSpeed) :
-                getSettings().invertSupplier.get() ? VectorMath.multiply(getSettings().powerSupplier.get(), invertVector) : getSettings().powerSupplier.get(),
+                getSettings().midModeSupplier.get() ? VectorMath.multiply(getSettings().powerSupplier.get(), invertVector) : getSettings().powerSupplier.get(), // fix this later by taking it out cause invert bad but im bored
 
                 getSettings().stopSupplier.get()
         ), true);

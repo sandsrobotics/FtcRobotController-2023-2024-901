@@ -18,6 +18,7 @@ import org.firstinspires.ftc.teamcode.parts.intake.Intake;
 import org.firstinspires.ftc.teamcode.parts.intake.IntakeTeleop;
 import org.firstinspires.ftc.teamcode.parts.positiontracker.hardware.PositionTrackerHardware;
 import org.firstinspires.ftc.teamcode.parts.positiontracker.odometry.Odometry;
+import org.firstinspires.ftc.teamcode.parts.positiontracker.odometry.Odometry24;
 import org.firstinspires.ftc.teamcode.parts.positiontracker.settings.PositionTrackerSettings;
 import org.firstinspires.ftc.teamcode.parts.teamprop.TeamProp;
 import org.firstinspires.ftc.teamcode.parts.teamprop.TeamPropDetectionPipeline;
@@ -43,7 +44,8 @@ public class TestPixel extends LinearOpMode {
     AprilTag aprilTag;
 
     //Vector3 fieldStartPos = new Vector3(11.75,-63,-90);
-    Vector3 fieldStartPos = new Vector3(11.75,-63,90);
+    //Vector3 fieldStartPos = new Vector3(11.75,-63,90);
+    Vector3 fieldStartPos = new Vector3(0,0,0);
     public volatile TeamPropDetectionPipeline.TeamPropPosition teamPropPosition;
 
     @Override
@@ -66,10 +68,12 @@ public class TestPixel extends LinearOpMode {
         //PositionTracker pt = new PositionTracker(robot);
 
         XRelativeSolver solver = new XRelativeSolver(drive);
-//        EncoderTracker et = new EncoderTracker(pt);
-//        pt.positionSourceId = EncoderTracker.class;
-        Odometry odo = new Odometry(pt); // THIS MAY BE FIXED (warning: breaks robot lifter and sweeper cause of something with encoders)
-        pt.positionSourceId = Odometry.class;
+        EncoderTracker et = new EncoderTracker(pt);
+        pt.positionSourceId = EncoderTracker.class;
+//        Odometry24 odo = new Odometry24(pt);
+//        pt.positionSourceId = Odometry24.class;
+//        Odometry odo = new Odometry(pt); // THIS MAY BE FIXED (warning: breaks robot lifter and sweeper cause of something with encoders)
+//        pt.positionSourceId = Odometry.class;
         Intake intake = new Intake(robot);
         new IntakeTeleop(intake);
         TeamProp tp = new TeamProp(robot);

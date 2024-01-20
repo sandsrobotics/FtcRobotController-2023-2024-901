@@ -41,7 +41,6 @@ public class IntakeTeleop extends LoopedPartImpl<Intake, IntakeTeleopSettings, O
                 (int) settings.sweepLiftSupplier.get(),
                 (int) settings.robotLiftSupplier.get(),
                 (int) settings.grabberSupplier.get(),
-                (int) settings.swingSupplier.get(),
                 (int) settings.pixChangeSupplier.get(),
         (int) settings.pixChangeSupplier.get(),
                 (int) settings.launchReleaseSupplier.get(),
@@ -56,10 +55,6 @@ public class IntakeTeleop extends LoopedPartImpl<Intake, IntakeTeleopSettings, O
             parent.setPix(parent.getPix() + pix);
         }
 
-        if(settings.sliderBottomSupplier.get())
-            parent.setLiftToBottom();
-        else if (settings.sliderTopSupplier.get())
-            parent.setLiftToTop();
         else if(settings.autoDropSupplier.get())
             parent.startAutoDrop();
         else if(settings.autoDockSupplier.get())

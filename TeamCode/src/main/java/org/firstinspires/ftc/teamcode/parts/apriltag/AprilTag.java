@@ -33,7 +33,7 @@ public class AprilTag extends LoopedPartImpl<Robot, ObjectUtils.Null, ObjectUtil
     private VisionPortal visionPortal;               // Used to manage the video source.
     private AprilTagProcessor aprilTag;              // Used for managing the AprilTag detection process.
     public AprilTagDetection desiredTag = null;     // Used to hold the data for a detected AprilTag
-    public boolean targetFound = false;
+    public boolean targetFound;
     public List<AprilTagDetection> currentDetections;
 
     /**
