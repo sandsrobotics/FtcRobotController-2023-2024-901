@@ -15,6 +15,7 @@ public class TeamPropDetectionPipeline extends OpenCvPipeline
      */
     public enum TeamPropPosition
     {
+        NONE,
         LEFT,
         CENTER,
         RIGHT
@@ -82,7 +83,7 @@ public class TeamPropDetectionPipeline extends OpenCvPipeline
     int avg1, avg2, avg3;
 
     // Volatile since accessed by OpMode thread w/o synchronization
-    public volatile TeamPropPosition position = TeamPropPosition.LEFT;
+    public volatile TeamPropPosition position = TeamPropPosition.NONE;
 
     //public TeamPropDetectionPipeline(){}
 
@@ -206,50 +207,50 @@ public class TeamPropDetectionPipeline extends OpenCvPipeline
          * Now that we found the max, we actually need to go and
          * figure out which sample region that value was from
          */
-        if(max == avg1) // Was it from region 1?
-        {
-            position = TeamPropPosition.LEFT; // Record our analysis
+        if(max > 0) {
+            if (max == avg1) // Was it from region 1?
+            {
+                position = TeamPropPosition.LEFT; // Record our analysis
 
-            /*
-             * Draw a solid rectangle on top of the chosen region.
-             * Simply a visual aid. Serves no functional purpose.
-             */
-            Imgproc.rectangle(
-                    input, // Buffer to draw on
-                    region1_pointA, // First point which defines the rectangle
-                    region1_pointB, // Second point which defines the rectangle
-                    GREEN, // The color the rectangle is drawn in
-                    5); // Negative thickness means solid fill
-        }
-        else if(max == avg2) // Was it from region 2?
-        {
-            position = TeamPropPosition.CENTER; // Record our analysis
+                /*
+                 * Draw a solid rectangle on top of the chosen region.
+                 * Simply a visual aid. Serves no functional purpose.
+                 */
+                Imgproc.rectangle(
+                        input, // Buffer to draw on
+                        region1_pointA, // First point which defines the rectangle
+                        region1_pointB, // Second point which defines the rectangle
+                        GREEN, // The color the rectangle is drawn in
+                        5); // Negative thickness means solid fill
+            } else if (max == avg2) // Was it from region 2?
+            {
+                position = TeamPropPosition.CENTER; // Record our analysis
 
-            /*
-             * Draw a solid rectangle on top of the chosen region.
-             * Simply a visual aid. Serves no functional purpose.
-             */
-            Imgproc.rectangle(
-                    input, // Buffer to draw on
-                    region2_pointA, // First point which defines the rectangle
-                    region2_pointB, // Second point which defines the rectangle
-                    GREEN, // The color the rectangle is drawn in
-                    5); // Negative thickness means solid fill
-        }
-        else if(max == avg3) // Was it from region 3?
-        {
-            position = TeamPropPosition.RIGHT; // Record our analysis
+                /*
+                 * Draw a solid rectangle on top of the chosen region.
+                 * Simply a visual aid. Serves no functional purpose.
+                 */
+                Imgproc.rectangle(
+                        input, // Buffer to draw on
+                        region2_pointA, // First point which defines the rectangle
+                        region2_pointB, // Second point which defines the rectangle
+                        GREEN, // The color the rectangle is drawn in
+                        5); // Negative thickness means solid fill
+            } else if (max == avg3) // Was it from region 3?
+            {
+                position = TeamPropPosition.RIGHT; // Record our analysis
 
-            /*
-             * Draw a solid rectangle on top of the chosen region.
-             * Simply a visual aid. Serves no functional purpose.
-             */
-            Imgproc.rectangle(
-                    input, // Buffer to draw on
-                    region3_pointA, // First point which defines the rectangle
-                    region3_pointB, // Second point which defines the rectangle
-                    GREEN, // The color the rectangle is drawn in
-                    5); // Negative thickness means solid fill
+                /*
+                 * Draw a solid rectangle on top of the chosen region.
+                 * Simply a visual aid. Serves no functional purpose.
+                 */
+                Imgproc.rectangle(
+                        input, // Buffer to draw on
+                        region3_pointA, // First point which defines the rectangle
+                        region3_pointB, // Second point which defines the rectangle
+                        GREEN, // The color the rectangle is drawn in
+                        5); // Negative thickness means solid fill
+            }
         }
 
         /*
