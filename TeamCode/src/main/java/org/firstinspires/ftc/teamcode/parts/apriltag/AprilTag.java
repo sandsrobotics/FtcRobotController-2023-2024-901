@@ -29,7 +29,7 @@ public class AprilTag extends LoopedPartImpl<Robot, ObjectUtils.Null, ObjectUtil
     Intake intake;
     public AprilTagDetectionPipeline pipeline;
     private static final boolean USE_WEBCAM = true;  // Set true to use a webcam, or false for a phone camera
-    private int DESIRED_TAG_ID = -1;     // Choose the tag you want to approach or set to -1 for ANY tag.
+    public int DESIRED_TAG_ID = -1;     // Choose the tag you want to approach or set to -1 for ANY tag.
     private VisionPortal visionPortal;               // Used to manage the video source.
     private AprilTagProcessor aprilTag;              // Used for managing the AprilTag detection process.
     public AprilTagDetection desiredTag = null;     // Used to hold the data for a detected AprilTag
@@ -62,12 +62,9 @@ public class AprilTag extends LoopedPartImpl<Robot, ObjectUtils.Null, ObjectUtil
                     } else {
                         // This tag is in the library, but we do not want to track it right now.
                         targetFound = false;
-                        desiredTag = null;
                     }
                 } else {
                     // This tag is NOT in the library, so we don't have enough information to track to it.
-                    targetFound = false;
-                    desiredTag = null;
                 }
             }
         }

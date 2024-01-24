@@ -27,7 +27,7 @@ import static java.lang.Boolean.TRUE;
 public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardware, IntakeControl>{
     private int slideTargetPosition;
     private int liftTargetPosition;
-    public boolean doTagRange = true;
+    public boolean doTagRange = false;
     public boolean doTagCenter = false;
     private boolean armed;
     private int swingTargetPosition;
@@ -37,6 +37,7 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
     boolean atTag;
     boolean tooClose;
     boolean inRange;
+    boolean inAutoRange;
     boolean run = false;
     double currentDist;
     boolean inCenter;
@@ -69,7 +70,7 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
 
     //***** Constructors *****
     public Intake(Robot parent) {
-        super(parent, "Slider", () -> new IntakeControl(0, 0, 0,0, 0, 0, 0, 0,1));
+        super(parent, "Slider", () -> new IntakeControl(0, 0, 0,0, 0, 0, 0, 0,0));
         setConfig(
                 IntakeSettings.makeDefault(),
                 IntakeHardware.makeDefault(parent.opMode.hardwareMap)
@@ -77,16 +78,12 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
     }
 
     public Intake(Robot parent, IntakeSettings settings, IntakeHardware hardware){
-        super(parent, "slider", () -> new IntakeControl(0, 0,0, 0,0,  0,0, 0,1));
+        super(parent, "slider", () -> new IntakeControl(0, 0,0, 0,0,  0,0, 0,0));
         setConfig(settings, hardware);
     }
 
-    private void preAutoMove(){
-        triggerEvent(ControllablePart.Events.stopControllers);
-    }
-    private void postAutoMove(){
-        triggerEvent(ControllablePart.Events.startControllers);
-    }
+    private void preAutoMove(){triggerEvent(ControllablePart.Events.stopControllers);}
+    private void postAutoMove(){triggerEvent(ControllablePart.Events.startControllers);}
 
     private void setSlideToHomeConfig(){
         double power = -0.125;
@@ -283,12 +280,12 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
         }
     }
 
-    public int getPix(){return pix;}
+    public int getPix(){return pixLine;}
 
     public void setPix(int pix) {
-        if(pix > getSettings().maxPix) pix = getSettings().maxPix;
+        if(pix > getSettings().maxPixLine) pix = getSettings().maxPixLine;
         else if(pix < 0) pix = 0;
-        this.pix = pix;
+        this.pixLine = pix;
     }
 
     public void robotLiftWithPower(int power) {
@@ -422,10 +419,11 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
         autoDropTask.autoStart = false;
 
         autoDropTask.addStep(this::preAutoMove);
-        autoDropTask.addStep(()->setSlidePosition(pixToPos[pix]));
+        autoDropTask.addStep(()->setGrabPosition(4));
+        autoDropTask.addStep(()->setSlidePosition(pixLineToPos[pixLine]));
         autoDropTask.addDelay(1000);
         autoDropTask.addTimedStep(()->setSwingPosition(1),1000);
-        autoDropTask.addStep(()->setGrabPosition(4));
+        autoDropTask.addStep(()-> setLeds2(hasPixels()));
         autoDropTask.addStep(this::postAutoMove);
         autoDropTask.addStep(() -> triggerEvent(Lifter.Events.dropComplete));
     }
@@ -444,10 +442,10 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
 
         finishDropTask.addStep(this::preAutoMove);
         finishDropTask.addStep(()->setGrabPosition(1));
-        // dont need this in auto
-      //  finishDropTask.addStep((()->
-      //          drive.addController("Move to closer pixel drop position", (control) -> control.power = control.power.addY(-.1))));
-      //  finishDropTask.addStep(()->setGrabPosition(1));
+//        finishDropTask.addStep(()-> run = true);
+//        finishDropTask.addTimedStep(() -> {drive.addController("Move to closer pixel drop position", (control) -> control.power = control.power.addY((getBackDist() - 8.0) * 0.02));}, () -> getBackDist() <= 12, 10000);
+//        finishDropTask.addStep(()-> run = false);
+        //  finishDropTask.addStep(()->setGrabPosition(1));
         finishDropTask.addStep(this::postAutoMove);
         finishDropTask.addStep(()->triggerEvent(Events.finishDropComplete));
     }
@@ -463,6 +461,8 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
 
     public void constructFoundRange(){
         foundRangeTask.autoStart = false;
+
+        foundRangeTask.addStep(()-> run = true);
 
         foundRangeTask.addStep(()->triggerEvent(Events.homeComplete));
     }
@@ -488,17 +488,18 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
     }
 
     public void doTagRanging(DriveControl control) {
-        final double desiredDistance = 7;
+        final double desiredDistance = 8.0;
         final double xPower = 0.01;
-        final double yPower = 0.02;
+        final double yPower = 0.03;
+        final double yAutoPower = 0.03;
+        inRange = getBackDist() <= 30;
+        atTag = getBackDist() <= 8.0;
+        tooClose = getBackDist() <= 6;
+        inAutoRange = getBackDist() <= 25;
 
-        if (tag.desiredTag != null) {
-            inCenter = tag.desiredTag.ftcPose.x > -2 && tag.desiredTag.ftcPose.x < 2;
-            inRange = getBackDist() <= 30;
-            double xDist = tag.desiredTag.ftcPose.x;
-            atTag = getBackDist() <= 7;
-            tooClose = getBackDist() <= 6;
-
+//        if (tag.desiredTag != null) {
+//            inCenter = tag.desiredTag.ftcPose.x > -2 && tag.desiredTag.ftcPose.x < 2;
+//            double xDist = tag.desiredTag.ftcPose.x;
 //           if (inRange) {
 //                    if(doTagCenter && tag.targetFound) { //are we seeing the tag we want?
 //                        if (!inCenter) // tag to the right (x is positive) tag to the left (x is negative)
@@ -507,23 +508,29 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
 //                            doTagCenter = false;
 //                    }
 //            }
-            if (inRange) {
-                if (doTagRange || tag.targetFound || run) {
+            if (doTagRange) {
+                if (!atTag) {
                     run = true;
-                    if (!atTag)
-                        control.power = control.power.addY((getBackDist() - desiredDistance) * -yPower);
-                    else {
-                        doTagRange = false ;
+                    control.power = control.power.addY((getBackDist() - desiredDistance) * -yPower);
+                } else {
+                    run = false;
+                    doTagRange = false;
+                }
+            } else if (tag.DESIRED_TAG_ID != -1) {
+                if (run && inAutoRange) {
+                    if (!atTag) {
+                        control.power = control.power.addY((getBackDist() - desiredDistance) * -yAutoPower);
+                    } else {
                         run = false;
+                        tag.setDesiredTag(-1);
                     }
                 }
-//           }
-//           else if (tooClose){
+            }
+//            else if (tooClose){
 //               drive.stopRobot();
 //               doTagRange = false;
 //               doTagCenter = false;
 //           }
-//        }
 //        else{
 //            inCenter = false;
 //            inRange = false;
@@ -533,9 +540,8 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
 //            doTagRange = false;
 //            doTagCenter = false;
 //        }
-            }
-        }
-        }
+      }
+
     public void setSweepPosition(int position) {
         switch (position) {
             case 1:
@@ -594,7 +600,7 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
         setSweepPosition(control.sweepLiftPosition);
         setRanging(control.ranging);
 
-        if(doTagRange || run)
+//        if(doTagRange || run)
           backDist = getHardware().backSensor.getDistance(DistanceUnit.INCH);
         currentSlidePos = getHardware().sliderMotor.getCurrentPosition();
         currentLiftPos = getHardware().robotLiftMotor.getCurrentPosition();

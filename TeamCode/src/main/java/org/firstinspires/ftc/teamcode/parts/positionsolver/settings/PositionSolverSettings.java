@@ -33,9 +33,9 @@ public class PositionSolverSettings {
 //    );
 
     public static PositionSolverSettings defaultSettings = new PositionSolverSettings(
-            new SolverSettings(1, 10, true, 10000, new PIDCoefficients(0.05, 0, 0), .8),
-            new SolverSettings(1, 10, true, 10000, new PIDCoefficients(0.05, 0, 0), .8),
-            new SolverSettings(2.5, 10, true, 10000, new PIDCoefficients(0.0125, 0, 0), .8)
+            new SolverSettings(1, 10, true, 10000, new PIDCoefficients(0.03, 0, 0), .7),
+            new SolverSettings(1, 10, true, 10000, new PIDCoefficients(0.03, 0, 0), .7),
+            new SolverSettings(2.5, 10, true, 10000, new PIDCoefficients(0.0125, 0, 0), .7)
     );
 
     public static PositionSolverSettings defaultNoAlwaysRunSettings = new PositionSolverSettings(

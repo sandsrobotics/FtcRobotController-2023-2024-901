@@ -93,6 +93,7 @@ public class TestPixel extends LinearOpMode {
         aprilTag = new AprilTag(robot);
         aprilTag.onInit();
         robot.start();
+        aprilTag.setDesiredTag(-1);
 
         // needs aprilTag and drive to initialize
         while (opModeIsActive()) {
