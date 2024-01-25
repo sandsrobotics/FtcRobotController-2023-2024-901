@@ -97,7 +97,10 @@ public class AutoBase extends LinearOpMode{
         leds = new Led(r);
 
         PositionTrackerSettings pts = new PositionTrackerSettings(AxesOrder.XYZ, false, 100, new Vector3(2,2,2), startPosition);
-//        customStartPos = new Vector3(.5 * 23.5,-62,-90);
+//            Vector3 startPosition = new Vector3(-1.5 * 23.5,-62,-90); // red wall
+//        customStartPos = new Vector3(.5 * 23.5,-62,-90); // red board side
+//         customStartPos = new Vector3(-1.5 * 23.5,-62,90); // blue wall side
+
         pts = pts.withPosition(customStartPos != null ? customStartPos : transformFunc.apply(pts.startPosition));
         pt = new PositionTracker(r, pts, PositionTrackerHardware.makeDefault(r));
 
@@ -208,6 +211,8 @@ public class AutoBase extends LinearOpMode{
         Vector3 dropPixCenter = new Vector3(-1.5, -1.5, -90);
         Vector3 dropPixLeft = new Vector3(-1.5, -1.38, 180);
         Vector3 dropPixRight = new Vector3(-1.5, -1.38, 0);
+        Vector3 dPLBlue = new Vector3(-1.5, -1.38, 0);
+        Vector3 dPRBlue = new Vector3(-1.5, -1.38, 180);
         Vector3 tagAngle = new Vector3(-1.5, -1.5, 180);
         Vector3 centerTagAngle = new Vector3(-1.5, .5, 180);
         Vector3 preSetupTagsMid = new Vector3(-1.5, -.5, 180); // tjk not over center
@@ -227,7 +232,10 @@ public class AutoBase extends LinearOpMode{
         }
         else {
             positionSolver.addMoveToTaskEx(tileToInchAuto(pushProp), autoTask);
-            positionSolver.addMoveToTaskEx(tileToInchAuto(left ? dropPixLeft : dropPixRight), autoTask);
+            if(isRed)
+                positionSolver.addMoveToTaskEx(tileToInchAuto(left ? dropPixLeft : dropPixRight), autoTask);
+            else
+                positionSolver.addMoveToTaskEx(tileToInchAuto(left ? dPLBlue : dPRBlue), autoTask);
         }
         intake.addAutoGrabToTask(autoTask, true, 2000); // make work laterr
         autoTask.addDelay(1000);
