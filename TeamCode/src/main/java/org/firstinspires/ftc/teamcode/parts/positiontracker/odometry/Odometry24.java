@@ -100,6 +100,10 @@ public class Odometry24 extends LoopedPartImpl<PositionTracker, OdometrySettings
         getHardware().XWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         getHardware().leftYWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         getHardware().rightYWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        // run without encoder needed so it doesn't break the robot lift/sweep
+        getHardware().XWheel.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        getHardware().leftYWheel.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        getHardware().rightYWheel.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         lastXPos = getHardware().XWheel.getCurrentPosition();
         lastLeftYPos = getHardware().leftYWheel.getCurrentPosition();
         lastRightYPos = getHardware().rightYWheel.getCurrentPosition();
@@ -135,7 +139,7 @@ public class Odometry24 extends LoopedPartImpl<PositionTracker, OdometrySettings
     public double lkYPos, lkXPos;
     public boolean lkUseFusedHeading = false;
 
-    Vector3 lkOdoRobotOffset = new Vector3 (2.25,0,0);          // map odo to robot (so it holds turn position better)
+    Vector3 lkOdoRobotOffset = new Vector3 (1.75,0.25,0);          // map odo to robot (so it holds turn position better)
     //Vector3 lkOdoFieldStart = new Vector3 (-36,63,-90);  // field start position [blue right slot]
     //Vector3 lkOdoFieldStart = parent.lkStartPosition;                   //?? This value probably not ready when constructed; linked?
     Vector3 lkOdoFieldStart = new Vector3 (0,0,0);
@@ -180,12 +184,12 @@ public class Odometry24 extends LoopedPartImpl<PositionTracker, OdometrySettings
         lkSetOdoFinalPose();
 
         /* Write a lot of debugging to telemetry */
-        parent.parent.opMode.telemetry.addData ("_lkOdoRobotOffset", lkOdoRobotOffset.toString());
-        parent.parent.opMode.telemetry.addData ("_lkOdoFieldStart ", lkOdoFieldStart.toString());
-        parent.parent.opMode.telemetry.addData ("_lkOdoFieldOffset", lkOdoFieldOffset.toString());
-        parent.parent.opMode.telemetry.addData ("_lkOdoRawPose    ", lkOdoRawPose.toString());
-        parent.parent.opMode.telemetry.addData ("_lkOdoRobotPose  ", lkOdoRobotPose.toString());
-        parent.parent.opMode.telemetry.addData ("_lkOdoFinalPose  ", lkOdoFinalPose.toString());
+        parent.parent.opMode.telemetry.addData ("_lkOdoRobotOffset", toString(lkOdoRobotOffset,2));
+        parent.parent.opMode.telemetry.addData ("_lkOdoFieldStart ", toString(lkOdoFieldStart,2));
+        parent.parent.opMode.telemetry.addData ("_lkOdoFieldOffset", toString(lkOdoFieldOffset,2));
+        parent.parent.opMode.telemetry.addData ("_lkOdoRawPose    ", toString(lkOdoRawPose,2));
+        parent.parent.opMode.telemetry.addData ("_lkOdoRobotPose  ", toString(lkOdoRobotPose,2));
+        parent.parent.opMode.telemetry.addData ("_lkOdoFinalPose  ", toString(lkOdoFinalPose,2));
         parent.parent.opMode.telemetry.addData ("_lkImuHeading    ", JavaUtil.formatNumber(lkImuHeading,2));
         parent.parent.opMode.telemetry.addData ("_lkOdoHeading    ", JavaUtil.formatNumber(lkOdoHeading,2));
 
@@ -282,6 +286,10 @@ public class Odometry24 extends LoopedPartImpl<PositionTracker, OdometrySettings
                 (pos1.Y + (pos2.X*Math.sin(Math.toRadians(pos1.Z)) + pos2.Y*Math.cos(Math.toRadians(pos1.Z)))),
                 (pos1.Z + pos2.Z)
         );
+    }
+
+    public String toString(Vector3 pos, int decimals){
+        return "{X=" + String.format("%."+ decimals +"f", pos.X) + ", Y=" + String.format("%."+ decimals +"f", pos.Y) + ", Z=" + String.format("%."+ decimals +"f", pos.Z) + "}";
     }
 
 }
