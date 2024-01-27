@@ -44,7 +44,8 @@ public class IntakeTeleop extends LoopedPartImpl<Intake, IntakeTeleopSettings, O
                 (int) settings.pixChangeSupplier.get(),
         (int) settings.pixChangeSupplier.get(),
                 (int) settings.launchReleaseSupplier.get(),
-        (int) settings.startTagRanging.get()
+        (int) settings.startTagRanging.get(),
+                (int) settings.startTagCentering.get()
         ), true);
     }
 

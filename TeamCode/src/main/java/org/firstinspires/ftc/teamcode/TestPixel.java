@@ -119,7 +119,7 @@ public class TestPixel extends LinearOpMode {
 
 //            telemetry.addData("Team Prop Position", teamPropPosition);
 
-            if (aprilTag != null && aprilTag.targetFound) {
+            if (aprilTag.currentDetections != null && aprilTag.targetFound) {
                 telemetry.addData("Found", "ID %d (%s)", aprilTag.desiredTag.id, aprilTag.desiredTag.metadata.name);
                 telemetry.addData("Range",  "%5.1f inches", aprilTag.desiredTag.ftcPose.range);
                 telemetry.addData("X", "%5.1f inches", aprilTag.desiredTag.ftcPose.x);

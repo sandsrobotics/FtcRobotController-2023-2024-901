@@ -72,6 +72,7 @@ public class AprilTag extends LoopedPartImpl<Robot, ObjectUtils.Null, ObjectUtil
             targetFound = false;
             desiredTag = null;
         }
+
     }
 
     @Override

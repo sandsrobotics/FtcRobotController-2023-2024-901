@@ -23,6 +23,8 @@ public class IntakeTeleopSettings {
     public final Supplier<Boolean> autoArmSupplier;
     public final Supplier<Boolean> autoStoreSupplier;
     public final Supplier<Integer> startTagRanging;
+    public final Supplier<Integer> startTagCentering;
+
 
 
 
@@ -32,7 +34,7 @@ public class IntakeTeleopSettings {
                                 Supplier<Integer> pixChangeSupplier, Supplier<Boolean> autoDropSupplier,
                                 Supplier<Boolean> autoDockSupplier, Supplier<Integer> launchReleaseSupplier,
                                 Supplier<Boolean> autoHomeSupplier, Supplier<Boolean> autoArmSupplier, Supplier<Boolean> autoStoreSupplier,
-                                Supplier<Integer> startTagRanging){
+                                Supplier<Integer> startTagRanging, Supplier<Integer> startTagCentering){
         this.heightSpeedSupplier = heightSpeedSupplier;
         this.sweepSpeedSupplier = sweepSpeedSupplier;
         this.sweepLiftSupplier = sweepLiftSupplier;
@@ -46,6 +48,7 @@ public class IntakeTeleopSettings {
         this.autoArmSupplier = autoArmSupplier;
         this.autoStoreSupplier = autoStoreSupplier;
         this.startTagRanging = startTagRanging;
+        this.startTagCentering = startTagCentering;
     }
 
     public static IntakeTeleopSettings makeDefault(Robot robot){
@@ -82,7 +85,8 @@ public class IntakeTeleopSettings {
                 new EdgeSupplier(()-> robot.opMode.gamepad1.dpad_down).getRisingEdgeSupplier(),
                 autoArm::isRisingEdge,
                 autoStore::isRisingEdge,
-        ()-> gamepad.b ? 1 : 0
+        ()-> gamepad.b ? 1 : 0,
+        ()-> gamepad.a ? 1 : 0
         );
     }
 }
