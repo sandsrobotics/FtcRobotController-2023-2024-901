@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.parts.positiontracker.odometry;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.teamcode.parts.positiontracker.PositionTicket;
 import org.firstinspires.ftc.teamcode.parts.positiontracker.PositionTracker;
@@ -101,13 +102,13 @@ public class Odometry extends LoopedPartImpl<PositionTracker, OdometrySettings, 
 
     @Override
     public void onStart() {
-        getHardware().XWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        getHardware().leftYWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        getHardware().rightYWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        getHardware().XWheel.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        getHardware().leftYWheel.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        getHardware().rightYWheel.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         // run without encoder needed so it doesn't break the robot lift/sweep
-        getHardware().XWheel.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        getHardware().leftYWheel.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        getHardware().rightYWheel.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        getHardware().XWheel.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        getHardware().leftYWheel.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        getHardware().rightYWheel.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 
         lastXPos = getHardware().XWheel.getCurrentPosition();
         lastLeftYPos = getHardware().leftYWheel.getCurrentPosition();

@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.teamcode.parts.apriltag.AprilTag;
+import org.firstinspires.ftc.teamcode.parts.bulkread.BulkRead;
 import org.firstinspires.ftc.teamcode.parts.drive.Drive;
 import org.firstinspires.ftc.teamcode.parts.drive.DriveControl;
 import org.firstinspires.ftc.teamcode.parts.intake.Intake;
@@ -92,6 +93,7 @@ public class AutoBase extends LinearOpMode{
         Telemetry dashboardTelemetry = dashboard.getTelemetry();
         Robot r = new Robot(this);
         Drive d = new Drive(r);
+        new BulkRead(r);
         tp = new TeamProp(r);
         intake = new Intake(r);
         leds = new Led(r);
