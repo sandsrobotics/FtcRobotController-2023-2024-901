@@ -4,7 +4,6 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.teamcode.parts.apriltag.AprilTag;
 import org.firstinspires.ftc.teamcode.parts.bulkread.BulkRead;
@@ -17,22 +16,18 @@ import org.firstinspires.ftc.teamcode.parts.positiontracker.encodertracking.Enco
 import org.firstinspires.ftc.teamcode.parts.intake.Intake;
 import org.firstinspires.ftc.teamcode.parts.intake.IntakeTeleop;
 import org.firstinspires.ftc.teamcode.parts.positiontracker.hardware.PositionTrackerHardware;
-import org.firstinspires.ftc.teamcode.parts.positiontracker.odometry.Odometry;
-import org.firstinspires.ftc.teamcode.parts.positiontracker.odometry.Odometry24;
 import org.firstinspires.ftc.teamcode.parts.positiontracker.settings.PositionTrackerSettings;
 import org.firstinspires.ftc.teamcode.parts.teamprop.TeamProp;
 import org.firstinspires.ftc.teamcode.parts.teamprop.TeamPropDetectionPipeline;
-
 import java.text.DecimalFormat;
-
 import om.self.ezftc.core.Robot;
-import om.self.ezftc.utils.Constants;
 import om.self.ezftc.utils.Vector3;
-
-@TeleOp(name="Test Pixel", group="Linear Opmode")
+@TeleOp(name="1 Teleop", group="Linear Opmode")
 public class TestPixel extends LinearOpMode {
     double tileSide = 23.5;
     boolean slideDone = false;
+    Drive drive;
+    Robot robot;
 
     public Vector3 tiletoField(Vector3 p){
         return new Vector3(p.X * tileSide, p.Y * tileSide, p.Z);
@@ -48,16 +43,20 @@ public class TestPixel extends LinearOpMode {
     Vector3 fieldStartPos = new Vector3(0,0,0);
     public volatile TeamPropDetectionPipeline.TeamPropPosition teamPropPosition;
 
+    public void initTeleop(){
+        new DriveTeleop(this.drive);
+    }
+
     @Override
     public void runOpMode() {
         DecimalFormat df = new DecimalFormat("#0.0");
         long start;
         FtcDashboard dashboard = FtcDashboard.getInstance();
         TelemetryPacket packet = new TelemetryPacket();
-        Robot robot = new Robot(this);
+        robot = new Robot(this);
         new BulkRead(robot);
-        Drive drive = new Drive(robot);
-        new DriveTeleop(drive);
+        drive = new Drive(robot);
+        initTeleop();
         Led ledStick = new Led(robot);
 
         PositionTrackerSettings pts = new PositionTrackerSettings(AxesOrder.XYZ, false, 100, new Vector3(2,2,2), fieldStartPos);
