@@ -6,6 +6,7 @@ import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 
+import org.apache.commons.math3.geometry.spherical.twod.Edge;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.depricated.lifter.Lifter;
@@ -21,6 +22,7 @@ import java.util.List;
 
 import om.self.ezftc.core.Robot;
 import om.self.ezftc.core.part.ControllablePart;
+import om.self.supplier.suppliers.EdgeSupplier;
 import om.self.task.core.Group;
 import om.self.task.other.TimedTask;
 
@@ -43,6 +45,7 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
     boolean inAngle;
     boolean inAutoRange;
     boolean run = false;
+    boolean runCenter = false;
     double currentDist;
     boolean inCenter;
     private boolean reverse;
@@ -59,7 +62,7 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
     private int pixLine = 0;
     private double backDist;
     private final int[] pixToPos = {1000,1100,1360,1620,1880, 2140, 2400, 2660, 2920, 3180, 3440, 3700, 3960}; //TODO move to settings, need 12 of these
-    private final int[] pixLineToPos = {1000, 2000, 3000};
+    private final int[] pixLineToPos = {1400, 2000, 3000};
     private final Group movementTask = new Group("auto movement",getTaskManager());
     private final TimedTask autoDropTask = new TimedTask(TaskNames.autoDrop, movementTask);
     private final TimedTask autoGrabTask = new TimedTask(TaskNames.autoGrab, getTaskManager());
@@ -74,7 +77,7 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
 
     //***** Constructors *****
     public Intake(Robot parent) {
-        super(parent, "Slider", () -> new IntakeControl(0, 0, 0,0, 0, 0, 0, 0,0, 0));
+        super(parent, "Slider", () -> new IntakeControl(0, 0,0, 0, 0, 0, 0,0, 0));
         setConfig(
                 IntakeSettings.makeDefault(),
                 IntakeHardware.makeDefault(parent.opMode.hardwareMap)
@@ -82,7 +85,7 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
     }
 
     public Intake(Robot parent, IntakeSettings settings, IntakeHardware hardware){
-        super(parent, "slider", () -> new IntakeControl(0, 0,0, 0,0,  0,0, 0,0, 0));
+        super(parent, "slider", () -> new IntakeControl(0,0, 0,0,  0,0, 0,0, 0));
         setConfig(settings, hardware);
     }
 
@@ -422,13 +425,13 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
     public void constructAutoDrop(){
         autoDropTask.autoStart = false;
 
-        autoDropTask.addStep(this::preAutoMove);
+//        autoDropTask.addStep(this::preAutoMove);
         autoDropTask.addStep(()->setGrabPosition(4));
         autoDropTask.addStep(()->setSlidePosition(pixLineToPos[pixLine]));
         autoDropTask.addDelay(1000);
         autoDropTask.addTimedStep(()->setSwingPosition(1),1000);
         autoDropTask.addStep(()-> setLeds2(hasPixels()));
-        autoDropTask.addStep(this::postAutoMove);
+//        autoDropTask.addStep(this::postAutoMove);
         autoDropTask.addStep(() -> triggerEvent(Lifter.Events.dropComplete));
     }
 
@@ -504,9 +507,9 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
 
 
     public void doTagRanging(DriveControl control) {
-        final double desiredDistance = 8.2;
+        final double desiredDistance = 8.15;
         final double xPower = 0.03;
-        final double yPower = 0.03;
+        final double yPower = 0.05;
         final double zPower = 0.01;
         final double yAutoPower = 0.03;
         inRange = getBackDist() <= 30;
@@ -516,10 +519,6 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
 
         if(doTagCenter) {
             if (tag.desiredTag != null) {
-                inCenter = tag.desiredTag.ftcPose.x > -1 && tag.desiredTag.ftcPose.x < 1;
-                inAngle = tag.desiredTag.ftcPose.bearing > -1 && tag.desiredTag.ftcPose.bearing < 1;
-                double xDist = tag.desiredTag.ftcPose.x;
-                double bearing = tag.desiredTag.ftcPose.bearing;
                 id = tag.desiredTag.id;
                 switch(id){
                     case 2:
@@ -530,13 +529,20 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
                         tag.setDesiredTag(5);
                     case 9:
                         tag.setDesiredTag(9);
-                        if(!inAngle)
-                            control.power = control.power.addZ(bearing * -zPower);
-                        else if (!inCenter) // tag to the right (x is positive) tag to the left (x is negative)
-                            control.power = control.power.addX(xDist * -xPower);
-                        else {
-                            doTagCenter = false;
-                            tag.setDesiredTag(-1);
+
+                        inCenter = tag.desiredTag.ftcPose.x > -1 && tag.desiredTag.ftcPose.x < 1;
+                        inAngle = tag.desiredTag.ftcPose.bearing > -1 && tag.desiredTag.ftcPose.bearing < 1;
+                        double xDist = tag.desiredTag.ftcPose.x;
+                        double bearing = tag.desiredTag.ftcPose.bearing;
+
+                        if(tag.targetFound) {
+                            if (!inAngle)
+                                control.power = control.power.addZ(bearing * zPower);
+                            if (!inCenter && inAngle) // tag to the right (x is positive) tag to the left (x is negative)
+                                control.power = control.power.addX(xDist * -xPower);
+                            else {
+                                doTagCenter = false;
+                            }
                         }
                         break;
                 }

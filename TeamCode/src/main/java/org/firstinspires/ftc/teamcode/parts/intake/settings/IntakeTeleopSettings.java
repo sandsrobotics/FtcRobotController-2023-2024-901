@@ -10,8 +10,7 @@ import om.self.ezftc.core.Robot;
 import om.self.supplier.suppliers.EdgeSupplier;
 
 public class IntakeTeleopSettings {
-    public final Supplier<Integer> heightSpeedSupplier;
-    public final Supplier<Float> sweepSpeedSupplier;
+    public final Supplier<Integer> sweepSpeedSupplier;
     public final Supplier<Integer> sweepLiftSupplier;
     public final Supplier<Integer> robotLiftSupplier;
     public final Supplier<Integer> grabberSupplier;
@@ -24,18 +23,19 @@ public class IntakeTeleopSettings {
     public final Supplier<Boolean> autoStoreSupplier;
     public final Supplier<Integer> startTagRanging;
     public final Supplier<Integer> startTagCentering;
+    public final Supplier<Boolean> releaseCenter;
 
 
 
 
-    public IntakeTeleopSettings(Supplier<Integer> heightSpeedSupplier, Supplier<Float> sweepSpeedSupplier,
+
+    public IntakeTeleopSettings(Supplier<Integer> sweepSpeedSupplier,
                                 Supplier<Integer> sweepLiftSupplier, Supplier<Integer> robotLiftSupplier,
                                 Supplier<Integer> grabberSupplier,
                                 Supplier<Integer> pixChangeSupplier, Supplier<Boolean> autoDropSupplier,
                                 Supplier<Boolean> autoDockSupplier, Supplier<Integer> launchReleaseSupplier,
                                 Supplier<Boolean> autoHomeSupplier, Supplier<Boolean> autoArmSupplier, Supplier<Boolean> autoStoreSupplier,
-                                Supplier<Integer> startTagRanging, Supplier<Integer> startTagCentering){
-        this.heightSpeedSupplier = heightSpeedSupplier;
+                                Supplier<Integer> startTagRanging, Supplier<Integer> startTagCentering, Supplier<Boolean> releaseCenter){
         this.sweepSpeedSupplier = sweepSpeedSupplier;
         this.sweepLiftSupplier = sweepLiftSupplier;
         this.robotLiftSupplier = robotLiftSupplier;
@@ -49,6 +49,7 @@ public class IntakeTeleopSettings {
         this.autoStoreSupplier = autoStoreSupplier;
         this.startTagRanging = startTagRanging;
         this.startTagCentering = startTagCentering;
+        this.releaseCenter = releaseCenter;
     }
 
     public static IntakeTeleopSettings makeDefault(Robot robot){
@@ -69,24 +70,28 @@ public class IntakeTeleopSettings {
 
         EdgeSupplier autoArm = new EdgeSupplier();
         autoArm.setBase(()->gamepad2.dpad_right);
+
         EdgeSupplier autoStore = new EdgeSupplier();
         autoStore.setBase(()->gamepad2.dpad_left);
 
+        EdgeSupplier releaseCenter = new EdgeSupplier();
+        releaseCenter.setBase(()->gamepad.a);
+
         return new IntakeTeleopSettings(
-            () -> gamepad.dpad_down ? -1 : gamepad.dpad_up ? 1 : 0,
-            ()-> gamepad.left_trigger - gamepad.right_trigger,
+            ()-> gamepad.right_bumper ? -1 : gamepad.left_bumper ? 1 : 0,
             () -> gamepad2.right_stick_button ? 1 : gamepad2.left_stick_button ? 2 : 0, //sweep lift supplier
-            () -> gamepad.left_bumper ? -1 : gamepad.right_bumper ? 1 : 0,
+            () -> gamepad.dpad_down ? -1 : gamepad.dpad_up ? 1 : 0,
             () -> gamepad2.y ? 1 : gamepad2.b ? 2 : gamepad2.a ? 3 : 0,
                 () -> downSupplier.isRisingEdge() ? -1 : upSupplier.isRisingEdge() ? 1 : 0,
             autoDrop::isRisingEdge,
             autoDock::isRisingEdge,
             () -> gamepad2.x ? 1 : 0,
-                new EdgeSupplier(()-> robot.opMode.gamepad1.dpad_down).getRisingEdgeSupplier(),
+                new EdgeSupplier(()-> robot.opMode.gamepad1.back).getRisingEdgeSupplier(),
                 autoArm::isRisingEdge,
                 autoStore::isRisingEdge,
         ()-> gamepad.b ? 1 : 0,
-        ()-> gamepad.a ? 1 : 0
+        ()-> gamepad.a ? 1 : 0,
+                releaseCenter::isFallingEdge
         );
     }
 }

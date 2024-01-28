@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.parts.intake;
 public class IntakeControl {
-    public double sliderPower;
-    public double sweeperPower;
+    public int sweeperPower;
     public int sweepLiftPosition;
     public int robotLiftPosition;
     public int grabberPosition;
@@ -11,10 +10,9 @@ public class IntakeControl {
     public int ranging;
     public int centering;
 
-    public IntakeControl(double sliderPower, double sweeperPower, int sweeperLiftPosition,
+    public IntakeControl(int sweeperPower, int sweeperLiftPosition,
                          int robotLiftPosition, int grabberPosition, int pix, int pixLIne,
                          int launchState, int ranging, int centering) {
-        this.sliderPower = sliderPower;
         this.sweeperPower = sweeperPower;
         this.sweepLiftPosition = sweeperLiftPosition;
         this.robotLiftPosition = robotLiftPosition;

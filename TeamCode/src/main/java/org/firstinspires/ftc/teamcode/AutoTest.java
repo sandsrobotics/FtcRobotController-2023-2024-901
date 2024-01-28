@@ -10,6 +10,6 @@ public class AutoTest extends AutoBase{
         midPark = false;
         isRed = true;
         parkOnly = false;
-        isBoard = true;
+        isBoard = false;
     }
 }

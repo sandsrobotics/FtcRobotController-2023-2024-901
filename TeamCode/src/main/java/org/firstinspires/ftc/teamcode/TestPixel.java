@@ -16,6 +16,7 @@ import org.firstinspires.ftc.teamcode.parts.positiontracker.encodertracking.Enco
 import org.firstinspires.ftc.teamcode.parts.intake.Intake;
 import org.firstinspires.ftc.teamcode.parts.intake.IntakeTeleop;
 import org.firstinspires.ftc.teamcode.parts.positiontracker.hardware.PositionTrackerHardware;
+import org.firstinspires.ftc.teamcode.parts.positiontracker.odometry.Odometry;
 import org.firstinspires.ftc.teamcode.parts.positiontracker.settings.PositionTrackerSettings;
 import org.firstinspires.ftc.teamcode.parts.teamprop.TeamProp;
 import org.firstinspires.ftc.teamcode.parts.teamprop.TeamPropDetectionPipeline;
@@ -40,7 +41,7 @@ public class TestPixel extends LinearOpMode {
 
     //Vector3 fieldStartPos = new Vector3(11.75,-63,-90);
     //Vector3 fieldStartPos = new Vector3(11.75,-63,90);
-    Vector3 fieldStartPos = new Vector3(0,0,0);
+    Vector3 fieldStartPos = new Vector3(0,0,-90);
     public volatile TeamPropDetectionPipeline.TeamPropPosition teamPropPosition;
 
     public void initTeleop(){
@@ -67,12 +68,12 @@ public class TestPixel extends LinearOpMode {
         //PositionTracker pt = new PositionTracker(robot);
 
         XRelativeSolver solver = new XRelativeSolver(drive);
-        EncoderTracker et = new EncoderTracker(pt);
-        pt.positionSourceId = EncoderTracker.class;
+//        EncoderTracker et = new EncoderTracker(pt);
+//        pt.positionSourceId = EncoderTracker.class;
 //        Odometry24 odo = new Odometry24(pt);
 //        pt.positionSourceId = Odometry24.class;
-//        Odometry odo = new Odometry(pt); // THIS MAY BE FIXED (warning: breaks robot lifter and sweeper cause of something with encoders)
-//        pt.positionSourceId = Odometry.class;
+        Odometry odo = new Odometry(pt);
+        pt.positionSourceId = Odometry.class;
         Intake intake = new Intake(robot);
         new IntakeTeleop(intake);
         TeamProp tp = new TeamProp(robot);
@@ -118,7 +119,7 @@ public class TestPixel extends LinearOpMode {
 
 //            telemetry.addData("Team Prop Position", teamPropPosition);
 
-            if (aprilTag.currentDetections != null && aprilTag.targetFound) {
+            if (aprilTag.targetFound) {
                 telemetry.addData("Found", "ID %d (%s)", aprilTag.desiredTag.id, aprilTag.desiredTag.metadata.name);
                 telemetry.addData("Range",  "%5.1f inches", aprilTag.desiredTag.ftcPose.range);
                 telemetry.addData("X", "%5.1f inches", aprilTag.desiredTag.ftcPose.x);

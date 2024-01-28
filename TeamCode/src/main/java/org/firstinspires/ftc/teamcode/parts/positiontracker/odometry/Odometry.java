@@ -32,7 +32,7 @@ public class Odometry extends LoopedPartImpl<PositionTracker, OdometrySettings, 
     }
 
     private double getAngleFromDiff(int leftYDiff, int rightYDiff){
-        return (leftYDiff - rightYDiff) * 360 / getSettings().ticksPerRotation;
+        return (leftYDiff - rightYDiff) * -360 / getSettings().ticksPerRotation;
     }
 
     @Override
@@ -84,7 +84,18 @@ public class Odometry extends LoopedPartImpl<PositionTracker, OdometrySettings, 
 
         cumulativeDistance += YMove;
 
-        parent.addPositionTicket(Odometry.class, new PositionTicket(VectorMath.translateAsVector2(pos.withZ(angle), XMove, YMove), new Vector2(XMove, YMove)));
+        // transpose opposite of robot offset to field position
+        Vector3 detransposeField = VectorMath.translateAsVector2(pos, -getSettings().robotOffset.X, -getSettings().robotOffset.Y);
+        // add robot change in pos to ^
+        Vector3 addedRobotPos = VectorMath.translateAsVector2(detransposeField.withZ(imuAng), XMove, YMove);
+        //transform back to field position
+        Vector3 finalPos = VectorMath.translateAsVector2(addedRobotPos, getSettings().robotOffset.X, getSettings().robotOffset.Y);
+
+        parent.parent.opMode.telemetry.addData("detransposed field pos", detransposeField);
+        parent.parent.opMode.telemetry.addData("added robot pos", addedRobotPos);
+        parent.parent.opMode.telemetry.addData("final pos", finalPos);
+
+        parent.addPositionTicket(Odometry.class, new PositionTicket(finalPos));
 
         lastLeftYPos = currLeftY;
         lastRightYPos = currRightY;

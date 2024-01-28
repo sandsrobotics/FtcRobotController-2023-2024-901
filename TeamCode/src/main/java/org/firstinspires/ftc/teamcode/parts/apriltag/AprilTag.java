@@ -48,8 +48,8 @@ public class AprilTag extends LoopedPartImpl<Robot, ObjectUtils.Null, ObjectUtil
 
     @Override
     public void onRun() {
-        if(aprilTag.getDetections() != null){
-            currentDetections = aprilTag.getDetections();
+        currentDetections = aprilTag.getDetections();
+        if(currentDetections != null && currentDetections.size() > 0){
             for (AprilTagDetection detection : currentDetections) {
                 // Look to see if we have size info on this tag.
                 if (detection.metadata != null) {

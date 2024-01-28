@@ -36,8 +36,7 @@ public class IntakeTeleop extends LoopedPartImpl<Intake, IntakeTeleopSettings, O
     @Override
     public void onStart() {
         parent.setBaseController(() -> new IntakeControl(
-                (double) settings.heightSpeedSupplier.get(),
-                (double) settings.sweepSpeedSupplier.get(),
+                (int) settings.sweepSpeedSupplier.get(),
                 (int) settings.sweepLiftSupplier.get(),
                 (int) settings.robotLiftSupplier.get(),
                 (int) settings.grabberSupplier.get(),
@@ -66,6 +65,8 @@ public class IntakeTeleop extends LoopedPartImpl<Intake, IntakeTeleopSettings, O
             parent.startAutoArm();
         else if(settings.autoStoreSupplier.get())
             parent.startAutoStore();
+        else if(settings.releaseCenter.get())
+            parent.tag.setDesiredTag(-1);
 
         parent.parent.opMode.telemetry.addData("pix", parent.getPix() + 1);
     }
