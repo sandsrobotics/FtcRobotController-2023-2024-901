@@ -216,8 +216,8 @@ public class AutoBase extends LinearOpMode{
         Vector3 dropPixRight = new Vector3(-1.5, -1.38, 0);
         Vector3 dPLBlue = new Vector3(-1.5, -1.38, 0);
         Vector3 dPRBlue = new Vector3(-1.5, -1.38, 180);
-        Vector3 preSetupTagsMid = new Vector3(-1.5, -.5, 180); // tjk not over center
-        Vector3 setupTagsMid = new Vector3(1.5, -.5, 180); // tjk not over center
+        Vector3 preSetupTagsMid = new Vector3(-1.5, -.5, 180);
+        Vector3 setupTagsMid = new Vector3(1.5, -.5, 180);
         Vector3 prePark = new Vector3(1.5, -1.5, 180);
         Vector3 centerAT = new Vector3(1.5,-1.5,180);
         Vector3 leftAT = new Vector3(1.5, -1.3, 180);
@@ -237,8 +237,10 @@ public class AutoBase extends LinearOpMode{
         }
         intake.addAutoGrabToTask(autoTask, true, 2000); // make work laterr
         autoTask.addDelay(1000);
+//        autoTask.addStep(()->positionSolver.setSettings(PositionSolverSettings.loseSettings)); // tjk
         positionSolver.addMoveToTaskEx(tileToInchAuto(preSetupTagsMid), autoTask);
         positionSolver.addMoveToTaskEx(tileToInchAuto(setupTagsMid), autoTask);
+//        autoTask.addStep(()->positionSolver.setSettings(PositionSolverSettings.defaultSettings)); // tjk
         if(center)
             positionSolver.addMoveToTaskExNoWait(tileToInchAuto(centerAT), autoTask);
         else if(left)
