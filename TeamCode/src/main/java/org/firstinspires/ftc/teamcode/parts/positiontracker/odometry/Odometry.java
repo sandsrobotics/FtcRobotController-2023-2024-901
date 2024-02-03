@@ -14,6 +14,7 @@ import om.self.ezftc.utils.VectorMath;
 
 public class Odometry extends LoopedPartImpl<PositionTracker, OdometrySettings, OdometryHardware> {
     int lastLeftYPos, lastRightYPos, lastXPos;
+    double lastAngle;
     double cumulativeDistance = 0;
 
     double odoAngle = 0;
@@ -85,9 +86,9 @@ public class Odometry extends LoopedPartImpl<PositionTracker, OdometrySettings, 
         cumulativeDistance += YMove;
 
         // transpose opposite of robot offset to field position
-        Vector3 detransposeField = VectorMath.translateAsVector2(pos, -getSettings().robotOffset.X, -getSettings().robotOffset.Y);
+        Vector3 detransposeField = VectorMath.translateAsVector2(pos.withZ(lastAngle), -getSettings().robotOffset.X, -getSettings().robotOffset.Y);
         // add robot change in pos to ^
-        Vector3 addedRobotPos = VectorMath.translateAsVector2(detransposeField.withZ(imuAng), XMove, YMove);
+        Vector3 addedRobotPos = VectorMath.translateAsVector2(detransposeField.withZ(angle), XMove, YMove);
         //transform back to field position
         Vector3 finalPos = VectorMath.translateAsVector2(addedRobotPos, getSettings().robotOffset.X, getSettings().robotOffset.Y);
 
@@ -100,6 +101,7 @@ public class Odometry extends LoopedPartImpl<PositionTracker, OdometrySettings, 
         lastLeftYPos = currLeftY;
         lastRightYPos = currRightY;
         lastXPos = currX;
+        lastAngle = finalPos.Z;
     }
 
     @Override
@@ -127,6 +129,7 @@ public class Odometry extends LoopedPartImpl<PositionTracker, OdometrySettings, 
 
         odoAngle = parent.getCurrentPosition().Z;
         lastImuAngle = parent.getImuAngle();
+        lastAngle = odoAngle;
     }
 
     @Override

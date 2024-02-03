@@ -3,7 +3,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 
 @Autonomous(name="Auto-BLUE-WALL", group="Test")
-public class AutoBlueWall extends AutoBase{
+public class AutoBlueWall extends AutoRedWallAndAll {
     @Override
 
     public void initAuto(){

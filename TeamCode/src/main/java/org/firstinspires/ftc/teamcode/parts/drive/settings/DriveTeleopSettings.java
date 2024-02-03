@@ -59,8 +59,8 @@ public class DriveTeleopSettings {
                         gamepad.right_stick_x
                 ),
                 () -> gamepad.x,
-                new LatchedModifier().toSupplier(() -> gamepad.right_bumper),
-                0.7,
+                new LatchedModifier().toSupplier(() -> gamepad.x),
+                1.0,
                 //new LatchedModifier().toSupplier(() -> gamepad.b),
                 () -> false,
                 0.5

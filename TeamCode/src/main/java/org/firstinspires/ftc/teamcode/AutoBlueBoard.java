@@ -1,15 +1,11 @@
 package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import org.firstinspires.ftc.teamcode.parts.positiontracker.odometry.Odometry;
-import org.firstinspires.ftc.teamcode.parts.positiontracker.odometry.OdometrySettings;
-
-import om.self.ezftc.utils.AngleMath;
 import om.self.ezftc.utils.Vector3;
 
 
 @Autonomous(name="Auto-BLUE-BOARD", group="Test")
-public class AutoBlueBoard extends AutoBase{
+public class AutoBlueBoard extends AutoRedWallAndAll {
     @Override
 
     public void initAuto(){

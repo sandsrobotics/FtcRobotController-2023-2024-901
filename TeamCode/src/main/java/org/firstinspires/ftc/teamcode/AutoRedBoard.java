@@ -5,7 +5,7 @@ import om.self.ezftc.utils.Vector3;
 
 
 @Autonomous(name="Auto-RED-BOARD", group="Test")
-public class AutoRedBoard extends AutoBase{
+public class AutoRedBoard extends AutoRedWallAndAll {
     @Override
     public void initAuto(){
         transformFunc = (v) -> v;

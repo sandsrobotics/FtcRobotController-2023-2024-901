@@ -82,16 +82,17 @@ public class IntakeTeleopSettings {
             () -> gamepad2.right_stick_button ? 1 : gamepad2.left_stick_button ? 2 : 0, //sweep lift supplier
             () -> gamepad.dpad_down ? -1 : gamepad.dpad_up ? 1 : 0,
             () -> gamepad2.y ? 1 : gamepad2.b ? 2 : gamepad2.a ? 3 : 0,
-                () -> downSupplier.isRisingEdge() ? -1 : upSupplier.isRisingEdge() ? 1 : 0,
+            () -> downSupplier.isRisingEdge() ? -1 : upSupplier.isRisingEdge() ? 1 : 0,
+//                upSupplier::isRisingEdge,
             autoDrop::isRisingEdge,
             autoDock::isRisingEdge,
             () -> gamepad2.x ? 1 : 0,
-                new EdgeSupplier(()-> robot.opMode.gamepad1.back).getRisingEdgeSupplier(),
+            new EdgeSupplier(()-> robot.opMode.gamepad1.back).getRisingEdgeSupplier(),
                 autoArm::isRisingEdge,
                 autoStore::isRisingEdge,
-        ()-> gamepad.b ? 1 : 0,
-        ()-> gamepad.a ? 1 : 0,
-                releaseCenter::isFallingEdge
+            ()-> gamepad.b ? 1 : 0,
+            ()-> gamepad.a ? 1 : 0,
+            releaseCenter::isFallingEdge
         );
     }
 }
