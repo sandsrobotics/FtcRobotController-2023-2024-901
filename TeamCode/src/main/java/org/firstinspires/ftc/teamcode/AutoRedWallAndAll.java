@@ -35,7 +35,7 @@ import om.self.task.other.TimedTask;
 import static om.self.ezftc.utils.Constants.tileSide;
 
 @Config
-@Autonomous(name="Auto-Red-wall-and-ALL", group="Test")
+@Autonomous(name="1 RED-WALL-park-MIDDLE", group="Test")
 public class AutoRedWallAndAll extends LinearOpMode{
     public Function<Vector3, Vector3> transformFunc;
     public Vector3 customStartPos;
@@ -241,15 +241,27 @@ public class AutoRedWallAndAll extends LinearOpMode{
         Vector3 preParkMid = new Vector3(1.5, -.5, 180);
         Vector3 preParkSide = new Vector3(1.5, -2.5, 180);
         Vector3 centerAT = new Vector3(1.5,-1.5,180);
-        Vector3 leftAT = new Vector3(1.5, -1.22, 180);
-        Vector3 rightAT = new Vector3(1.5, -1.78, 180);
+        Vector3 leftAT = new Vector3(1.5, -1.2, 180);
+        Vector3 rightAT = new Vector3(1.5, -1.8, 180);
+        Vector3 leftBoardAT = new Vector3(1.5, -1.25, 180);
+        Vector3 rightBoardAT = new Vector3(1.5, -1.75, 180);
+
         intake.addAutoDropToTask(autoTask);
-        if(center)
-            positionSolver.addMoveToTaskExNoWait(tileToInchAuto(centerAT), autoTask);
-        else if(left)
-            positionSolver.addMoveToTaskExNoWait(tileToInchAuto(leftAT), autoTask);
-        else
-            positionSolver.addMoveToTaskExNoWait(tileToInchAuto(rightAT), autoTask);
+        if(!isBoard) {
+            if (center)
+                positionSolver.addMoveToTaskExNoWait(tileToInchAuto(centerAT), autoTask);
+            else if (left)
+                positionSolver.addMoveToTaskExNoWait(tileToInchAuto(leftAT), autoTask);
+            else
+                positionSolver.addMoveToTaskExNoWait(tileToInchAuto(rightAT), autoTask);
+        } else{
+            if (center)
+                positionSolver.addMoveToTaskExNoWait(tileToInchAuto(centerAT), autoTask);
+            else if (left)
+                positionSolver.addMoveToTaskExNoWait(tileToInchAuto(leftBoardAT), autoTask);
+            else
+                positionSolver.addMoveToTaskExNoWait(tileToInchAuto(rightBoardAT), autoTask);
+        }
         autoTask.addStep(()->positionSolver.setSettings(PositionSolverSettings.defaultNoAlwaysRunSettings));
         autoTask.addDelay(shortDelay);
         intake.addFoundRangeToTask(autoTask);
@@ -268,7 +280,7 @@ public class AutoRedWallAndAll extends LinearOpMode{
         Vector3 centerRight = new Vector3(-1.7, -1.38, 0);
         Vector3 moveRight = new Vector3(-1.7, -.5, 0);
         Vector3 dropCenter = new Vector3(-1.5, -.6, -90);
-        Vector3 dropPixLeft = new Vector3(-1.5, -1.38, 180);
+        Vector3 dropPixLeft = new Vector3(-1.47, -1.38, 180);
         Vector3 postDropPixLeft = new Vector3(-1.5, -1.38, 180);
         Vector3 preDropPixRight = new Vector3(-1.47, -1.38, -90);
         Vector3 dropPixRight = new Vector3(-1.47, -1.38, 0);
