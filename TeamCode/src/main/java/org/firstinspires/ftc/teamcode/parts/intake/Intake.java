@@ -153,6 +153,10 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
                 getHardware().swingServoLeft.setPosition(getSettings().swingLeftSafePosition);
                 getHardware().swingServoRight.setPosition(getSettings().swingLeftSafePosition);
                 break;
+            case 3:
+                getHardware().swingServoLeft.setPosition(getSettings().swingLeftMaxPosition);
+                getHardware().swingServoRight.setPosition(getSettings().swingLeftMaxPosition);
+                break;
         }
     }
 
@@ -396,7 +400,8 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
         task.waitForEvent(eventManager.getContainer(Events.grabComplete));
     }
 
-    public void addAutoGrabToTask(TimedTask task, boolean rev, int time){
+    public void addAutoGrabToTask(TimedTask task, boolean reverse){
+        task.addStep(()-> this.reverse = reverse);
         addAutoGrabToTask(task);
     }
 
@@ -507,8 +512,8 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
 
 
     public void doTagRanging(DriveControl control) {
-        final double desiredAutoDistance = 7.2;
-        final double desiredTeleDistance = 7.5;
+        final double desiredAutoDistance = 7.5;
+        final double desiredTeleDistance = 7.8;
         final double xPower = 0.03;
         final double yPower = 0.05;
         final double zPower = 0.01;

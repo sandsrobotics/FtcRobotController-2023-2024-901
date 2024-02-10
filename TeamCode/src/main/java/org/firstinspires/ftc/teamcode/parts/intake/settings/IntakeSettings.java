@@ -28,6 +28,7 @@ public class IntakeSettings {
     public final double launchReleaseLockPosition;
     public final double launchReleaseUnlockPosition;
     public final double grabberPrimePosition;
+    public final double swingLeftMaxPosition;
 
 
 
@@ -35,7 +36,7 @@ public class IntakeSettings {
                           int maxDownLiftSpeed, double tolerance, double sweepLiftServoDownPosition, double sweepLiftServoStackPosition,
                           double sweepLiftServoStorePosition, int maxLiftPosition, int minLiftPosition, double grabberOpenPosition, double grabberGripTwoPosition,
                           double grabberGripOnePosition, double swingLeftSafePosition, double swingRightSafePosition, double swingLeftDropPosition, double swingRightDropPosition, int maxPix, int maxPixLine, double launchAngleStorePosition,
-                          double launchAngleArmPosition, double launchReleaseLockPosition, double launchReleaseUnlockPosition, double grabberPrimePosition) {
+                          double launchAngleArmPosition, double launchReleaseLockPosition, double launchReleaseUnlockPosition, double grabberPrimePosition, double swingLeftMaxPosition) {
         this.minSlidePosition = minSlidePosition;
         this.maxSlidePosition = maxSlidePosition;
         this.maxDownSlideSpeed = maxDownSlideSpeed;
@@ -63,6 +64,7 @@ public class IntakeSettings {
         this.launchReleaseLockPosition = launchReleaseLockPosition;
         this.launchReleaseUnlockPosition = launchReleaseUnlockPosition;
         this.grabberPrimePosition = grabberPrimePosition;
+        this.swingLeftMaxPosition = swingLeftMaxPosition;
     }
 
     // left safe: ,.14 drop: .5
@@ -96,7 +98,8 @@ public class IntakeSettings {
                 .58,
                 .482,
                 .702,
-                .44
+                .44,
+                .62
                 );
     }
 }

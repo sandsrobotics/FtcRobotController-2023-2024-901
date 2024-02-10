@@ -4,8 +4,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import om.self.ezftc.utils.Vector3;
 
 
-@Autonomous(name="2 RED-WALL-PARK-CORNER", group="Test")
-public class AutoRedWallCorner extends AutoRedWallAndAll {
+@Autonomous(name="2 RED-BOARD", group="Test")
+public class AutoRedBoard extends AutoRedWallAndAll {
     @Override
     public void initAuto(){
         transformFunc = (v) -> v;
@@ -13,6 +13,6 @@ public class AutoRedWallCorner extends AutoRedWallAndAll {
         midPark = false;
         isRed = true;
         parkOnly = false;
-        isBoard = false;
+        isBoard = true;
     }
 }

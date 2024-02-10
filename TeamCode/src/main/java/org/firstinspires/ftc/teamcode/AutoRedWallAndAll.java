@@ -35,7 +35,7 @@ import om.self.task.other.TimedTask;
 import static om.self.ezftc.utils.Constants.tileSide;
 
 @Config
-@Autonomous(name="1 RED-WALL-park-MIDDLE", group="Test")
+@Autonomous(name="1 RED-WALL", group="Test")
 public class AutoRedWallAndAll extends LinearOpMode{
     public Function<Vector3, Vector3> transformFunc;
     public Vector3 customStartPos;
@@ -57,6 +57,7 @@ public class AutoRedWallAndAll extends LinearOpMode{
     static public int midDelay = 2000;
     static public int longDelay = 2800;
     public int startDelay;
+    private int parkPosition;
 
     //Vector3 centralspikemark = new Vector3(-35.25, -39.5, -90);
    // Vector3 startPosition = new Vector3(-1.5,-2.7,-90);
@@ -135,10 +136,17 @@ public class AutoRedWallAndAll extends LinearOpMode{
             else if(new EdgeSupplier(()->r.opMode.gamepad1.x).isRisingEdge()) {
                 startDelay -= 1000;
                 if(startDelay < 0) startDelay = 0;
+            } else if(new EdgeSupplier(()->r.opMode.gamepad1.a).isRisingEdge()) {
+                parkPosition = 1;
+            } else if(new EdgeSupplier(()->r.opMode.gamepad1.b).isRisingEdge()) {
+                parkPosition = 2;
             }
+
+
 //            packet.put("Team Prop", tp.pipeline.position);
 //            dashboard.sendTelemetryPacket(packet);
             telemetry.addData("START DELAY", startDelay);
+            telemetry.addData("PARK POSITION", parkPosition == 0 ? "Park based off tags" : parkPosition == 1 ? "Park MID" : "Park CORNER");
             telemetry.update();
             sleep(50);
         }
@@ -186,7 +194,8 @@ public class AutoRedWallAndAll extends LinearOpMode{
                 dropAuto(autoTask);
             }
             parkAuto(autoTask);
-        }
+        } else
+            testAuto(autoTask);
 
 
         while (opModeIsActive()) {
@@ -231,15 +240,22 @@ public class AutoRedWallAndAll extends LinearOpMode{
     private void parkAuto(TimedTask autoTask){
         Vector3 parkMid = new Vector3(2.4, -.5, 180);
         Vector3 parkSide = new Vector3(2.4, -2.5, 180);
+        Vector3 preParkMid = new Vector3(1.5, -.5, 180);
+        Vector3 preParkSide = new Vector3(1.5, -2.5, 180);
 
         autoTask.addStep(()->positionSolver.setSettings(PositionSolverSettings.defaultSettings));
-        positionSolver.addMoveToTaskEx(tileToInchAuto(midPark ? parkMid : parkSide), autoTask);
+        if(parkPosition == 0) {
+            positionSolver.addMoveToTaskEx(tileToInchAuto(left ? preParkSide : preParkMid), autoTask);
+            positionSolver.addMoveToTaskEx(tileToInchAuto(left ? parkSide : parkMid), autoTask);
+        }
+        else {
+            positionSolver.addMoveToTaskEx(tileToInchAuto(parkPosition == 1 ? preParkMid : preParkSide), autoTask);
+            positionSolver.addMoveToTaskEx(tileToInchAuto(parkPosition == 1 ? parkMid : parkSide), autoTask);
+        }
     }
 
     private void dropAuto(TimedTask autoTask){
         Vector3 setupTagsMid = new Vector3(1.5, -.5, 180);
-        Vector3 preParkMid = new Vector3(1.5, -.5, 180);
-        Vector3 preParkSide = new Vector3(1.5, -2.5, 180);
         Vector3 centerAT = new Vector3(1.5,-1.5,180);
         Vector3 leftAT = new Vector3(1.5, -1.2, 180);
         Vector3 rightAT = new Vector3(1.5, -1.8, 180);
@@ -270,7 +286,7 @@ public class AutoRedWallAndAll extends LinearOpMode{
         autoTask.addDelay(shortDelay);
         intake.addAutoDockToTask(autoTask);
         autoTask.addStep(()->positionSolver.setSettings(PositionSolverSettings.defaultSettings));
-        positionSolver.addMoveToTaskEx(tileToInchAuto(midPark ? preParkMid : preParkSide), autoTask);
+
     }
 
 
@@ -280,33 +296,36 @@ public class AutoRedWallAndAll extends LinearOpMode{
         Vector3 centerRight = new Vector3(-1.7, -1.38, 0);
         Vector3 moveRight = new Vector3(-1.7, -.5, 0);
         Vector3 dropCenter = new Vector3(-1.5, -.6, -90);
-        Vector3 dropPixLeft = new Vector3(-1.47, -1.38, 180);
+        Vector3 dropPixLeft = new Vector3(-1.46, -1.38, 180);
         Vector3 postDropPixLeft = new Vector3(-1.5, -1.38, 180);
         Vector3 preDropPixRight = new Vector3(-1.47, -1.38, -90);
         Vector3 dropPixRight = new Vector3(-1.47, -1.38, 0);
         Vector3 preSetupTagsMid = new Vector3(-1.5, -.5, 180);
         Vector3 setupTagsMid = new Vector3(1.5, -.5, 180);
         Vector3 preSetupTagsMidRIGHT = new Vector3(-1.7, -.5, 180);
+        Vector3 stack = new Vector3(-2.5, -.5, 180);
+
 
         autoTask.addStep(()->positionSolver.setSettings(PositionSolverSettings.defaultSettings));
         autoTask.addStep(()->intake.setGrabPosition(3));
         if (center){
             positionSolver.addMoveToTaskEx(tileToInchAuto(dropCenter), autoTask);
-            intake.addAutoGrabToTask(autoTask, true, 2000);
+            intake.addAutoGrabToTask(autoTask, true);
             autoTask.addDelay(500);
             positionSolver.addMoveToTaskEx(tileToInchAuto(preSetupTagsMid), autoTask);
+
         }
         else if(left){
             positionSolver.addMoveToTaskEx(tileToInchAuto(pushProp), autoTask);
             positionSolver.addMoveToTaskEx(tileToInchAuto(dropPixLeft), autoTask);
-            intake.addAutoGrabToTask(autoTask, true, 2000);
+            intake.addAutoGrabToTask(autoTask, true);
             autoTask.addDelay(500);
             positionSolver.addMoveToTaskEx(tileToInchAuto(preSetupTagsMid), autoTask);
         } else {
             positionSolver.addMoveToTaskEx(tileToInchAuto(pushProp), autoTask);
             positionSolver.addMoveToTaskEx(tileToInchAuto(preDropPixRight), autoTask);
             positionSolver.addMoveToTaskEx(tileToInchAuto(dropPixRight), autoTask);
-            intake.addAutoGrabToTask(autoTask, true, 2000);
+            intake.addAutoGrabToTask(autoTask, true);
             autoTask.addDelay(500);
             positionSolver.addMoveToTaskEx(tileToInchAuto(centerRight),autoTask);
             positionSolver.addMoveToTaskEx(tileToInchAuto(moveRight), autoTask);
@@ -335,14 +354,14 @@ public class AutoRedWallAndAll extends LinearOpMode{
         if(center){
             positionSolver.addMoveToTaskEx(tileToInchAuto(preDrop), autoTask);
             positionSolver.addMoveToTaskEx(tileToInchAuto(dropPixCenter), autoTask);
-            intake.addAutoGrabToTask(autoTask, true, 2000);
+            intake.addAutoGrabToTask(autoTask, true);
             autoTask.addDelay(500);
             positionSolver.addMoveToTaskEx(tileToInchAuto(tagAngle), autoTask);
         }
         else if (left) {
             positionSolver.addMoveToTaskEx(tileToInchAuto(preDrop), autoTask);
             positionSolver.addMoveToTaskEx(tileToInchAuto(dropPixLeft), autoTask);
-            intake.addAutoGrabToTask(autoTask, true, 2000);
+            intake.addAutoGrabToTask(autoTask, true);
         }
         else {
 //            positionSolver.addMoveToTaskEx(tileToInchAuto(dropPixRight), autoTask);
@@ -354,73 +373,65 @@ public class AutoRedWallAndAll extends LinearOpMode{
             positionSolver.addMoveToTaskEx(tileToInchAuto(slideRight), autoTask);
             positionSolver.addMoveToTaskEx(tileToInchAuto(slideUp), autoTask);
             positionSolver.addMoveToTaskEx(tileToInchAuto(turnRight), autoTask);
-            intake.addAutoGrabToTask(autoTask, true, 2000);
+            intake.addAutoGrabToTask(autoTask, true);
         }
         autoTask.addDelay(500);
         positionSolver.addMoveToTaskEx(tileToInchAuto(setupTags), autoTask);
     }
 
-    private void testRobot(TimedTask autoTask){
-        Vector3 startPos = new Vector3(1, 0, 90);
-        Vector3 testPos = new Vector3(1, .5, 90);
-
-        intake.addAutoGrabToTask(autoTask, true, 2000);
-        autoTask.addDelay(5000);
-        positionSolver.addMoveToTaskEx(tileToInchAuto(new Vector3(-1.5, -2.6, -90)), autoTask);
-        intake.addFoundRangeToTask(autoTask);
-        autoTask.addDelay(5000);
-        intake.addAutoDropToTask(autoTask);
-        autoTask.addDelay(5000);
-        intake.addFinishDropToTask(autoTask);
-        autoTask.addDelay(5000);
-        intake.addAutoDockToTask(autoTask);
-        positionSolver.addMoveToTaskEx(tileToInchAuto(new Vector3(-1.5, -2.6, -90)), autoTask);
-//        intake.addAutoDropToTask(autoTask);
-//        autoTask.addDelay(5000);
-//        intake.addFinishDropToTask(autoTask);
-//        autoTask.addDelay(5000);
-//        intake.addAutoDockToTask(autoTask);
-//        autoTask.addDelay(3000);
+    private void testAuto(TimedTask autoTask){
+        intake.addAutoGrabToTask(autoTask, true);
+        autoTask.addDelay(3000);
+        intake.addAutoGrabToTask(autoTask, false);
     }
-private void wallAutoGrabPix(TimedTask autoTask){
-    Vector3 startPos = new Vector3(-1.5, -2.6, -90);
-    Vector3 pushProp = new Vector3(-1.5, -1.5, -90);
-    Vector3 centerRight = new Vector3(-1.6, -1.5, -90);
+
+private void wallAutoGrabPix(TimedTask autoTask) {
+        Vector3 startPos = new Vector3(-1.5, -2.6, -90);
+    Vector3 pushProp = new Vector3(-1.5, -1.38, -90);
+    Vector3 centerRight = new Vector3(-1.7, -1.38, 0);
+    Vector3 moveRight = new Vector3(-1.7, -.5, 0);
     Vector3 dropCenter = new Vector3(-1.5, -.6, -90);
-    Vector3 dropPixLeft = new Vector3(-1.55, -1.38, 180);
-    Vector3 dropPixRight = new Vector3(-1.52, -1.38, 0);
-    Vector3 preSetupTagsMid = new Vector3(-1.6, -.45, 180);
+    Vector3 dropPixLeft = new Vector3(-1.47, -1.38, 180);
+    Vector3 postDropPixLeft = new Vector3(-1.5, -1.38, 180);
+    Vector3 preDropPixRight = new Vector3(-1.47, -1.38, -90);
+    Vector3 dropPixRight = new Vector3(-1.47, -1.38, 0);
+    Vector3 preSetupTagsMid = new Vector3(-1.5, -.5, 180);
     Vector3 setupTagsMid = new Vector3(1.5, -.5, 180);
+    Vector3 preSetupTagsMidRIGHT = new Vector3(-1.7, -.5, 180);
+    Vector3 stack = new Vector3(-2.42, -.53, 180);
 
-    Vector3 stack = new Vector3(-2.423, -.53, 180);
+    autoTask.addStep(() -> positionSolver.setSettings(PositionSolverSettings.defaultSettings));
+        autoTask.addStep(() -> positionSolver.setSettings(PositionSolverSettings.defaultSettings));
+        autoTask.addStep(() -> intake.setGrabPosition(3));
+        if (center) {
+            positionSolver.addMoveToTaskEx(tileToInchAuto(dropCenter), autoTask);
+            intake.addAutoGrabToTask(autoTask, true);
+            autoTask.addDelay(500);
+            positionSolver.addMoveToTaskEx(tileToInchAuto(preSetupTagsMid), autoTask);
 
-    autoTask.addStep(()->positionSolver.setSettings(PositionSolverSettings.defaultSettings));
-
-    if (center){
-        positionSolver.addMoveToTaskEx(tileToInchAuto(dropCenter), autoTask);
-    }
-    else if(left){
-        positionSolver.addMoveToTaskEx(tileToInchAuto(pushProp), autoTask);
-        positionSolver.addMoveToTaskEx(tileToInchAuto(dropPixLeft), autoTask);
-    }
-    else {
-        positionSolver.addMoveToTaskEx(tileToInchAuto(pushProp), autoTask);
-        positionSolver.addMoveToTaskEx(tileToInchAuto(dropPixRight), autoTask);
-    }
-    intake.addAutoGrabToTask(autoTask, true, 1000);
-    autoTask.addDelay(1000);
-    if(!center && !left)
-        positionSolver.addMoveToTaskEx(tileToInchAuto(centerRight), autoTask);
-    positionSolver.addMoveToTaskEx(tileToInchAuto(preSetupTagsMid), autoTask);
-    autoTask.addStep(()->intake.setSweepPosition(2));
-    positionSolver.addMoveToTaskEx(tileToInchAuto(stack), autoTask);
-    autoTask.addDelay(1000);
-    intake.addAutoGrabToTask(autoTask, true, 1000);
-    autoTask.addDelay(3000);
-    autoTask.addStep(()->intake.setGrabPosition(3));
+        } else if (left) {
+            positionSolver.addMoveToTaskEx(tileToInchAuto(pushProp), autoTask);
+            positionSolver.addMoveToTaskEx(tileToInchAuto(dropPixLeft), autoTask);
+            intake.addAutoGrabToTask(autoTask, true);
+            autoTask.addDelay(500);
+            positionSolver.addMoveToTaskEx(tileToInchAuto(preSetupTagsMid), autoTask);
+        } else {
+            positionSolver.addMoveToTaskEx(tileToInchAuto(pushProp), autoTask);
+            positionSolver.addMoveToTaskEx(tileToInchAuto(preDropPixRight), autoTask);
+            positionSolver.addMoveToTaskEx(tileToInchAuto(dropPixRight), autoTask);
+            intake.addAutoGrabToTask(autoTask, true);
+            autoTask.addDelay(500);
+            positionSolver.addMoveToTaskEx(tileToInchAuto(centerRight), autoTask);
+            positionSolver.addMoveToTaskEx(tileToInchAuto(moveRight), autoTask);
+            positionSolver.addMoveToTaskEx(tileToInchAuto(preSetupTagsMidRIGHT), autoTask);
+        }
+        autoTask.addStep(() -> intake.setSweepPosition(2));
+        positionSolver.addMoveToTaskEx(tileToInchAuto(stack), autoTask);
+        autoTask.addDelay(1000);
+        intake.addAutoGrabToTask(autoTask, false);
+        autoTask.addDelay(3000);
+        autoTask.addStep(() -> intake.setGrabPosition(3));
 //    intake.addAutoGrabToTask(autoTask, true, 1000);
-    positionSolver.addMoveToTaskEx(tileToInchAuto(setupTagsMid), autoTask);
-}
-
-
+        positionSolver.addMoveToTaskEx(tileToInchAuto(setupTagsMid), autoTask);
+    }
 }

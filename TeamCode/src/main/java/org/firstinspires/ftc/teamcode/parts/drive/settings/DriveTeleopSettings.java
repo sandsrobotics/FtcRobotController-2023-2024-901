@@ -42,7 +42,7 @@ public class DriveTeleopSettings {
                 ),
                 () -> gamepad.x,
                 new LatchedModifier().toSupplier(() -> gamepad.right_bumper),
-                0.7,
+                1.0,
                 //new LatchedModifier().toSupplier(() -> gamepad.b),
                 () -> gamepad.right_trigger > 0.5,
                 0.5
