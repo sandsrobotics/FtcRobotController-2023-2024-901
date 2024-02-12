@@ -296,7 +296,7 @@ public class AutoRedWallAndAll extends LinearOpMode{
         Vector3 centerRight = new Vector3(-1.7, -1.38, 0);
         Vector3 moveRight = new Vector3(-1.7, -.5, 0);
         Vector3 dropCenter = new Vector3(-1.5, -.6, -90);
-        Vector3 dropPixLeft = new Vector3(-1.46, -1.38, 180);
+        Vector3 dropPixLeft = new Vector3(-1.49, -1.38, 180);
         Vector3 postDropPixLeft = new Vector3(-1.5, -1.38, 180);
         Vector3 preDropPixRight = new Vector3(-1.47, -1.38, -90);
         Vector3 dropPixRight = new Vector3(-1.47, -1.38, 0);
