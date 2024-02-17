@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.lib;
 import android.graphics.Color;
 import androidx.annotation.ColorInt;
 
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpModeManagerNotifier;
 import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynchDevice;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynchSimple;
@@ -10,12 +12,9 @@ import com.qualcomm.robotcore.hardware.I2cWaitControl;
 import com.qualcomm.robotcore.hardware.configuration.annotations.DeviceProperties;
 import com.qualcomm.robotcore.hardware.configuration.annotations.I2cDeviceType;
 
-import static android.os.SystemClock.sleep;
-
-
 @I2cDeviceType()
 @DeviceProperties(name = "QWIIC LED Stick", description = "Sparkfun QWIIC LED Stick", xmlTag = "QWIIC_LED_STICK")
-public class QwiicLEDStick extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> {
+public class QwiicLEDStick extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> implements OpModeManagerNotifier.Notifications {
 
     private enum Commands {
         CHANGE_LED_LENGTH(0x70),
@@ -255,6 +254,21 @@ public class QwiicLEDStick extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> {
 
         this.deviceClient.setI2cAddress(ADDRESS_I2C_DEFAULT);
         super.registerArmingStateCallback(false);
+    }
+
+    @Override
+    public void onOpModePreInit(OpMode opMode) {
+        turnAllOff();
+    }
+
+    @Override
+    public void onOpModePreStart(OpMode opMode) {
+        turnAllOff();
+    }
+
+    @Override
+    public void onOpModePostStop(OpMode opMode) {
+        turnAllOff();
     }
 
 }

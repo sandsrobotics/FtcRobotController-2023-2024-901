@@ -1,5 +1,10 @@
 package org.firstinspires.ftc.teamcode.parts.drive;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
+
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.teamcode.parts.drive.hardware.DriveHardware;
 import org.firstinspires.ftc.teamcode.parts.drive.settings.DriveSettings;
 import java.util.function.Function;
@@ -18,6 +23,7 @@ public final class Drive extends ControllableLoopedPart<Robot,DriveSettings, Dri
     private Function<Vector3, Vector3> powerFilter = pow -> pow;
 
     private DrivePowerConverter dpc;
+    private boolean fieldCentric = false;
 
     public  Drive(Robot robot){
         super(robot, "drive", robot.regularTaskManager, () -> new DriveControl(new Vector3(0,0,0),false));
@@ -46,6 +52,9 @@ public final class Drive extends ControllableLoopedPart<Robot,DriveSettings, Dri
         };
     }
 
+    public void setFieldCentric(boolean fc) {
+        this.fieldCentric = fc;
+    }
 
     public void setTargetPower(Vector3 targetPower){
         this.targetPower = targetPower;
@@ -55,11 +64,27 @@ public final class Drive extends ControllableLoopedPart<Robot,DriveSettings, Dri
      * this method is a direct connection to the drive and bypasses things like motion smoothing. Use {@link Drive#setTargetPower(Vector3)}
      */
     public void moveRobot(double x, double y, double r){
+        if (fieldCentric) {
+            double[] rot = fieldCentricRotation(x, y);
+            x = rot[0];
+            y = rot[1];
+        }
         double[] pows = dpc.convert(x,y,r);
         getHardware().topLeftMotor.setPower(pows[0]);
         getHardware().topRightMotor.setPower(pows[1]);
         getHardware().bottomLeftMotor.setPower(pows[2]);
         getHardware().bottomRightMotor.setPower(pows[3]);
+    }
+
+    public double[] fieldCentricRotation(double x, double y){
+        // Get IMU angle in radians
+        BNO055IMU imu = parent.opMode.hardwareMap.get(BNO055IMU.class, "imu");
+        double theta = imu.getAngularOrientation(AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.RADIANS).thirdAngle;
+        // rotate coordinate system - IMU positive angle is CW
+        double temp = x * Math.sin(theta) + y * Math.cos(theta);
+        x = x * Math.cos(theta) - y * Math.sin(theta);
+        y = temp;
+        return (new double[]{x,y});
     }
 
     /**
@@ -145,7 +170,7 @@ public final class Drive extends ControllableLoopedPart<Robot,DriveSettings, Dri
 
     @Override
     public void onRun(DriveControl control) {
-        parent.opMode.telemetry.addData("drive powers", control.power);//TODO remove
+        //parent.opMode.telemetry.addData("drive powers", control.power);//TODO remove
 
         if(control.stop) stopRobot();
         else setTargetPower(control.power);

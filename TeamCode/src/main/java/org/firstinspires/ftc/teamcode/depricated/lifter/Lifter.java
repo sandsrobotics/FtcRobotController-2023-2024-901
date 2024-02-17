@@ -768,7 +768,7 @@ public class Lifter extends ControllablePart<Robot, LifterSettings, LifterHardwa
 
     public static final class Events {
         public static final String dockComplete = "DOCK_COMPLETE";
-        public static final String grabComplete = "GRAB_COMPLETE";
+        public static final String grabComplete = "gRAB_COMPLETE";
         public static final String preDropComplete = "PRE_DROP_COMPLETE";
         public static final String dropComplete = "DROP_COMPlETE";
     }

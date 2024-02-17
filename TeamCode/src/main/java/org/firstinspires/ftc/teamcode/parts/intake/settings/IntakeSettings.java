@@ -29,6 +29,7 @@ public class IntakeSettings {
     public final double launchReleaseUnlockPosition;
     public final double grabberPrimePosition;
     public final double swingLeftMaxPosition;
+    public final double sweepLiftServoStackTopPosition;
 
 
 
@@ -36,7 +37,7 @@ public class IntakeSettings {
                           int maxDownLiftSpeed, double tolerance, double sweepLiftServoDownPosition, double sweepLiftServoStackPosition,
                           double sweepLiftServoStorePosition, int maxLiftPosition, int minLiftPosition, double grabberOpenPosition, double grabberGripTwoPosition,
                           double grabberGripOnePosition, double swingLeftSafePosition, double swingRightSafePosition, double swingLeftDropPosition, double swingRightDropPosition, int maxPix, int maxPixLine, double launchAngleStorePosition,
-                          double launchAngleArmPosition, double launchReleaseLockPosition, double launchReleaseUnlockPosition, double grabberPrimePosition, double swingLeftMaxPosition) {
+                          double launchAngleArmPosition, double launchReleaseLockPosition, double launchReleaseUnlockPosition, double grabberPrimePosition, double swingLeftMaxPosition, double sweepLiftServoStackTopPosition) {
         this.minSlidePosition = minSlidePosition;
         this.maxSlidePosition = maxSlidePosition;
         this.maxDownSlideSpeed = maxDownSlideSpeed;
@@ -65,6 +66,7 @@ public class IntakeSettings {
         this.launchReleaseUnlockPosition = launchReleaseUnlockPosition;
         this.grabberPrimePosition = grabberPrimePosition;
         this.swingLeftMaxPosition = swingLeftMaxPosition;
+        this.sweepLiftServoStackTopPosition = sweepLiftServoStackTopPosition;
     }
 
     // left safe: ,.14 drop: .5
@@ -95,11 +97,12 @@ public class IntakeSettings {
                 12,
                 5,
                 .46,
-                .58,
+                .59,
                 .482,
                 .702,
                 .44,
-                .62
+                .62,
+                .33
                 );
     }
 }

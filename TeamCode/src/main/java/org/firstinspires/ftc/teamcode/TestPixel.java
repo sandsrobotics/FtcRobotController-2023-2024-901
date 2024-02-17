@@ -17,6 +17,7 @@ import org.firstinspires.ftc.teamcode.parts.intake.Intake;
 import org.firstinspires.ftc.teamcode.parts.intake.IntakeTeleop;
 import org.firstinspires.ftc.teamcode.parts.positiontracker.hardware.PositionTrackerHardware;
 import org.firstinspires.ftc.teamcode.parts.positiontracker.odometry.Odometry;
+import org.firstinspires.ftc.teamcode.parts.positiontracker.odometry.Odometry24;
 import org.firstinspires.ftc.teamcode.parts.positiontracker.settings.PositionTrackerSettings;
 import org.firstinspires.ftc.teamcode.parts.teamprop.TeamProp;
 import org.firstinspires.ftc.teamcode.parts.teamprop.TeamPropDetectionPipeline;
@@ -59,6 +60,7 @@ public class TestPixel extends LinearOpMode {
         drive = new Drive(robot);
         initTeleop();
         Led ledStick = new Led(robot);
+        drive.setFieldCentric(false);
 
         PositionTrackerSettings pts = new PositionTrackerSettings(AxesOrder.XYZ, false, 100, new Vector3(2,2,2), fieldStartPos);
 //        pts.withPosition(transformFunc.apply(pts.startPosition));
@@ -123,6 +125,7 @@ public class TestPixel extends LinearOpMode {
                 telemetry.addData("Found", "ID %d (%s)", aprilTag.desiredTag.id, aprilTag.desiredTag.metadata.name);
                 telemetry.addData("Range",  "%5.1f inches", aprilTag.desiredTag.ftcPose.range);
                 telemetry.addData("X", "%5.1f inches", aprilTag.desiredTag.ftcPose.x);
+                telemetry.addData("Y", "%5.1f inches", aprilTag.desiredTag.ftcPose.y);
                 telemetry.addData("Bearing","%3.0f degrees", aprilTag.desiredTag.ftcPose.bearing);
                 telemetry.addData("Yaw","%3.0f degrees", aprilTag.desiredTag.ftcPose.yaw);
             }

@@ -4,10 +4,13 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.apache.commons.lang3.ObjectUtils;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.teamcode.depricated.lifter.Lifter;
 import org.firstinspires.ftc.teamcode.parts.drive.Drive;
 import org.firstinspires.ftc.teamcode.parts.drive.DriveControl;
 import org.firstinspires.ftc.teamcode.parts.intake.Intake;
+import org.firstinspires.ftc.teamcode.parts.positiontracker.PositionTicket;
+import org.firstinspires.ftc.teamcode.parts.positiontracker.PositionTracker;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
@@ -20,6 +23,7 @@ import java.util.List;
 
 import om.self.ezftc.core.Robot;
 import om.self.ezftc.core.part.LoopedPartImpl;
+import om.self.ezftc.utils.Vector3;
 
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 
@@ -35,6 +39,7 @@ public class AprilTag extends LoopedPartImpl<Robot, ObjectUtils.Null, ObjectUtil
     public AprilTagDetection desiredTag = null;     // Used to hold the data for a detected AprilTag
     public boolean targetFound;
     public List<AprilTagDetection> currentDetections;
+    PositionTracker positionTracker;
 
     /**
      * A constructor for Part that creates task and event managers attached to the parents task and event managers. This also create a loop that will run forever
@@ -58,6 +63,7 @@ public class AprilTag extends LoopedPartImpl<Robot, ObjectUtils.Null, ObjectUtil
                         // Yes, we want to use this tag.
                             targetFound = true;
                             desiredTag = detection;
+                            updatePositionWithTag();
                         break;  // don't look any further.
                     } else {
                         // This tag is in the library, but we do not want to track it right now.
@@ -72,7 +78,20 @@ public class AprilTag extends LoopedPartImpl<Robot, ObjectUtils.Null, ObjectUtil
             targetFound = false;
             desiredTag = null;
         }
+    }
 
+
+    public void updatePositionWithTag(){
+        VectorF tagPos = desiredTag.metadata.fieldPosition;
+        Vector3 tagPosAsV3 = new Vector3(tagPos.get(0), tagPos.get(1), tagPos.get(2));
+        parent.opMode.telemetry.addData("Tag Position as V3: ", tagPosAsV3);
+        double yDist = desiredTag.ftcPose.x;
+        double xDist = desiredTag.ftcPose.y;
+
+        Vector3 robotPos = new Vector3(tagPosAsV3.X - xDist - 7, tagPosAsV3.Y + yDist, 180);
+        parent.opMode.telemetry.addData("Robot Position using Tag: ", robotPos);
+
+//        positionTracker.addPositionTicket(AprilTag.class, robotPos);
     }
 
     @Override
@@ -83,6 +102,9 @@ public class AprilTag extends LoopedPartImpl<Robot, ObjectUtils.Null, ObjectUtil
      */
     @Override
     public void onInit() {
+        positionTracker = getBeanManager().getBestMatch(PositionTracker.class, false);
+
+
         // Create the AprilTag processor the easy way.
         aprilTag = AprilTagProcessor.easyCreateWithDefaults();
         visionPortal = VisionPortal.easyCreateWithDefaults(parent.opMode.hardwareMap.get(WebcamName.class, "Webcam 1"), aprilTag);

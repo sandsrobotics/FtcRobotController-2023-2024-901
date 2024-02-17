@@ -182,7 +182,7 @@ public class AutoRedWallAndAll extends LinearOpMode{
             // init intake setup items here
         });
         // add calls to special autonomous action collections in methods below
-
+        autoTask.addStep(()->intake.grabTime = 2000);
         if(!parkOnly) {
             autoTask.addDelay(startDelay);
             if (isBoard) {
@@ -190,7 +190,8 @@ public class AutoRedWallAndAll extends LinearOpMode{
                 dropAuto(autoTask);
             }
             else {
-                wallAuto(autoTask);
+                autoTask.addStep(()->intake.setPix(1));
+                wallAutoGrabPix(autoTask);
                 dropAuto(autoTask);
             }
             parkAuto(autoTask);
@@ -282,6 +283,10 @@ public class AutoRedWallAndAll extends LinearOpMode{
         autoTask.addDelay(shortDelay);
         intake.addFoundRangeToTask(autoTask);
         autoTask.addDelay(longDelay);
+        if(isBoard)
+            autoTask.addStep(()->intake.setSlidePosition(800));
+        else
+            autoTask.addStep(()->intake.setSlidePosition(1100)); //tjk
         intake.addFinishDropToTask(autoTask);
         autoTask.addDelay(shortDelay);
         intake.addAutoDockToTask(autoTask);
@@ -380,13 +385,16 @@ public class AutoRedWallAndAll extends LinearOpMode{
     }
 
     private void testAuto(TimedTask autoTask){
-        intake.addAutoGrabToTask(autoTask, true);
-        autoTask.addDelay(3000);
-        intake.addAutoGrabToTask(autoTask, false);
+        Vector3 startPos = new Vector3(-1.4, -2.5, -90);
+
+        intake.addAutoGrabToTask(autoTask, true, 1000);
+        autoTask.addDelay(100);
+        positionSolver.addMoveToTaskEx(tileToInchAuto(startPos), autoTask);
+        intake.addAutoGrabToTask(autoTask, false, 5500);
     }
 
-private void wallAutoGrabPix(TimedTask autoTask) {
-        Vector3 startPos = new Vector3(-1.5, -2.6, -90);
+    private void wallAutoGrabPix(TimedTask autoTask) {
+    Vector3 startPos = new Vector3(-1.5, -2.6, -90);
     Vector3 pushProp = new Vector3(-1.5, -1.38, -90);
     Vector3 centerRight = new Vector3(-1.7, -1.38, 0);
     Vector3 moveRight = new Vector3(-1.7, -.5, 0);
@@ -398,11 +406,11 @@ private void wallAutoGrabPix(TimedTask autoTask) {
     Vector3 preSetupTagsMid = new Vector3(-1.5, -.5, 180);
     Vector3 setupTagsMid = new Vector3(1.5, -.5, 180);
     Vector3 preSetupTagsMidRIGHT = new Vector3(-1.7, -.5, 180);
-    Vector3 stack = new Vector3(-2.42, -.53, 180);
+        Vector3 preStack = new Vector3(-2.2, -.52, 180);
+        Vector3 stack = new Vector3(-2.4, -.52, 180);
 
     autoTask.addStep(() -> positionSolver.setSettings(PositionSolverSettings.defaultSettings));
         autoTask.addStep(() -> positionSolver.setSettings(PositionSolverSettings.defaultSettings));
-        autoTask.addStep(() -> intake.setGrabPosition(3));
         if (center) {
             positionSolver.addMoveToTaskEx(tileToInchAuto(dropCenter), autoTask);
             intake.addAutoGrabToTask(autoTask, true);
@@ -425,13 +433,19 @@ private void wallAutoGrabPix(TimedTask autoTask) {
             positionSolver.addMoveToTaskEx(tileToInchAuto(moveRight), autoTask);
             positionSolver.addMoveToTaskEx(tileToInchAuto(preSetupTagsMidRIGHT), autoTask);
         }
-        autoTask.addStep(() -> intake.setSweepPosition(2));
+        autoTask.addStep(() -> intake.setGrabPosition(0));
+        autoTask.addStep(() -> intake.setSweepPosition(3));
+        positionSolver.addMoveToTaskEx(tileToInchAuto(preStack), autoTask);
+        intake.addAutoGrabToTask(autoTask, false); // pickup from white stack
         positionSolver.addMoveToTaskEx(tileToInchAuto(stack), autoTask);
-        autoTask.addDelay(1000);
-        intake.addAutoGrabToTask(autoTask, false);
-        autoTask.addDelay(3000);
-        autoTask.addStep(() -> intake.setGrabPosition(3));
-//    intake.addAutoGrabToTask(autoTask, true, 1000);
+        //intake.addAutoGrabToTask(autoTask, false); // pickup from white stack
+        autoTask.addDelay(1000); // tjk
+        positionSolver.addMoveToTaskExNoWait(tileToInchAuto(preSetupTagsMid), autoTask);
+        intake.addAutoGrabToTask(autoTask, true);
+        autoTask.addTimedStep(()->intake.sweepWithPower(1), 1500); // dump any extra pixels
+        autoTask.addDelay(500);
+        autoTask.addStep(() -> intake.setGrabPosition(3)); // poke pixels tjk
         positionSolver.addMoveToTaskEx(tileToInchAuto(setupTagsMid), autoTask);
+        //autoTask.addStep(() -> intake.setGrabPosition(3)); // poke pixels tjk
     }
 }

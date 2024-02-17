@@ -39,24 +39,24 @@ public class Odometry extends LoopedPartImpl<PositionTracker, OdometrySettings, 
     @Override
     public void onRun() {
 
-        parent.parent.opMode.telemetry.addData("y odo dist", (getHardware().leftYWheel.getCurrentPosition() + getHardware().rightYWheel.getCurrentPosition()) / 2.0);
-        parent.parent.opMode.telemetry.addData("cumulativeDistance", cumulativeDistance);
+//        parent.parent.opMode.telemetry.addData("y odo dist", (getHardware().leftYWheel.getCurrentPosition() + getHardware().rightYWheel.getCurrentPosition()) / 2.0);
+//        parent.parent.opMode.telemetry.addData("cumulativeDistance", cumulativeDistance);
 
         int currLeftY = getHardware().leftYWheel.getCurrentPosition();
         int currRightY = getHardware().rightYWheel.getCurrentPosition();
         int currX = getHardware().XWheel.getCurrentPosition();
 
-        parent.parent.opMode.telemetry.addData("left y", currLeftY);
-        parent.parent.opMode.telemetry.addData("right y", currRightY);
-        parent.parent.opMode.telemetry.addData("middle x", currX);
+//        parent.parent.opMode.telemetry.addData("left y", currLeftY);
+//        parent.parent.opMode.telemetry.addData("right y", currRightY);
+//        parent.parent.opMode.telemetry.addData("middle x", currX);
 
         int leftYDiff = currLeftY - lastLeftYPos;
         int rightYDiff = currRightY - lastRightYPos;
         int XDiff = currX - lastXPos;
 
-        parent.parent.opMode.telemetry.addData("left y diff", leftYDiff);
-        parent.parent.opMode.telemetry.addData("right y diff", rightYDiff);
-        parent.parent.opMode.telemetry.addData("x", XDiff);
+//        parent.parent.opMode.telemetry.addData("left y diff", leftYDiff);
+//        parent.parent.opMode.telemetry.addData("right y diff", rightYDiff);
+//        parent.parent.opMode.telemetry.addData("x", XDiff);
 
         Vector3 pos = parent.getCurrentPosition();
 
@@ -71,17 +71,17 @@ public class Odometry extends LoopedPartImpl<PositionTracker, OdometrySettings, 
 
         lastImuAngle = imuAng;
 
-        parent.parent.opMode.telemetry.addData("imu accurate", imuAccurate);
-        parent.parent.opMode.telemetry.addData("odo angle", odoAngle);
-        parent.parent.opMode.telemetry.addData("cumulative angle", cumulativeOdoAngle);
+//        parent.parent.opMode.telemetry.addData("imu accurate", imuAccurate);
+//        parent.parent.opMode.telemetry.addData("odo angle", odoAngle);
+//        parent.parent.opMode.telemetry.addData("cumulative angle", cumulativeOdoAngle);
 
         double angle = odoAngle;
 
         double XMove = ((XDiff) / getSettings().ticksPerInch);
         double YMove = ((leftYDiff + rightYDiff) / (2 * getSettings().ticksPerInch));
 
-        parent.parent.opMode.telemetry.addData("x move", XMove);
-        parent.parent.opMode.telemetry.addData("y move", YMove);
+//        parent.parent.opMode.telemetry.addData("x move", XMove);
+//        parent.parent.opMode.telemetry.addData("y move", YMove);
 
         cumulativeDistance += YMove;
 
@@ -92,9 +92,9 @@ public class Odometry extends LoopedPartImpl<PositionTracker, OdometrySettings, 
         //transform back to field position
         Vector3 finalPos = VectorMath.translateAsVector2(addedRobotPos, getSettings().robotOffset.X, getSettings().robotOffset.Y);
 
-        parent.parent.opMode.telemetry.addData("detransposed field pos", detransposeField);
-        parent.parent.opMode.telemetry.addData("added robot pos", addedRobotPos);
-        parent.parent.opMode.telemetry.addData("final pos", finalPos);
+//        parent.parent.opMode.telemetry.addData("detransposed field pos", detransposeField);
+//        parent.parent.opMode.telemetry.addData("added robot pos", addedRobotPos);
+//        parent.parent.opMode.telemetry.addData("final pos", finalPos);
 
         parent.addPositionTicket(Odometry.class, new PositionTicket(finalPos));
 
