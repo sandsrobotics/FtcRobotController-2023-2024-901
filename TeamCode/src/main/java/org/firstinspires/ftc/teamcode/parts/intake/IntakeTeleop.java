@@ -64,8 +64,11 @@ public class IntakeTeleop extends LoopedPartImpl<Intake, IntakeTeleopSettings, O
             parent.startAutoArm();
         else if(settings.autoStoreSupplier.get())
             parent.startAutoStore();
-//        else if(settings.releaseCenter.get())
-//            parent.tag.setDesiredTag(-1);
+        else if(settings.releaseRange.get())
+            parent.startAutoDock();
+        else if(settings.releaseCenter.get())
+            parent.startRunCenter();
+
 
         parent.parent.opMode.telemetry.addData("pix", parent.getPix() + 1);
     }

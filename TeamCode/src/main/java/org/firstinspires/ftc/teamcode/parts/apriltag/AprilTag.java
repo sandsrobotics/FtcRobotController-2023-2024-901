@@ -11,6 +11,7 @@ import org.firstinspires.ftc.teamcode.parts.drive.DriveControl;
 import org.firstinspires.ftc.teamcode.parts.intake.Intake;
 import org.firstinspires.ftc.teamcode.parts.positiontracker.PositionTicket;
 import org.firstinspires.ftc.teamcode.parts.positiontracker.PositionTracker;
+import org.firstinspires.ftc.teamcode.parts.positiontracker.odometry.Odometry;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
@@ -23,7 +24,9 @@ import java.util.List;
 
 import om.self.ezftc.core.Robot;
 import om.self.ezftc.core.part.LoopedPartImpl;
+import om.self.ezftc.utils.AngleMath;
 import om.self.ezftc.utils.Vector3;
+import om.self.ezftc.utils.VectorMath;
 
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 
@@ -63,7 +66,6 @@ public class AprilTag extends LoopedPartImpl<Robot, ObjectUtils.Null, ObjectUtil
                         // Yes, we want to use this tag.
                             targetFound = true;
                             desiredTag = detection;
-                            updatePositionWithTag();
                         break;  // don't look any further.
                     } else {
                         // This tag is in the library, but we do not want to track it right now.
@@ -82,16 +84,25 @@ public class AprilTag extends LoopedPartImpl<Robot, ObjectUtils.Null, ObjectUtil
 
 
     public void updatePositionWithTag(){
-        VectorF tagPos = desiredTag.metadata.fieldPosition;
-        Vector3 tagPosAsV3 = new Vector3(tagPos.get(0), tagPos.get(1), tagPos.get(2));
-        parent.opMode.telemetry.addData("Tag Position as V3: ", tagPosAsV3);
-        double yDist = desiredTag.ftcPose.x;
-        double xDist = desiredTag.ftcPose.y;
+        if(desiredTag != null) {
+            VectorF tagPos = desiredTag.metadata.fieldPosition;
+            Vector3 tagPosAsV3 = new Vector3(tagPos.get(0), tagPos.get(1), tagPos.get(2));
+            Vector3 cameraOffset = new Vector3(8.5, 0, 0);
+            parent.opMode.telemetry.addData("Tag Position as V3: ", tagPosAsV3);
+            double xOffset = desiredTag.ftcPose.y + cameraOffset.X;
+            double yOffset = -desiredTag.ftcPose.x + cameraOffset.Y;
+            double angle = AngleMath.scaleAngle(180 - desiredTag.ftcPose.yaw);
 
-        Vector3 robotPos = new Vector3(tagPosAsV3.X - xDist - 7, tagPosAsV3.Y + yDist, 180);
-        parent.opMode.telemetry.addData("Robot Position using Tag: ", robotPos);
+            Vector3 robotPos = new Vector3(tagPosAsV3.X + xOffset, tagPosAsV3.Y + yOffset, angle);
+//            Vector3 robotPosAngle = VectorMath.translateAsVector2(tagPosAsV3.withZ(angle), yOffset, xOffset);
+            Vector3 robotPosAngle = VectorMath.translateTagAsVector2(tagPosAsV3.withZ(angle), xOffset, yOffset);
+//            Vector3 robotPosAngle = new Vector3(robotOffset.X);
+            parent.opMode.telemetry.addData("Robot Position using Tag: ", robotPosAngle);
 
-//        positionTracker.addPositionTicket(AprilTag.class, robotPos);
+            positionTracker.addPositionTicket(AprilTag.class, new PositionTicket(robotPosAngle));
+        }
+        else
+            parent.opMode.telemetry.addLine("No tag found!!");
     }
 
     @Override
@@ -102,7 +113,6 @@ public class AprilTag extends LoopedPartImpl<Robot, ObjectUtils.Null, ObjectUtil
      */
     @Override
     public void onInit() {
-        positionTracker = getBeanManager().getBestMatch(PositionTracker.class, false);
 
 
         // Create the AprilTag processor the easy way.
@@ -133,6 +143,8 @@ public class AprilTag extends LoopedPartImpl<Robot, ObjectUtils.Null, ObjectUtil
 
     @Override
     public void onStart() {
+        positionTracker = getBeanManager().getBestMatch(PositionTracker.class, false);
+
     }
 
     @Override

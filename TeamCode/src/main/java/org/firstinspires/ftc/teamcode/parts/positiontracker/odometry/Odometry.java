@@ -75,6 +75,9 @@ public class Odometry extends LoopedPartImpl<PositionTracker, OdometrySettings, 
 //        parent.parent.opMode.telemetry.addData("odo angle", odoAngle);
 //        parent.parent.opMode.telemetry.addData("cumulative angle", cumulativeOdoAngle);
 
+        if(parent.tagTicket != null)
+            odoAngle = parent.tagTicket.position.Z;
+
         double angle = odoAngle;
 
         double XMove = ((XDiff) / getSettings().ticksPerInch);
@@ -94,7 +97,7 @@ public class Odometry extends LoopedPartImpl<PositionTracker, OdometrySettings, 
 
 //        parent.parent.opMode.telemetry.addData("detransposed field pos", detransposeField);
 //        parent.parent.opMode.telemetry.addData("added robot pos", addedRobotPos);
-//        parent.parent.opMode.telemetry.addData("final pos", finalPos);
+        parent.parent.opMode.telemetry.addData("final pos", finalPos);
 
         parent.addPositionTicket(Odometry.class, new PositionTicket(finalPos));
 

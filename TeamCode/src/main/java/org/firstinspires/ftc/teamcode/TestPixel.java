@@ -4,13 +4,17 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+
+import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.teamcode.parts.apriltag.AprilTag;
 import org.firstinspires.ftc.teamcode.parts.bulkread.BulkRead;
 import org.firstinspires.ftc.teamcode.parts.drive.Drive;
 import org.firstinspires.ftc.teamcode.parts.drive.DriveTeleop;
 import org.firstinspires.ftc.teamcode.parts.led.Led;
+import org.firstinspires.ftc.teamcode.parts.positionsolver.PositionSolver;
 import org.firstinspires.ftc.teamcode.parts.positionsolver.XRelativeSolver;
+import org.firstinspires.ftc.teamcode.parts.positionsolver.settings.PositionSolverSettings;
 import org.firstinspires.ftc.teamcode.parts.positiontracker.PositionTracker;
 import org.firstinspires.ftc.teamcode.parts.positiontracker.encodertracking.EncoderTracker;
 import org.firstinspires.ftc.teamcode.parts.intake.Intake;
@@ -24,12 +28,17 @@ import org.firstinspires.ftc.teamcode.parts.teamprop.TeamPropDetectionPipeline;
 import java.text.DecimalFormat;
 import om.self.ezftc.core.Robot;
 import om.self.ezftc.utils.Vector3;
+import om.self.ezftc.utils.VectorMath;
+import om.self.supplier.suppliers.EdgeSupplier;
+
 @TeleOp(name="1 Teleop", group="Linear Opmode")
 public class TestPixel extends LinearOpMode {
     double tileSide = 23.5;
     boolean slideDone = false;
     Drive drive;
     Robot robot;
+    PositionSolver positionSolver;
+    PositionTracker pt;
 
     public Vector3 tiletoField(Vector3 p){
         return new Vector3(p.X * tileSide, p.Y * tileSide, p.Z);
@@ -42,7 +51,7 @@ public class TestPixel extends LinearOpMode {
 
     //Vector3 fieldStartPos = new Vector3(11.75,-63,-90);
     //Vector3 fieldStartPos = new Vector3(11.75,-63,90);
-    Vector3 fieldStartPos = new Vector3(0,0,-90);
+    Vector3 fieldStartPos = new Vector3(0,0,180);
     public volatile TeamPropDetectionPipeline.TeamPropPosition teamPropPosition;
 
     public void initTeleop(){
@@ -51,6 +60,7 @@ public class TestPixel extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+        String fileName = "positionData";
         DecimalFormat df = new DecimalFormat("#0.0");
         long start;
         FtcDashboard dashboard = FtcDashboard.getInstance();
@@ -66,9 +76,10 @@ public class TestPixel extends LinearOpMode {
 //        pts.withPosition(transformFunc.apply(pts.startPosition));
         //pts = pts.withPosition(customStartPos != null ? customStartPos : transformFunc.apply(pts.startPosition));
         //pt = new PositionTracker(r, pts, PositionTrackerHardware.makeDefault(r));
-        PositionTracker pt = new PositionTracker(robot,pts,PositionTrackerHardware.makeDefault(robot));
+        pt = new PositionTracker(robot,pts,PositionTrackerHardware.makeDefault(robot));
         //PositionTracker pt = new PositionTracker(robot);
-
+        positionSolver = new PositionSolver(drive);
+        positionSolver.setSettings(PositionSolverSettings.defaultNoAlwaysRunSettings);
         XRelativeSolver solver = new XRelativeSolver(drive);
 //        EncoderTracker et = new EncoderTracker(pt);
 //        pt.positionSourceId = EncoderTracker.class;
@@ -80,6 +91,13 @@ public class TestPixel extends LinearOpMode {
         new IntakeTeleop(intake);
         TeamProp tp = new TeamProp(robot);
         robot.init();
+
+        //****** tjk
+        EdgeSupplier leftPixel = new EdgeSupplier();
+        leftPixel.setBase(()->gamepad1.dpad_left);
+        EdgeSupplier rightPixel = new EdgeSupplier();
+        rightPixel.setBase(()->gamepad1.dpad_right);
+        //******
 
         while (!isStarted()) {
             teamPropPosition = tp.pipeline.position;
@@ -101,6 +119,11 @@ public class TestPixel extends LinearOpMode {
         while (opModeIsActive()) {
             start = System.currentTimeMillis();
             robot.run();
+
+            //****** tjk
+            if(leftPixel.isRisingEdge()) pixelShiftY(-3.0); // 3" = 1 pixel difference
+            if(rightPixel.isRisingEdge()) pixelShiftY(+3.0);
+            //******
 
             // Dashboard stuff
 //            double x = pt.getCurrentPosition().X;
@@ -128,6 +151,7 @@ public class TestPixel extends LinearOpMode {
                 telemetry.addData("Y", "%5.1f inches", aprilTag.desiredTag.ftcPose.y);
                 telemetry.addData("Bearing","%3.0f degrees", aprilTag.desiredTag.ftcPose.bearing);
                 telemetry.addData("Yaw","%3.0f degrees", aprilTag.desiredTag.ftcPose.yaw);
+                telemetry.addData("position: ", aprilTag.desiredTag.metadata.fieldPosition);
             }
 
             robot.opMode.telemetry.addData("time", System.currentTimeMillis() - start);
@@ -135,5 +159,14 @@ public class TestPixel extends LinearOpMode {
             telemetry.update();
         }
         robot.stop();
+    }
+
+    public void moveRobot(Vector3 target){
+        positionSolver.setNewTarget(target, false);
+    }
+
+    //****** tjk
+    public void pixelShiftY(Double Y){
+        positionSolver.setNewTarget(pt.getCurrentPosition().addY(Y), true);
     }
 }

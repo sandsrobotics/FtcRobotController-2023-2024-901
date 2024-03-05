@@ -30,6 +30,7 @@ public class IntakeSettings {
     public final double grabberPrimePosition;
     public final double swingLeftMaxPosition;
     public final double sweepLiftServoStackTopPosition;
+    public final double swingLeftActualMaxPosition;
 
 
 
@@ -37,7 +38,7 @@ public class IntakeSettings {
                           int maxDownLiftSpeed, double tolerance, double sweepLiftServoDownPosition, double sweepLiftServoStackPosition,
                           double sweepLiftServoStorePosition, int maxLiftPosition, int minLiftPosition, double grabberOpenPosition, double grabberGripTwoPosition,
                           double grabberGripOnePosition, double swingLeftSafePosition, double swingRightSafePosition, double swingLeftDropPosition, double swingRightDropPosition, int maxPix, int maxPixLine, double launchAngleStorePosition,
-                          double launchAngleArmPosition, double launchReleaseLockPosition, double launchReleaseUnlockPosition, double grabberPrimePosition, double swingLeftMaxPosition, double sweepLiftServoStackTopPosition) {
+                          double launchAngleArmPosition, double launchReleaseLockPosition, double launchReleaseUnlockPosition, double grabberPrimePosition, double swingLeftMaxPosition, double sweepLiftServoStackTopPosition, double swingLeftActualMaxPosition) {
         this.minSlidePosition = minSlidePosition;
         this.maxSlidePosition = maxSlidePosition;
         this.maxDownSlideSpeed = maxDownSlideSpeed;
@@ -67,9 +68,10 @@ public class IntakeSettings {
         this.grabberPrimePosition = grabberPrimePosition;
         this.swingLeftMaxPosition = swingLeftMaxPosition;
         this.sweepLiftServoStackTopPosition = sweepLiftServoStackTopPosition;
+        this.swingLeftActualMaxPosition = swingLeftActualMaxPosition;
     }
 
-    // left safe: ,.14 drop: .5
+    // left safe: ,.14 drop: .5 FOR ACTUAL MAX, .6
     // right safe: .87, drop: .48
 
     public static IntakeSettings makeDefault(){
@@ -88,21 +90,22 @@ public class IntakeSettings {
                 8699,
                 201,
                 .95,
-                .22,
-                .65,
+                .15,
+                .56,
                 .158,
                 .842,
                 .52,
                 .48,
                 12,
-                5,
+                7,
                 .46,
                 .59,
                 .482,
                 .702,
-                .44,
-                .62,
-                .33
+                .42,
+                .56,
+                .365,
+                        .6
                 );
     }
 }

@@ -24,10 +24,7 @@ public class IntakeTeleopSettings {
     public final Supplier<Integer> startTagRanging;
     public final Supplier<Integer> startTagCentering;
     public final Supplier<Boolean> releaseCenter;
-
-
-
-
+    public final Supplier<Boolean> releaseRange;
 
     public IntakeTeleopSettings(Supplier<Integer> sweepSpeedSupplier,
                                 Supplier<Integer> sweepLiftSupplier, Supplier<Integer> robotLiftSupplier,
@@ -35,7 +32,8 @@ public class IntakeTeleopSettings {
                                 Supplier<Integer> pixChangeSupplier, Supplier<Boolean> autoDropSupplier,
                                 Supplier<Boolean> autoDockSupplier, Supplier<Integer> launchReleaseSupplier,
                                 Supplier<Boolean> autoHomeSupplier, Supplier<Boolean> autoArmSupplier, Supplier<Boolean> autoStoreSupplier,
-                                Supplier<Integer> startTagRanging, Supplier<Integer> startTagCentering, Supplier<Boolean> releaseCenter){
+                                Supplier<Integer> startTagRanging, Supplier<Integer> startTagCentering, Supplier<Boolean> releaseCenter,
+                                Supplier<Boolean> releaseRange){
         this.sweepSpeedSupplier = sweepSpeedSupplier;
         this.sweepLiftSupplier = sweepLiftSupplier;
         this.robotLiftSupplier = robotLiftSupplier;
@@ -50,6 +48,7 @@ public class IntakeTeleopSettings {
         this.startTagRanging = startTagRanging;
         this.startTagCentering = startTagCentering;
         this.releaseCenter = releaseCenter;
+        this.releaseRange = releaseRange;
     }
 
     public static IntakeTeleopSettings makeDefault(Robot robot){
@@ -75,7 +74,11 @@ public class IntakeTeleopSettings {
         autoStore.setBase(()->gamepad2.dpad_left);
 
         EdgeSupplier releaseCenter = new EdgeSupplier();
-        releaseCenter.setBase(()->gamepad.a);
+        releaseCenter.setBase(()->gamepad.y);
+
+        EdgeSupplier releaseRange = new EdgeSupplier();
+        releaseRange.setBase(()->gamepad.b);
+
 
         return new IntakeTeleopSettings(
             ()-> gamepad.right_bumper ? -1 : gamepad.left_bumper ? 1 : 0,
@@ -91,8 +94,9 @@ public class IntakeTeleopSettings {
                 autoArm::isRisingEdge,
                 autoStore::isRisingEdge,
             ()-> gamepad.b ? 1 : 0,
-            ()-> gamepad.a ? 1 : 0,
-            releaseCenter::isFallingEdge
+            ()-> gamepad.y ? 1 : 0,
+                releaseCenter::isFallingEdge,
+                releaseRange::isFallingEdge
         );
     }
 }

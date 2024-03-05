@@ -47,6 +47,20 @@ public class VectorMath {
         return new Vector3(xOut, yOut, val.Z);
     }
 
+//    public static Vector3 translateTagAsVector2(Vector3 val, double x, double y){
+//        double r = Math.toRadians(val.Z);
+//        double xOut = val.X + y * Math.sin(r) + x * Math.cos(r);
+//        double yOut = val.Y + x * Math.sin(r) + y * Math.cos(r);
+//        return new Vector3(xOut, yOut, val.Z);
+//    }
+
+    public static Vector3 translateTagAsVector2(Vector3 val, double x, double y) {
+        double r = Math.toRadians(val.Z);
+        double xOut = val.X + x * Math.cos(r) - y * Math.sin(r);
+        double yOut = val.Y + x * Math.sin(r) + y * Math.cos(r);
+        return new Vector3(xOut, yOut, val.Z);
+    }
+
     public static boolean inTolerance(double[] currPos, double[] targetPos, double[] tol){
         for(int i = 0; i < 3; i++)
             if(Math.abs(targetPos[i] - currPos[i]) > tol[i]) return false;

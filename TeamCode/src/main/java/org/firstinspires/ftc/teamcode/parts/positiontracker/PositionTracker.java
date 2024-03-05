@@ -28,6 +28,7 @@ public class PositionTracker extends LoopedPartImpl<Robot, PositionTrackerSettin
     public Class positionSourceId; //TODO make better
     private Hashtable<Class, PositionTicket> tickets = new Hashtable();
     private double imuAngle = 0;
+    public PositionTicket tagTicket;
 
     public double lkRawImuAngle = 0; // LK
     public Vector3 lkStartPosition; // LK
@@ -146,7 +147,10 @@ public class PositionTracker extends LoopedPartImpl<Robot, PositionTrackerSettin
         if(positionSourceId != null && tickets.containsKey(positionSourceId)){
             lastUpdateTime = System.currentTimeMillis();
             PositionTicket ticket = tickets.get(positionSourceId);
+            tagTicket = tickets.get(AprilTag.class);
             currentPosition = ticket.position; //todo add something better
+            if(tagTicket != null)
+                currentPosition = tagTicket.position;
             relativePosition = VectorMath.add(relativePosition, ticket.robotRelative);
             tickets.clear();
         }

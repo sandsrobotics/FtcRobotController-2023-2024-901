@@ -34,8 +34,9 @@ public class IntakeHardware {
     public final RevColorSensorV3 botSensor;
     public final RevColorSensorV3 topSensor;
     public final Rev2mDistanceSensor backSensor;
+    public final DigitalChannel grabberLimitSwitch;
 
-    public IntakeHardware(DcMotorEx sliderMotor, DcMotorEx sweeperMotor, Servo sweepLiftServo, DcMotorEx robotLiftMotor, Servo grabberServo, DigitalChannel liftLowLimitSwitch, DigitalChannel liftHighLImitSwitch, DigitalChannel slideLowLimitSwitch, Servo swingServoLeft,Servo swingServoRight, Servo launchServoAngle, Servo launchServoRelease, RevColorSensorV3 botSensor, RevColorSensorV3 topSensor, Rev2mDistanceSensor backSensor) {
+    public IntakeHardware(DcMotorEx sliderMotor, DcMotorEx sweeperMotor, Servo sweepLiftServo, DcMotorEx robotLiftMotor, Servo grabberServo, DigitalChannel liftLowLimitSwitch, DigitalChannel liftHighLImitSwitch, DigitalChannel slideLowLimitSwitch, Servo swingServoLeft,Servo swingServoRight, Servo launchServoAngle, Servo launchServoRelease, RevColorSensorV3 botSensor, RevColorSensorV3 topSensor, Rev2mDistanceSensor backSensor, DigitalChannel grabberLimitSwitch) {
         this.sweeperMotor = sweeperMotor;
         this.sliderMotor = sliderMotor;
         this.sweepLiftServo = sweepLiftServo;
@@ -51,6 +52,7 @@ public class IntakeHardware {
         this.botSensor = botSensor;
         this.topSensor = topSensor;
         this.backSensor = backSensor;
+        this.grabberLimitSwitch = grabberLimitSwitch;
     }
 //beans
     public static IntakeHardware makeDefault(HardwareMap hardwareMap) {
@@ -69,9 +71,12 @@ public class IntakeHardware {
         DigitalChannel lowLiftLimit = hardwareMap.get(DigitalChannel.class, "digital0");
         DigitalChannel highLiftLimit = hardwareMap.get(DigitalChannel.class, "digital1");
         DigitalChannel lowSlideLimit = hardwareMap.get(DigitalChannel.class, "digital3");
+        DigitalChannel grabberLimit = hardwareMap.get(DigitalChannel.class, "digital6");
         lowLiftLimit.setMode(DigitalChannel.Mode.INPUT);
         highLiftLimit.setMode(DigitalChannel.Mode.INPUT);
         lowSlideLimit.setMode(DigitalChannel.Mode.INPUT);
+        grabberLimit.setMode(DigitalChannel.Mode.INPUT);
+
 
         return new IntakeHardware(
                 slideMotorSettings.makeExMotor(hardwareMap),
@@ -88,7 +93,8 @@ public class IntakeHardware {
                 launchServoReleaseSettings.makeServo(hardwareMap),
                 botSensor,
                 topSensor,
-                backSensor
+                backSensor,
+                grabberLimit
         );
     }
 }
