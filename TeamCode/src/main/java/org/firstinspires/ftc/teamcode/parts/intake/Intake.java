@@ -37,13 +37,14 @@ import om.self.task.other.TimedTask;
 public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardware, IntakeControl> {
     public int slideTargetPosition;
     public Function<Vector3, Vector3> transformFunc;
-    Vector3 mid = new Vector3(36, -36, 180);
-    private double lastBackDist;
     public boolean doTagRange = false;
     public boolean doTagCenter = false;
     private boolean armed;
     public boolean run = false;
     public boolean runCenter = false;
+    private double xPos = 0;
+    public double yPos = 36;
+    Vector3 mid;
     public boolean extraDrop;
     public boolean completeDrop;
     private boolean reverse;
@@ -56,7 +57,6 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
     double motorPower = 0;
     private int pixLine = 0;
     private double backDist;
-    private final int[] pixToPos = {1000, 1100, 1360, 1620, 1880, 2140, 2400, 2660, 2920, 3180, 3440, 3700, 3960}; //TODO move to settings, need 12 of these
     private final int[] pixLineToPos = {1000, 1200, 1400, 1800, 2200, 2600, 3000, 3000, 3000};
     private final Group movementTask = new Group("auto movement", getTaskManager());
     private final TimedTask autoDropTask = new TimedTask(TaskNames.autoDrop, movementTask);
@@ -368,7 +368,7 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
 
         autoGrabTask.addStep(this::preAutoMove);
         // autoGrabTask.addTimedStep(()-> sweepWithPix(2), grabTime);
-        autoGrabTask.addTimedStep(() -> sweepWithPower(reverse ? 1 : -1), () -> hasPixels() == 2, 2300); // tjk
+        autoGrabTask.addTimedStep(() -> sweepWithPower(reverse ? 1 : -1), () -> hasPixels() == 2, 2500); // tjk
         autoGrabTask.addStep(() -> sweepWithPower(0));
         autoGrabTask.addStep(this::postAutoMove);
         autoGrabTask.addStep(() -> triggerEvent(Events.grabComplete));
@@ -428,10 +428,11 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
         autoDropTask.autoStart = false;
 
 //        autoDropTask.addStep(this::preAutoMove);
-        autoDropTask.addStep(() -> setGrabPosition(4));
+        autoDropTask.addStep(()-> setGrabPosition(3));
         autoDropTask.addStep(() -> setSlidePosition(pixLineToPos[pixLine]));
         autoDropTask.addDelay(500);
         autoDropTask.addStep(() -> setSwingPosition(getPix() == 8 ? 4 : getPix() == 7 ? 3 : 1));
+        autoDropTask.addStep(() -> setGrabPosition(4));
         autoDropTask.addStep((Runnable) ()->completeDrop = true);
 //        autoDropTask.addStep(this::postAutoMove);
         autoDropTask.addStep(() -> triggerEvent(Lifter.Events.dropComplete));
@@ -487,19 +488,21 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
         task.waitForEvent(eventManager.getContainer(Events.foundRangeComplete));
     }
 
+    public void startRunCenter(){
+        runCenterTask.restart();
+    }
+
     public void constructRunCenter() {
         runCenterTask.autoStart = false;
 
         runCenterTask.addStep(this::preAutoMove);
-//        runCenterTask.addStep(()->positionSolver.setSettings(PositionSolverSettings.defaultSettings));
-        positionSolver.addMoveToTaskEx(mid, runCenterTask);
-//        runCenterTask.addStep(()->positionSolver.setSettings(PositionSolverSettings.defaultNoAlwaysRunSettings));
+        runCenterTask.addStep(()->{
+            mid = new Vector3(xPos, yPos, 180);
+            positionSolver.setNewTarget(mid, true);
+        });
+//        positionSolver.addMoveToTaskEx(mid, runCenterTask);
         runCenterTask.addStep(this::postAutoMove);
         runCenterTask.addStep(()->triggerEvent(Events.runCenterCompletee));
-    }
-
-    public void startRunCenter(){
-        runCenterTask.restart();
     }
 
     public void addRunCenterToTask(TaskEx task){
@@ -544,7 +547,10 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
 
         if (doTagCenter) {
             if (tag.desiredTag != null) {
+                if(tag.desiredTag.id <= 3) yPos = 36;
+                else yPos = -36;
                 tag.updatePositionWithTag();
+                xPos = positionTracker.getCurrentPosition().X;
             }
         } else if (doTagRange) {
             if (getHardware().grabberLimitSwitch.getState()) {
@@ -623,6 +629,7 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
     @Override
     public void onInit() {
         positionSolver = getBeanManager().getBestMatch(PositionSolver.class, false);
+        positionTracker = getBeanManager().getBestMatch(PositionTracker.class, false, true);
         constructAutoDrop();
         constructAutoDock();
         constructAutoGrab();
@@ -657,8 +664,8 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
         currentSlidePos = getHardware().sliderMotor.getCurrentPosition();
         currentLiftPos = getHardware().robotLiftMotor.getCurrentPosition();
 //        parent.opMode.telemetry.addData("lifter pos", getRobotLiftPosition());
-//        parent.opMode.telemetry.addData("y:", new EdgeSupplier(()-> parent.opMode.gamepad1.y).getRisingEdgeSupplier());
-//        parent.opMode.telemetry.addData("x:", new EdgeSupplier(()-> parent.opMode.gamepad1.x).getRisingEdgeSupplier());
+        parent.opMode.telemetry.addData("y:", yPos);
+        parent.opMode.telemetry.addData("x:", xPos);
         //parent.opMode.telemetry.addData("Top Pixel (cm)", getTopPixelDist());
         //parent.opMode.telemetry.addData("Bottom Pixel (cm)", getBottomPixelDist());
 //        parent.opMode.telemetry.addData("Back Board (In)", getBackDist());
@@ -682,7 +689,7 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
         tag = getBeanManager().getBestMatch(AprilTag.class, false);
         led = getBeanManager().getBestMatch(Led.class, false);
 //        positionSolver = getBeanManager().getBestMatch(PositionSolver.class, false);
-        positionTracker = getBeanManager().getBestMatch(PositionTracker.class, false, true);
+//        positionTracker = getBeanManager().getBestMatch(PositionTracker.class, false, true);
 
         drive.addController(Intake.ContollerNames.distanceContoller, this::doTagRanging);
         setSweepPosition(0);

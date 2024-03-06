@@ -134,17 +134,21 @@ public class AutoRedWallAndAll extends LinearOpMode{
             else
                 telemetry.addData("Team Prop", tp.pipeline.position);
 
-            if(new EdgeSupplier(()-> r.opMode.gamepad1.y).isRisingEdge()) {
+            if(new EdgeSupplier(()-> r.opMode.gamepad1.right_bumper).isRisingEdge()) {
                 startDelay += 1000;
                 if(startDelay > 6000) startDelay = 6000;
             }
-            else if(new EdgeSupplier(()->r.opMode.gamepad1.x).isRisingEdge()) {
+            else if(new EdgeSupplier(()->r.opMode.gamepad1.left_bumper).isRisingEdge()) {
                 startDelay -= 1000;
                 if(startDelay < 0) startDelay = 0;
             } else if(new EdgeSupplier(()->r.opMode.gamepad1.a).isRisingEdge()) {
                 parkPosition = 1;
             } else if(new EdgeSupplier(()->r.opMode.gamepad1.b).isRisingEdge()) {
                 parkPosition = 2;
+            } else if(new EdgeSupplier(()->r.opMode.gamepad1.x).isRisingEdge()) {
+                parkPosition = 3;
+            } else if(new EdgeSupplier(()->r.opMode.gamepad1.y).isRisingEdge()) {
+                parkPosition = 0;
             } else if(new EdgeSupplier(()->r.opMode.gamepad1.dpad_up).isRisingEdge()) {
                 extraPix = true;
             } else if(new EdgeSupplier(()->r.opMode.gamepad1.dpad_down).isRisingEdge()) {
@@ -161,7 +165,7 @@ public class AutoRedWallAndAll extends LinearOpMode{
             telemetry.addData("START DELAY", startDelay);
             telemetry.addData("EXTRA PIXEL? ", extraPix);
             telemetry.addData("DROP POSITION? ", dropLow ? "Drop first" : "Drop second");
-            telemetry.addData("PARK POSITION", parkPosition == 0 ? "Park based off tags" : parkPosition == 1 ? "Park MID" : "Park CORNER");
+            telemetry.addData("PARK POSITION", parkPosition == 0 ? "Park based off tags" : parkPosition == 1 ? "Park MID" : parkPosition == 2 ? "Park CORNER" : "Park BOARD");
             telemetry.addData("AUTO: ", isRed ? (isBoard ? "RED BOARD" : "RED WALL") : isBoard ? "BLUE BOARD" : "BLUE WALL");
             telemetry.update();
             sleep(50);
@@ -260,11 +264,17 @@ public class AutoRedWallAndAll extends LinearOpMode{
         Vector3 preParkSide = new Vector3(2.0, -2.5, 180);
 
         if(parkPosition == 0) {
+            intake.addAutoDockToTask(autoTask);
             positionSolver.addMoveToTaskEx(tileToInchAuto(left ? preParkSide : preParkMid), autoTask);
             autoTask.addStep(()->positionSolver.setSettings(PositionSolverSettings.defaultSettings));
             positionSolver.addMoveToTaskEx(tileToInchAuto(left ? parkSide : parkMid), autoTask);
         }
-        else {
+        else if(parkPosition == 3){
+            positionSolver.setSettings(PositionSolverSettings.defaultNoAlwaysRunSettings);
+            intake.addAutoDockToTask(autoTask);
+        }
+        else{
+            intake.addAutoDockToTask(autoTask);
             positionSolver.addMoveToTaskEx(tileToInchAuto(parkPosition == 1 ? preParkMid : preParkSide), autoTask);
             autoTask.addStep(()->positionSolver.setSettings(PositionSolverSettings.defaultSettings));
             positionSolver.addMoveToTaskEx(tileToInchAuto(parkPosition == 1 ? parkMid : parkSide), autoTask);
@@ -291,14 +301,14 @@ public class AutoRedWallAndAll extends LinearOpMode{
             autoTask.addStep((Runnable) () -> intake.run = true);
             autoTask.addDelay(longDelay);
             autoTask.addStep(()->positionSolver.setSettings(PositionSolverSettings.defaultSettings));
-            positionSolver.addMoveToTaskExNoWait(tileToInchAuto(isRed ? (left ? rightAT : leftAT) : (right ? leftAT : rightAT)), autoTask);
+            positionSolver.addMoveToTaskExNoWait(tileToInchAuto(isRed ? (left ? rightAT : leftAT) : (left ? leftAT : rightAT)), autoTask);
             autoTask.addStep(()->positionSolver.setSettings(PositionSolverSettings.defaultNoAlwaysRunSettings));
             autoTask.addStep(()-> intake.setSlidePosition(900));
             autoTask.addDelay(shortDelay);
         } else {
             autoTask.addDelay(1000); //give swing arm time to get out before lowering slider
             autoTask.addStep((Runnable) ()->intake.completeDrop = false);
-            autoTask.addStep(()-> intake.setSlidePosition(!isBoard ? (dropLow ? 650 : 900) : 650));
+            autoTask.addStep(()-> intake.setSlidePosition(dropLow ? 650 : 900));
         }
 
         autoTask.addStep((Runnable) () -> intake.run = true);
@@ -309,7 +319,6 @@ public class AutoRedWallAndAll extends LinearOpMode{
         autoTask.addDelay(500); //give slider time to get up otherwise it wont dock properly and crash on park
         autoTask.addStep(()->positionSolver.setSettings(PositionSolverSettings.loseSettings));
 //        positionSolver.addMoveToTaskEx(tileToInchAuto(pt.getCurrentPosition().withX(1.5*23.5)), autoTask); // Move away from the board so the swing arm doesn't catch on it
-        intake.addAutoDockToTask(autoTask);
 //        autoTask.addDelay(midDelay);
 
 
@@ -438,7 +447,8 @@ public class AutoRedWallAndAll extends LinearOpMode{
     Vector3 setupTagsMid = new Vector3(1.5, -.5, 180);
     Vector3 preSetupTagsMidRIGHT = new Vector3(-1.7, -.5, 180);
         Vector3 preStack = new Vector3(-2.2, -.52, 180);
-        Vector3 stack = new Vector3(-2.5, -.54, 180);
+        Vector3 stackRed = new Vector3(-2.5, -.41, 180);
+        Vector3 stackBlue = new Vector3(-2.5, -.54, 180);
         Vector3 stackbackout = new Vector3(-2.2, -.52, 180); // tjk
 
         autoTask.addStep(() -> positionSolver.setSettings(PositionSolverSettings.defaultSettings));
@@ -476,7 +486,7 @@ public class AutoRedWallAndAll extends LinearOpMode{
         autoTask.addStep(() -> intake.setSweepPosition(3));
         positionSolver.addMoveToTaskEx(tileToInchAuto(preStack), autoTask);
         intake.addAutoGrabToTask(autoTask, false); // pickup from white stack
-        positionSolver.addMoveToTaskEx(tileToInchAuto(stack), autoTask);
+        positionSolver.addMoveToTaskEx(tileToInchAuto(isRed ? stackRed : stackBlue), autoTask);
         //intake.addAutoGrabToTask(autoTask, false); // pickup from white stack
         autoTask.addStep(()->positionSolver.setSettings(PositionSolverSettings.loseSettings));
         autoTask.addDelay(1000); // tjk
