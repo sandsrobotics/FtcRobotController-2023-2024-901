@@ -408,7 +408,7 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
         autoDockTask.addStep(() -> drive.addController("Move to closer pixel drop position", (control) -> control.power = control.power.addY(.6)));
         autoDockTask.addDelay(75);
         autoDockTask.addStep(() -> drive.removeController("Move to closer pixel drop position"));
-        autoDockTask.addStep(() -> setSwingPosition(getSlidePosition() > 800 ? 2 : 1));
+        autoDockTask.addStep(() -> setSwingPosition(getSlidePosition() > 740 ? 2 : 1));
         autoDockTask.addDelay(500);
         autoDockTask.addStep(() -> setSlidePosition(0));
         autoDockTask.addStep(this::postAutoMove);
@@ -543,7 +543,7 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
         final double xPower = 0.03;
         final double yPower = 0.045;
         final double zPower = 0.01;
-        final double yAutoPower = 0.045;
+        final double yAutoPower = 0.055;
 
         if (doTagCenter) {
             if (tag.desiredTag != null) {
