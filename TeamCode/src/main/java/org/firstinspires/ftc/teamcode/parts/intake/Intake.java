@@ -41,6 +41,7 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
     public boolean doTagCenter = false;
     private boolean armed;
     public boolean run = false;
+    public boolean runSensor;
     public boolean runCenter = false;
     private double xPos = 0;
     public double yPos = 36;
@@ -196,7 +197,7 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
     }
 
     public double getBackDist() {
-        return backDist;
+        return backDist == 0.0 ? 7.0 : Math.min(backDist, 30.0);
     }
 
     public int hasPixels() {
@@ -579,17 +580,7 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
                 run = false;
             }
         }
-        else if (runCenter && tag.targetFound) {
-                boolean inCenter = tag.desiredTag.ftcPose.x > -1 && tag.desiredTag.ftcPose.x < 1;
-                double xDist = tag.desiredTag.ftcPose.x;
-
-                if (!inCenter) // tag to the right (x is positive) tag to the left (x is negative)
-                    control.power = control.power.addX(xDist * -xPower);
-                else {
-                    runCenter = false;
-                }
-            }
-        }
+    }
 //            else if (tooClose){
 //               drive.stopRobot();
 //               doTagRange = false;
@@ -668,7 +659,7 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
         parent.opMode.telemetry.addData("x:", xPos);
         //parent.opMode.telemetry.addData("Top Pixel (cm)", getTopPixelDist());
         //parent.opMode.telemetry.addData("Bottom Pixel (cm)", getBottomPixelDist());
-//        parent.opMode.telemetry.addData("Back Board (In)", getBackDist());
+        parent.opMode.telemetry.addData("Back Board (In)", getBackDist());
 //        parent.opMode.telemetry.addData("ranging", run);
         //parent.opMode.telemetry.addData("Lift height", getRobotLiftPosition());
         //parent.opMode.telemetry.addData("dpad",control.robotLiftPosition);
