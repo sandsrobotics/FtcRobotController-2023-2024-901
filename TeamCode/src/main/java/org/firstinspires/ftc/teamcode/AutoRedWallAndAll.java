@@ -273,9 +273,9 @@ public class AutoRedWallAndAll extends LinearOpMode{
     }
 
     private void dropAuto(TimedTask autoTask){
-        Vector3 centerAT = new Vector3(1.5,-1.52,180);
-        Vector3 leftAT = new Vector3(1.5, -1.25, 180);
-        Vector3 rightAT = new Vector3(1.5, -1.75, 180);
+        Vector3 centerAT = new Vector3(1.5,-1.55,180);
+        Vector3 leftAT = new Vector3(1.5, -1.23, 180);
+        Vector3 rightAT = new Vector3(1.5, -1.82, 180);
 
         intake.addAutoDropToTask(autoTask);
         if(!isBoard)
