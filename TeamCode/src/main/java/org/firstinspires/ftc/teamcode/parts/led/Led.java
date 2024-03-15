@@ -30,7 +30,7 @@ public class Led extends LoopedPartImpl<Robot, ObjectUtils.Null, ObjectUtils.Nul
 
     @Override
     public void onInit() {
-         leds = parent.opMode.hardwareMap.get(QwiicLEDStick.class, "statLed");
+        leds = parent.opMode.hardwareMap.get(QwiicLEDStick.class, "statLed");
     }
 
     @Override

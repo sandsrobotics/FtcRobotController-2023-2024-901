@@ -542,9 +542,9 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
         final double desiredAutoDistance = 8.2;
         final double desiredTeleDistance = 7.0;
         final double xPower = 0.03;
-        final double yPower = 0.045;
+        final double yPower = 0.051;
         final double zPower = 0.01;
-        final double yAutoPower = 0.055;
+        final double yAutoPower = 0.051;
 
         if (doTagCenter) {
             if (tag.desiredTag != null) {
@@ -655,11 +655,11 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
         currentSlidePos = getHardware().sliderMotor.getCurrentPosition();
         currentLiftPos = getHardware().robotLiftMotor.getCurrentPosition();
 //        parent.opMode.telemetry.addData("lifter pos", getRobotLiftPosition());
-        parent.opMode.telemetry.addData("y:", yPos);
-        parent.opMode.telemetry.addData("x:", xPos);
+//        parent.opMode.telemetry.addData("y:", yPos);
+//        parent.opMode.telemetry.addData("x:", xPos);
         //parent.opMode.telemetry.addData("Top Pixel (cm)", getTopPixelDist());
         //parent.opMode.telemetry.addData("Bottom Pixel (cm)", getBottomPixelDist());
-        parent.opMode.telemetry.addData("Back Board (In)", getBackDist());
+//        parent.opMode.telemetry.addData("Back Board (In)", getBackDist());
 //        parent.opMode.telemetry.addData("ranging", run);
         //parent.opMode.telemetry.addData("Lift height", getRobotLiftPosition());
         //parent.opMode.telemetry.addData("dpad",control.robotLiftPosition);

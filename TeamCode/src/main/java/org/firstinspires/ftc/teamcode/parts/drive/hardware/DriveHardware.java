@@ -4,6 +4,11 @@ import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
+
+import java.lang.reflect.Array;
+import java.util.Arrays;
+import java.util.List;
 
 import om.self.ezftc.core.Robot;
 import om.self.ezftc.utils.hardware.motor.MotorSettings;
@@ -17,11 +22,20 @@ public class DriveHardware {
     public final DcMotorEx bottomLeftMotor;
     public final DcMotorEx bottomRightMotor;
 
+
     public DriveHardware(HardwareMap hardwareMap, MotorSettings topLeftMotorSettings, MotorSettings topRightMotorSettings, MotorSettings bottomLeftMotorSettings, MotorSettings bottomRightMotorSettings) {
         topLeftMotor = topLeftMotorSettings.makeExMotor(hardwareMap);
         topRightMotor = topRightMotorSettings.makeExMotor(hardwareMap);
         bottomLeftMotor = bottomLeftMotorSettings.makeExMotor(hardwareMap);
         bottomRightMotor = bottomRightMotorSettings.makeExMotor(hardwareMap);
+
+        List<DcMotorEx> motors = Arrays.asList(topLeftMotor, topRightMotor, bottomLeftMotor, bottomRightMotor);
+        for(DcMotorEx motor : motors){
+            MotorConfigurationType motorConfigurationType = motor.getMotorType().clone();
+            motorConfigurationType.setAchieveableMaxRPMFraction(1.0);
+            motor.setMotorType(motorConfigurationType);
+        }
+
     }
 
     public DriveHardware(DcMotorEx topLeftMotor, DcMotorEx topRightMotor, DcMotorEx bottomLeftMotor, DcMotorEx bottomRightMotor){

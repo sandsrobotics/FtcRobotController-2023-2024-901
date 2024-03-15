@@ -19,6 +19,7 @@ public class PositionSolver extends Part<Drive, PositionSolverSettings, ObjectUt
 //    } //TODO add done event
 
     private boolean t = false;
+    private long startTime;
 
     protected PositionTracker positionTracker;
 
@@ -98,6 +99,13 @@ public class PositionSolver extends Part<Drive, PositionSolverSettings, ObjectUt
 
     public void addMoveToTaskExNoWait(Vector3 target, TaskEx task){
         task.addStep(() -> setNewTarget(target, true));
+    }
+
+    public void addMoveToTaskEx(Vector3 target, TaskEx task, int time){
+        //sanitize input
+        if(time <= 0) return;
+        task.addStep(() -> {startTime = System.currentTimeMillis();});
+        task.addStep(() -> setNewTarget(target, true), () -> (System.currentTimeMillis() - startTime >= time));
     }
 
     @Override
