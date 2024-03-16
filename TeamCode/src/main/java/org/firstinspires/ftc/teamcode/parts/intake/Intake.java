@@ -41,7 +41,6 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
     public boolean doTagCenter = false;
     private boolean armed;
     public boolean run = false;
-    public boolean runSensor;
     public boolean runCenter = false;
     private double xPos = 0;
     public double yPos = 36;
@@ -57,6 +56,7 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
     boolean isTop;
     double motorPower = 0;
     private int pixLine = 0;
+    private int dropNum;
     private double backDist;
     private final int[] pixLineToPos = {1000, 1200, 1400, 1800, 2200, 2600, 3000, 3000, 3000};
     private final Group movementTask = new Group("auto movement", getTaskManager());
@@ -456,7 +456,7 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
         finishDropTask.addDelay(150);
         finishDropTask.addStep(() -> drive.addController("Move to closer pixel drop position", (control) -> control.power = control.power.addY(.6)));
         finishDropTask.addDelay(65);
-//        finishDropTask.addStep(() -> setGrabPosition(1));
+        finishDropTask.addStep(() -> setGrabPosition(1));
         finishDropTask.addStep(() -> drive.removeController("Move to closer pixel drop position"));
         finishDropTask.addStep(this::postAutoMove);
         finishDropTask.addStep(() -> triggerEvent(Events.finishDropComplete));
@@ -540,7 +540,7 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
 
     public void doTagRanging(DriveControl control) {
         final double desiredAutoDistance = 8.2;
-        final double desiredTeleDistance = 7.0;
+        final double desiredTeleDistance = 7.3;
         final double xPower = 0.03;
         final double yPower = 0.051;
         final double zPower = 0.01;
@@ -575,28 +575,10 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
                     startFinishDrop();
                     completeDrop = false;
                 }
-                led.setBottomGroup2(2);
-                led.setTopGroup2(2);
                 run = false;
             }
         }
     }
-//            else if (tooClose){
-//               drive.stopRobot();
-//               doTagRange = false;
-//               doTagCenter = false;
-//           }
-//        else{
-//            inCenter = false;
-//            inRange = false;
-//            currentDist = 0;
-//            atTag = false;
-//            tooClose = false;
-//            doTagRange = false;
-//            doTagCenter = false;
-//        }
-//}
-
 
 
     public void setSweepPosition(int position) {

@@ -36,7 +36,13 @@ public class IntakeHardware {
     public final Rev2mDistanceSensor backSensor;
     public final DigitalChannel grabberLimitSwitch;
 
-    public IntakeHardware(DcMotorEx sliderMotor, DcMotorEx sweeperMotor, Servo sweepLiftServo, DcMotorEx robotLiftMotor, Servo grabberServo, DigitalChannel liftLowLimitSwitch, DigitalChannel liftHighLImitSwitch, DigitalChannel slideLowLimitSwitch, Servo swingServoLeft,Servo swingServoRight, Servo launchServoAngle, Servo launchServoRelease, RevColorSensorV3 botSensor, RevColorSensorV3 topSensor, Rev2mDistanceSensor backSensor, DigitalChannel grabberLimitSwitch) {
+    public IntakeHardware(DcMotorEx sliderMotor, DcMotorEx sweeperMotor,
+                          Servo sweepLiftServo, DcMotorEx robotLiftMotor,
+                          Servo grabberServo, DigitalChannel liftLowLimitSwitch,
+                          DigitalChannel liftHighLImitSwitch, DigitalChannel slideLowLimitSwitch,
+                          Servo swingServoLeft,Servo swingServoRight, Servo launchServoAngle,
+                          Servo launchServoRelease, RevColorSensorV3 botSensor, RevColorSensorV3 topSensor,
+                          Rev2mDistanceSensor backSensor, DigitalChannel grabberLimitSwitch) {
         this.sweeperMotor = sweeperMotor;
         this.sliderMotor = sliderMotor;
         this.sweepLiftServo = sweepLiftServo;

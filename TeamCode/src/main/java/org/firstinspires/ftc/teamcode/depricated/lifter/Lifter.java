@@ -296,7 +296,7 @@ public class Lifter extends ControllablePart<Robot, LifterSettings, LifterHardwa
 
     public void addAutoDropToTask(TaskEx task){
         task.addStep(autoDropTask::restart);
-        task.waitForEvent(Events.dropComplete, eventManager, () -> {});
+//        task.waitForEvent(Events.dropComplete, eventManager, () -> {});
     }
 
     /**

@@ -15,9 +15,9 @@ public class PositionSolverSettings {
     }
 
     public static PositionSolverSettings loseSettings = new PositionSolverSettings(
-            new SolverSettings(5, 5, true, 10000, new PIDCoefficients(0.05, 0, 0), 1),
-            new SolverSettings(5, 5, true, 10000, new PIDCoefficients(0.05, 0, 0), 1),
-            new SolverSettings(10, 5, true, 10000, new PIDCoefficients(0.0125, 0, 0), 1)
+            new SolverSettings(5, 5, true, 10000, new PIDCoefficients(0.07, 0, 0), 1),
+            new SolverSettings(5, 5, true, 10000, new PIDCoefficients(0.07, 0, 0), 1),
+            new SolverSettings(2.5, 5, true, 10000, new PIDCoefficients(0.0125, 0, 0), 1)
     );
 
     public static PositionSolverSettings extraLoseSettings = new PositionSolverSettings(
@@ -29,7 +29,7 @@ public class PositionSolverSettings {
     public static PositionSolverSettings slowSettings = new PositionSolverSettings(
             new SolverSettings(1, 10, true, 10000, new PIDCoefficients(0.05, 0, 0), .3),
             new SolverSettings(1, 10, true, 10000, new PIDCoefficients(0.05, 0, 0), .3),
-            new SolverSettings(2.5, 10, true, 10000, new PIDCoefficients(0.0125, 0, 0), .3)
+            new SolverSettings(2, 10, true, 10000, new PIDCoefficients(0.0125, 0, 0), .3)
     );
 
     public static PositionSolverSettings defaultSettings = new PositionSolverSettings(
