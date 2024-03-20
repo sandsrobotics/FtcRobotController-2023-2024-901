@@ -105,7 +105,8 @@ public class PositionSolver extends Part<Drive, PositionSolverSettings, ObjectUt
         //sanitize input
         if(time <= 0) return;
         task.addStep(() -> {startTime = System.currentTimeMillis();});
-        task.addStep(() -> setNewTarget(target, true), () -> (System.currentTimeMillis() - startTime >= time));
+        task.addStep(() -> setNewTarget(target, true));
+        task.addStep(() -> (System.currentTimeMillis() - startTime >= time) || isDone());
     }
 
     @Override

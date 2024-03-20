@@ -369,7 +369,7 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
 
         autoGrabTask.addStep(this::preAutoMove);
         // autoGrabTask.addTimedStep(()-> sweepWithPix(2), grabTime);
-        autoGrabTask.addTimedStep(() -> sweepWithPower(reverse ? 1 : -1), () -> hasPixels() == 2, 2500); // tjk
+        autoGrabTask.addTimedStep(() -> sweepWithPower(reverse ? 1 : -1), () -> hasPixels() == 2, 1500); // tjk
         autoGrabTask.addStep(() -> sweepWithPower(0));
         autoGrabTask.addStep(this::postAutoMove);
         autoGrabTask.addStep(() -> triggerEvent(Events.grabComplete));
@@ -453,10 +453,10 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
 
         finishDropTask.addStep(this::preAutoMove);
         finishDropTask.addStep(() -> setGrabPosition(extraDrop ? 2 : 1)); //change to 2 when grabbing extra pix in auto
-        finishDropTask.addDelay(150);
+        finishDropTask.addDelay(200); // lowerr when plunger fixed
         finishDropTask.addStep(() -> drive.addController("Move to closer pixel drop position", (control) -> control.power = control.power.addY(.6)));
         finishDropTask.addDelay(65);
-        finishDropTask.addStep(() -> setGrabPosition(1));
+//        finishDropTask.addStep(() -> setGrabPosition(1));
         finishDropTask.addStep(() -> drive.removeController("Move to closer pixel drop position"));
         finishDropTask.addStep(this::postAutoMove);
         finishDropTask.addStep(() -> triggerEvent(Events.finishDropComplete));
@@ -539,12 +539,12 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
 
 
     public void doTagRanging(DriveControl control) {
-        final double desiredAutoDistance = 8.2;
-        final double desiredTeleDistance = 7.3;
+        final double desiredAutoDistance = 7.2;
+        final double desiredTeleDistance = 8.0;
         final double xPower = 0.03;
-        final double yPower = 0.051;
+        final double yPower = 0.02;
         final double zPower = 0.01;
-        final double yAutoPower = 0.051;
+        final double yAutoPower = 0.03;
 
         if (doTagCenter) {
             if (tag.desiredTag != null) {
@@ -555,7 +555,7 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
             }
         } else if (doTagRange) {
             if (getHardware().grabberLimitSwitch.getState()) {
-                control.power = control.power.addY((getBackDist() - desiredTeleDistance) * -yPower);
+                control.power = control.power.addY((Math.min(getBackDist(), 15) - desiredTeleDistance) * -yPower);
                 led.setBottomGroup2(0);
                 led.setTopGroup2(0);
             } else if (!getHardware().grabberLimitSwitch.getState()) {
@@ -569,7 +569,7 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
             }
         } else if (run) {
             if (getHardware().grabberLimitSwitch.getState()) {
-                control.power = control.power.addY((getBackDist() - desiredTeleDistance) * -yAutoPower);
+                control.power = control.power.addY((Math.min(getBackDist(), 14) - desiredAutoDistance) * -yAutoPower);
             } else if (!getHardware().grabberLimitSwitch.getState()) {
                 if (completeDrop) {
                     startFinishDrop();
@@ -601,6 +601,7 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
 
     @Override
     public void onInit() {
+        backDist = getHardware().backSensor.getDistance(DistanceUnit.INCH);
         positionSolver = getBeanManager().getBestMatch(PositionSolver.class, false);
         positionTracker = getBeanManager().getBestMatch(PositionTracker.class, false, true);
         constructAutoDrop();
