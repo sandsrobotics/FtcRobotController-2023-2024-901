@@ -42,8 +42,10 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
     private boolean armed;
     public boolean run = false;
     public boolean runCenter = false;
+    private boolean abortRange;
     private double xPos = 0;
     public double yPos = 36;
+    private double lastBackDist;
     Vector3 mid;
     public boolean extraDrop;
     public boolean completeDrop;
@@ -56,6 +58,7 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
     boolean isTop;
     double motorPower = 0;
     private int pixLine = 0;
+    public int dropCounter;
     private int dropNum;
     private double backDist;
     private final int[] pixLineToPos = {1000, 1200, 1400, 1800, 2200, 2600, 3000, 3000, 3000};
@@ -447,17 +450,12 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
         task.addStep(autoDropTask::restart);
         task.waitForEvent(eventManager.getContainer(Events.dropComplete));
     }
-
     public void constructFinishDrop() {
         finishDropTask.autoStart = false;
 
         finishDropTask.addStep(this::preAutoMove);
-        finishDropTask.addStep(() -> setGrabPosition(extraDrop ? 2 : 1)); //change to 2 when grabbing extra pix in auto
-        finishDropTask.addDelay(200); // lowerr when plunger fixed
-        finishDropTask.addStep(() -> drive.addController("Move to closer pixel drop position", (control) -> control.power = control.power.addY(.6)));
-        finishDropTask.addDelay(65);
-//        finishDropTask.addStep(() -> setGrabPosition(1));
-        finishDropTask.addStep(() -> drive.removeController("Move to closer pixel drop position"));
+        finishDropTask.addStep(() -> setGrabPosition((extraDrop || dropCounter == 0) ? 2 : 1)); //change to 2 when grabbing extra pix in auto
+        finishDropTask.addDelay(200); // lower when plunger fixed
         finishDropTask.addStep(this::postAutoMove);
         finishDropTask.addStep(() -> triggerEvent(Events.finishDropComplete));
     }
@@ -475,7 +473,9 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
     public void constructFoundRange() {
         foundRangeTask.autoStart = false;
 
-        foundRangeTask.addStep(()->setRunCenter(true));
+        foundRangeTask.addStep(() -> drive.addController("Move to closer pixel drop position", (control) -> control.power = control.power.addY(.6)));
+        foundRangeTask.addDelay(65);
+        foundRangeTask.addStep(() -> drive.removeController("Move to closer pixel drop position"));
 
         foundRangeTask.addStep(() -> triggerEvent(Events.foundRangeComplete));
     }
@@ -553,20 +553,20 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
                 tag.updatePositionWithTag();
                 xPos = positionTracker.getCurrentPosition().X;
             }
-        } else if (doTagRange) {
+        } else if (doTagRange && !abortRange) {
+            if(getBackDist() - lastBackDist >= 7)
+                abortRange = true;
             if (getHardware().grabberLimitSwitch.getState()) {
                 control.power = control.power.addY((Math.min(getBackDist(), 15) - desiredTeleDistance) * -yPower);
                 led.setBottomGroup2(0);
                 led.setTopGroup2(0);
             } else if (!getHardware().grabberLimitSwitch.getState()) {
-                if (completeDrop) {
-                    startFinishDrop();
-                    completeDrop = false;
-                }
+                startFinishDrop();
                 led.setBottomGroup2(2);
                 led.setTopGroup2(2);
                 doTagRange = false;
             }
+            lastBackDist = getBackDist();
         } else if (run) {
             if (getHardware().grabberLimitSwitch.getState()) {
                 control.power = control.power.addY((Math.min(getBackDist(), 14) - desiredAutoDistance) * -yAutoPower);
@@ -617,6 +617,7 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
         setSwingPosition(2);
         setLaunchAngle(2);
         setLaunchState(0);
+        lastBackDist = getBackDist();
     }
 
     @Override

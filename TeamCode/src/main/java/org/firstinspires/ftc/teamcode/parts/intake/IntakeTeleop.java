@@ -31,6 +31,7 @@ public class IntakeTeleop extends LoopedPartImpl<Intake, IntakeTeleopSettings, O
 
     @Override
     public void onInit() {
+        parent.dropCounter = 0;
     }
 
     @Override
@@ -64,8 +65,12 @@ public class IntakeTeleop extends LoopedPartImpl<Intake, IntakeTeleopSettings, O
             parent.startAutoArm();
         else if(settings.autoStoreSupplier.get())
             parent.startAutoStore();
-        else if(settings.releaseRange.get())
-            parent.startAutoDock();
+        else if(settings.releaseRange.get()) {
+            parent.dropCounter++;
+            parent.startFoundRange();
+            if(parent.dropCounter == 2)
+                parent.startAutoDock();
+        }
         else if(settings.releaseCenter.get())
             parent.startRunCenter();
 

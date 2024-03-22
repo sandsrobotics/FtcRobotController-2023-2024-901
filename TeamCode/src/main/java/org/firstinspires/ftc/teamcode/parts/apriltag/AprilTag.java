@@ -66,6 +66,7 @@ public class AprilTag extends LoopedPartImpl<Robot, ObjectUtils.Null, ObjectUtil
                         // Yes, we want to use this tag.
                             targetFound = true;
                             desiredTag = detection;
+                            updatePositionWithTag();
                         break;  // don't look any further.
                     } else {
                         // This tag is in the library, but we do not want to track it right now.
@@ -85,21 +86,22 @@ public class AprilTag extends LoopedPartImpl<Robot, ObjectUtils.Null, ObjectUtil
 
     public void updatePositionWithTag(){
         if(desiredTag != null) {
-            VectorF tagPos = desiredTag.metadata.fieldPosition;
-            Vector3 tagPosAsV3 = new Vector3(tagPos.get(0), tagPos.get(1), tagPos.get(2));
-            Vector3 cameraOffset = new Vector3(8.5, 0, 0);
-            parent.opMode.telemetry.addData("Tag Position as V3: ", tagPosAsV3);
+            final VectorF tagPos = desiredTag.metadata.fieldPosition;
+            final Vector3 tagPosAsV3 = new Vector3(tagPos.get(0), tagPos.get(1), tagPos.get(2));
+            final Vector3 cameraOffset = new Vector3(8.5, 0, 0);
+            final Vector3 tagOffset = new Vector3(0, 0, 0);
+            // Need to check if this is different for tags - including oppposite side
+
             double xOffset = desiredTag.ftcPose.y + cameraOffset.X;
             double yOffset = -desiredTag.ftcPose.x + cameraOffset.Y;
             double angle = AngleMath.scaleAngle(180 - desiredTag.ftcPose.yaw);
 
-            Vector3 robotPos = new Vector3(tagPosAsV3.X + xOffset, tagPosAsV3.Y + yOffset, angle);
-//            Vector3 robotPosAngle = VectorMath.translateAsVector2(tagPosAsV3.withZ(angle), yOffset, xOffset);
             Vector3 robotPosAngle = VectorMath.translateTagAsVector2(tagPosAsV3.withZ(angle), xOffset, yOffset);
-//            Vector3 robotPosAngle = new Vector3(robotOffset.X);
+
+            parent.opMode.telemetry.addData("Tag Position as V3: ", tagPosAsV3);
             parent.opMode.telemetry.addData("Robot Position using Tag: ", robotPosAngle);
 
-            positionTracker.addPositionTicket(AprilTag.class, new PositionTicket(robotPosAngle));
+//            positionTracker.addPositionTicket(AprilTag.class, new PositionTicket(robotPosAngle));
         }
         else
             parent.opMode.telemetry.addLine("No tag found!!");
@@ -144,7 +146,6 @@ public class AprilTag extends LoopedPartImpl<Robot, ObjectUtils.Null, ObjectUtil
     @Override
     public void onStart() {
         positionTracker = getBeanManager().getBestMatch(PositionTracker.class, false);
-
     }
 
     @Override
