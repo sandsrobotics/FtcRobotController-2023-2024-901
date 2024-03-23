@@ -19,6 +19,8 @@ public class AutoBlueBoard extends AutoRedWallAndAll {
         isBoard = true;
         extraPix = false;
         dropLow = true;
+        stackPathSide = false;
+        dropPathSide = false;
     }
 
 }

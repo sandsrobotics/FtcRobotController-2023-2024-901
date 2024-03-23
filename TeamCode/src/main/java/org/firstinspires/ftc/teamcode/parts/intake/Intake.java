@@ -539,8 +539,8 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
 
 
     public void doTagRanging(DriveControl control) {
-        final double desiredAutoDistance = 7.2;
-        final double desiredTeleDistance = 8.0;
+        final double desiredAutoDistance = 7.0;
+        final double desiredTeleDistance = 7.0;
         final double xPower = 0.03;
         final double yPower = 0.02;
         final double zPower = 0.01;

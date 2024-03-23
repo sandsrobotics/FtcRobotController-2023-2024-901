@@ -90,7 +90,7 @@ public class AprilTag extends LoopedPartImpl<Robot, ObjectUtils.Null, ObjectUtil
             final Vector3 tagPosAsV3 = new Vector3(tagPos.get(0), tagPos.get(1), tagPos.get(2));
             final Vector3 cameraOffset = new Vector3(8.5, 0, 0);
             final Vector3 tagOffset = new Vector3(0, 0, 0);
-            // Need to check if this is different for tags - including oppposite side
+            // Need to check if this is different for tags - including opposite side
 
             double xOffset = desiredTag.ftcPose.y + cameraOffset.X;
             double yOffset = -desiredTag.ftcPose.x + cameraOffset.Y;
