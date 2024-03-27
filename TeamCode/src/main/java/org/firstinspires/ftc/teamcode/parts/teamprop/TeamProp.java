@@ -53,6 +53,7 @@ public class TeamProp extends LoopedPartImpl<Robot, ObjectUtils.Null, ObjectUtil
 
     @Override
     public void onRun() {
+        pipeline.pixelPosition = pipeline.getPixAnalysis();
     }
 
     @Override

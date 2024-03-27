@@ -295,8 +295,8 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
 
         if (power < 0) { // going down
             isTop = false;
-            if (getHardware().liftLowLimitSwitch.getState())
-                motorPower = 0.0;
+//            if (getHardware().liftLowLimitSwitch.getState())
+//                motorPower = 0.0;
         } else if (power > 0) { // going up
             if (getHardware().robotLiftMotor.getCurrent(CurrentUnit.MILLIAMPS) > 5000 || isTop) {
                 isTop = true;
@@ -571,10 +571,6 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
             if (getHardware().grabberLimitSwitch.getState()) {
                 control.power = control.power.addY((Math.min(getBackDist(), 14) - desiredAutoDistance) * -yAutoPower);
             } else if (!getHardware().grabberLimitSwitch.getState()) {
-                if (completeDrop) {
-                    startFinishDrop();
-                    completeDrop = false;
-                }
                 run = false;
             }
         }

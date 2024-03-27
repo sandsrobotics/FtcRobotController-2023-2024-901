@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.parts.teamprop;
 
+import org.apache.commons.math3.analysis.function.Max;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
@@ -7,6 +8,8 @@ import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
+
+import androidx.core.math.MathUtils;
 
 public class TeamPropDetectionPipeline extends OpenCvPipeline
 {
@@ -21,10 +24,23 @@ public class TeamPropDetectionPipeline extends OpenCvPipeline
         RIGHT
     }
 
+    public enum PixelPosition
+    {
+        NONE,
+        LEFTTAGLEFT,
+        LEFTTAGRIGHT,
+        CENTERTAGLEFT,
+        CENTERTAGRIGHT,
+        RIGHTTAGLEFT,
+        RIGHTTAGRIGHT,
+
+    }
+
     /*
      * Some color constants
      */
     static final Scalar BLUE = new Scalar(0, 0, 255);
+    static final Scalar YELLOW = new Scalar(0, 255, 255);
     static final Scalar GREEN = new Scalar(0, 255, 0);
     static final Scalar BLOCK = new Scalar(76,166,40);
     static final Scalar WHITE = new Scalar(255,255,255);
@@ -35,6 +51,12 @@ public class TeamPropDetectionPipeline extends OpenCvPipeline
     static final Point REGION1_TOPLEFT_ANCHOR_POINT = new Point(0,400);
     static final Point REGION2_TOPLEFT_ANCHOR_POINT = new Point(550,350);
     static final Point REGION3_TOPLEFT_ANCHOR_POINT = new Point(1080,400);
+    static final Point REGION4_TOPLEFT_ANCHOR_POINT = new Point(0,400);
+    static final Point REGION5_TOPLEFT_ANCHOR_POINT = new Point(213,400);
+    static final Point REGION6_TOPLEFT_ANCHOR_POINT = new Point(426,400);
+    static final Point REGION7_TOPLEFT_ANCHOR_POINT = new Point(639,400);
+    static final Point REGION8_TOPLEFT_ANCHOR_POINT = new Point(852,400);
+    static final Point REGION9_TOPLEFT_ANCHOR_POINT = new Point(1080,400);
     static final int REGION_WIDTH = 200;
     static final int REGION_HEIGHT = 200;
 
@@ -74,16 +96,55 @@ public class TeamPropDetectionPipeline extends OpenCvPipeline
             REGION3_TOPLEFT_ANCHOR_POINT.x + REGION_WIDTH,
             REGION3_TOPLEFT_ANCHOR_POINT.y + REGION_HEIGHT);
 
+    Point region4_pointA = new Point(
+            REGION4_TOPLEFT_ANCHOR_POINT.x,
+            REGION4_TOPLEFT_ANCHOR_POINT.y);
+    Point region4_pointB = new Point(
+            REGION4_TOPLEFT_ANCHOR_POINT.x + REGION_WIDTH,
+            REGION4_TOPLEFT_ANCHOR_POINT.y + REGION_HEIGHT);
+    Point region5_pointA = new Point(
+            REGION5_TOPLEFT_ANCHOR_POINT.x,
+            REGION5_TOPLEFT_ANCHOR_POINT.y);
+    Point region5_pointB = new Point(
+            REGION5_TOPLEFT_ANCHOR_POINT.x + REGION_WIDTH,
+            REGION5_TOPLEFT_ANCHOR_POINT.y + REGION_HEIGHT);
+    Point region6_pointA = new Point(
+            REGION6_TOPLEFT_ANCHOR_POINT.x,
+            REGION6_TOPLEFT_ANCHOR_POINT.y);
+    Point region6_pointB = new Point(
+            REGION6_TOPLEFT_ANCHOR_POINT.x + REGION_WIDTH,
+            REGION6_TOPLEFT_ANCHOR_POINT.y + REGION_HEIGHT);
+
+    Point region7_pointA = new Point(
+            REGION7_TOPLEFT_ANCHOR_POINT.x,
+            REGION7_TOPLEFT_ANCHOR_POINT.y);
+    Point region7_pointB = new Point(
+            REGION7_TOPLEFT_ANCHOR_POINT.x + REGION_WIDTH,
+            REGION7_TOPLEFT_ANCHOR_POINT.y + REGION_HEIGHT);
+    Point region8_pointA = new Point(
+            REGION8_TOPLEFT_ANCHOR_POINT.x,
+            REGION8_TOPLEFT_ANCHOR_POINT.y);
+    Point region8_pointB = new Point(
+            REGION8_TOPLEFT_ANCHOR_POINT.x + REGION_WIDTH,
+            REGION8_TOPLEFT_ANCHOR_POINT.y + REGION_HEIGHT);
+    Point region9_pointA = new Point(
+            REGION9_TOPLEFT_ANCHOR_POINT.x,
+            REGION9_TOPLEFT_ANCHOR_POINT.y);
+    Point region9_pointB = new Point(
+            REGION9_TOPLEFT_ANCHOR_POINT.x + REGION_WIDTH,
+            REGION9_TOPLEFT_ANCHOR_POINT.y + REGION_HEIGHT);
+
     /*
      * Working variables
      */
-    Mat region1, region2, region3;
+    Mat region1, region2, region3, region4, region5, region6, region7, region8, region9;
     Mat inputConv = new Mat();
     Mat extracted = new Mat();
-    int avg1, avg2, avg3;
+    int avg1, avg2, avg3, avg4, avg5, avg6, avg7, avg8, avg9;
 
     // Volatile since accessed by OpMode thread w/o synchronization
     public volatile TeamPropPosition position = TeamPropPosition.NONE;
+    public volatile PixelPosition pixelPosition = PixelPosition.NONE;
 
     //public TeamPropDetectionPipeline(){}
 
@@ -126,6 +187,12 @@ public class TeamPropDetectionPipeline extends OpenCvPipeline
         region1 = extracted.submat(new Rect(region1_pointA, region1_pointB));
         region2 = extracted.submat(new Rect(region2_pointA, region2_pointB));
         region3 = extracted.submat(new Rect(region3_pointA, region3_pointB));
+        region4 = extracted.submat(new Rect(region4_pointA, region4_pointB));
+        region5 = extracted.submat(new Rect(region5_pointA, region5_pointB));
+        region6 = extracted.submat(new Rect(region6_pointA, region6_pointB));
+        region7 = extracted.submat(new Rect(region7_pointA, region7_pointB));
+        region8 = extracted.submat(new Rect(region8_pointA, region8_pointB));
+        region9 = extracted.submat(new Rect(region9_pointA, region9_pointB));
     }
 
     @Override
@@ -143,6 +210,13 @@ public class TeamPropDetectionPipeline extends OpenCvPipeline
         avg1 = (int) Core.mean(region1).val[0];
         avg2 = (int) Core.mean(region2).val[0];
         avg3 = (int) Core.mean(region3).val[0];
+        avg4 = (int) Core.mean(region4).val[0];
+        avg5 = (int) Core.mean(region5).val[0];
+        avg6 = (int) Core.mean(region6).val[0];
+        avg7 = (int) Core.mean(region7).val[0];
+        avg8 = (int) Core.mean(region8).val[0];
+        avg9 = (int) Core.mean(region9).val[0];
+
         /*
          * Draw a rectangle showing sample region 1 on the screen.
          * Simply a visual aid. Serves no functional purpose.
@@ -202,6 +276,7 @@ public class TeamPropDetectionPipeline extends OpenCvPipeline
          */
         int maxOneTwo = Math.max(avg1, avg2);
         int max = Math.max(maxOneTwo, avg3);
+        int pixMax = Math.max(Math.max(Math.max(avg4, avg5), avg6), Math.max(Math.max(avg7, avg8), avg9));
 
         /*
          * Now that we found the max, we actually need to go and
@@ -252,7 +327,9 @@ public class TeamPropDetectionPipeline extends OpenCvPipeline
                         5); // Negative thickness means solid fill
             }
         }
-
+        if(pixMax > 0){
+            pixelPosition = pixMax == avg4 ? PixelPosition.LEFTTAGLEFT : pixMax == avg5 ? PixelPosition.LEFTTAGRIGHT : pixMax == avg6 ? PixelPosition.CENTERTAGLEFT : pixMax == avg7 ? PixelPosition.CENTERTAGRIGHT : pixMax == avg8 ? PixelPosition.RIGHTTAGLEFT : PixelPosition.RIGHTTAGRIGHT;
+        }
         /*
          * Render the 'input' buffer to the viewport. But note this is not
          * simply rendering the raw camera feed, because we called functions
@@ -265,6 +342,12 @@ public class TeamPropDetectionPipeline extends OpenCvPipeline
     {
         return position;
     }
+
+    public PixelPosition getPixAnalysis()
+    {
+        return pixelPosition;
+    }
+
 
     public int getAvg1() {
         return avg1;
