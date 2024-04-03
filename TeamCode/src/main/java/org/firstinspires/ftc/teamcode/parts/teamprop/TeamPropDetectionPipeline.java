@@ -51,12 +51,12 @@ public class TeamPropDetectionPipeline extends OpenCvPipeline
     static final Point REGION1_TOPLEFT_ANCHOR_POINT = new Point(0,400);
     static final Point REGION2_TOPLEFT_ANCHOR_POINT = new Point(550,350);
     static final Point REGION3_TOPLEFT_ANCHOR_POINT = new Point(1080,400);
-    static final Point REGION4_TOPLEFT_ANCHOR_POINT = new Point(0,400);
-    static final Point REGION5_TOPLEFT_ANCHOR_POINT = new Point(213,400);
-    static final Point REGION6_TOPLEFT_ANCHOR_POINT = new Point(426,400);
-    static final Point REGION7_TOPLEFT_ANCHOR_POINT = new Point(639,400);
-    static final Point REGION8_TOPLEFT_ANCHOR_POINT = new Point(852,400);
-    static final Point REGION9_TOPLEFT_ANCHOR_POINT = new Point(1080,400);
+    static final Point REGION4_TOPLEFT_ANCHOR_POINT = new Point(0,200);
+    static final Point REGION5_TOPLEFT_ANCHOR_POINT = new Point(213,200);
+    static final Point REGION6_TOPLEFT_ANCHOR_POINT = new Point(426,200);
+    static final Point REGION7_TOPLEFT_ANCHOR_POINT = new Point(639,200);
+    static final Point REGION8_TOPLEFT_ANCHOR_POINT = new Point(852,200);
+    static final Point REGION9_TOPLEFT_ANCHOR_POINT = new Point(1080,200);
     static final int REGION_WIDTH = 200;
     static final int REGION_HEIGHT = 200;
 
@@ -270,6 +270,26 @@ public class TeamPropDetectionPipeline extends OpenCvPipeline
                 4,                               // font scale
                 WHITE,             // Scalar object for color
                 4); // tickness
+
+        Imgproc.rectangle(
+                input, // Buffer to draw on
+                region4_pointA, // First point which defines the rectangle
+                region4_pointB, // Second point which defines the rectangle
+                BLOCK, // The color the rectangle is drawn in
+                2); // Thickness of the rectangle lines
+        Imgproc.rectangle(
+                input, // Buffer to draw on
+                region5_pointA, // First point which defines the rectangle
+                region5_pointB, // Second point which defines the rectangle
+                BLOCK, // The color the rectangle is drawn in
+                2); // Thickness of the rectangle lines
+        Imgproc.rectangle(
+                input, // Buffer to draw on
+                region9_pointA, // First point which defines the rectangle
+                region9_pointB, // Second point which defines the rectangle
+                BLOCK, // The color the rectangle is drawn in
+                2); // Thickness of the rectangle lines
+
 
         /*
          * Find the max of the 3 averages

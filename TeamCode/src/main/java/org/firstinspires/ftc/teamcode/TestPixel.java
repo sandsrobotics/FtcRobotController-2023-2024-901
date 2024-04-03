@@ -89,27 +89,27 @@ public class TestPixel extends LinearOpMode {
         pt.positionSourceId = Odometry.class;
         Intake intake = new Intake(robot);
         new IntakeTeleop(intake);
-        TeamProp tp = new TeamProp(robot);
+//        TeamProp tp = new TeamProp(robot);
         robot.init();
 
         //****** tjk
-        EdgeSupplier leftPixel = new EdgeSupplier();
-        leftPixel.setBase(()->gamepad1.dpad_left);
-        EdgeSupplier rightPixel = new EdgeSupplier();
-        rightPixel.setBase(()->gamepad1.dpad_right);
+//        EdgeSupplier leftPixel = new EdgeSupplier();
+//        leftPixel.setBase(()->gamepad1.dpad_left);
+//        EdgeSupplier rightPixel = new EdgeSupplier();
+//        rightPixel.setBase(()->gamepad1.dpad_right);
         //******
 
         while (!isStarted()) {
-            teamPropPosition = tp.pipeline.position;
-            telemetry.addData("Team Prop", teamPropPosition);
-            telemetry.addData("left:", tp.pipeline.getAvg1());
-            telemetry.addData("center:", tp.pipeline.getAvg2());
-            telemetry.addData("right:", tp.pipeline.getAvg3());
+//            teamPropPosition = tp.pipeline.position;
+//            telemetry.addData("Team Prop", teamPropPosition);
+//            telemetry.addData("left:", tp.pipeline.getAvg1());
+//            telemetry.addData("center:", tp.pipeline.getAvg2());
+//            telemetry.addData("right:", tp.pipeline.getAvg3());
             dashboard.sendTelemetryPacket(packet);
             telemetry.update();
         }
 
-        tp.onStop(); // stop team prop detection
+//        tp.onStop(); // stop team prop detection
         aprilTag = new AprilTag(robot);
         aprilTag.onInit();
         robot.start();
@@ -121,8 +121,8 @@ public class TestPixel extends LinearOpMode {
             robot.run();
 
             //****** tjk
-            if(leftPixel.isRisingEdge()) pixelShiftY(-3.0); // 3" = 1 pixel difference
-            if(rightPixel.isRisingEdge()) pixelShiftY(+3.0);
+//            if(leftPixel.isRisingEdge()) pixelShiftY(-3.0); // 3" = 1 pixel difference
+//            if(rightPixel.isRisingEdge()) pixelShiftY(+3.0);
             //******
 
             // Dashboard stuff

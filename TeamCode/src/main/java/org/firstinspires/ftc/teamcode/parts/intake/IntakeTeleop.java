@@ -67,9 +67,12 @@ public class IntakeTeleop extends LoopedPartImpl<Intake, IntakeTeleopSettings, O
             parent.startAutoStore();
         else if(settings.releaseRange.get()) {
             parent.dropCounter++;
-            parent.startFoundRange();
-            if(parent.dropCounter == 2)
+            parent.rangingHeld = true;
+            parent.lastBackDist = 20;
+            if(parent.dropCounter == 2) {
                 parent.startAutoDock();
+                parent.dropCounter = 0;
+            }
         }
         else if(settings.releaseCenter.get())
             parent.startRunCenter();

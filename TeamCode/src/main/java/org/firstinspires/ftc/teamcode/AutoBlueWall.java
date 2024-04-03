@@ -6,10 +6,7 @@ public class AutoBlueWall extends AutoRedWallAndAll {
     @Override
 
     public void initAuto(){
-        //transformFunc = (v) -> v.withY(-v.Y).withZ(-180 - v.Z); // Original Adi
-        transformFunc = (v) -> v.withY(-v.Y).withZ(-v.Z); // tjk not anymore
-        // transformFunc = (v) -> v.withY(-v.Y).withZ(AngleMath.scaleAngle(-180 + v.Z)); //tjk
-//        customStartPos = new Vector3(-1.5 * 23.5,62,90); // blue wall side
+        transformFunc = (v) -> v.withY(-v.Y).withZ(-v.Z);
         midPark = true;
         isRed = false;
         parkOnly = false;
@@ -19,6 +16,7 @@ public class AutoBlueWall extends AutoRedWallAndAll {
         stackPathSide = false;
         dropPathSide = false;
         extraWallPix = true;
+        stackSide = true;
     }
 
 }

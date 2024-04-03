@@ -86,11 +86,11 @@ public class TestPixelMento extends LinearOpMode {
         robot.init();
 
         while (!isStarted()) {
-            teamPropPosition = tp.pipeline.position;
-            telemetry.addData("Team Prop", teamPropPosition);
-            telemetry.addData("left:", tp.pipeline.getAvg1());
-            telemetry.addData("center:", tp.pipeline.getAvg2());
-            telemetry.addData("right:", tp.pipeline.getAvg3());
+//            teamPropPosition = tp.pipeline.position;
+//            telemetry.addData("Team Prop", teamPropPosition);
+//            telemetry.addData("left:", tp.pipeline.getAvg1());
+//            telemetry.addData("center:", tp.pipeline.getAvg2());
+//            telemetry.addData("right:", tp.pipeline.getAvg3());
             dashboard.sendTelemetryPacket(packet);
             telemetry.update();
         }
