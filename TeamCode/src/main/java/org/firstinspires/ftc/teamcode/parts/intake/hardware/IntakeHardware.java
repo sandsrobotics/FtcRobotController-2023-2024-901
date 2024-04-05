@@ -34,6 +34,8 @@ public class IntakeHardware {
     public final RevColorSensorV3 botSensor;
     public final RevColorSensorV3 topSensor;
     public final Rev2mDistanceSensor backSensor;
+    public final Rev2mDistanceSensor redSensor;
+    public final Rev2mDistanceSensor blueSensor;
     public final DigitalChannel grabberLimitSwitch;
 
     public IntakeHardware(DcMotorEx sliderMotor, DcMotorEx sweeperMotor,
@@ -42,7 +44,8 @@ public class IntakeHardware {
                           DigitalChannel liftHighLImitSwitch, DigitalChannel slideLowLimitSwitch,
                           Servo swingServoLeft,Servo swingServoRight, Servo launchServoAngle,
                           Servo launchServoRelease, RevColorSensorV3 botSensor, RevColorSensorV3 topSensor,
-                          Rev2mDistanceSensor backSensor, DigitalChannel grabberLimitSwitch) {
+                          Rev2mDistanceSensor backSensor, DigitalChannel grabberLimitSwitch, Rev2mDistanceSensor redSensor,
+                          Rev2mDistanceSensor blueSensor) {
         this.sweeperMotor = sweeperMotor;
         this.sliderMotor = sliderMotor;
         this.sweepLiftServo = sweepLiftServo;
@@ -59,6 +62,8 @@ public class IntakeHardware {
         this.topSensor = topSensor;
         this.backSensor = backSensor;
         this.grabberLimitSwitch = grabberLimitSwitch;
+        this.redSensor = redSensor;
+        this.blueSensor = blueSensor;
     }
 //beans
     public static IntakeHardware makeDefault(HardwareMap hardwareMap) {
@@ -82,7 +87,8 @@ public class IntakeHardware {
         highLiftLimit.setMode(DigitalChannel.Mode.INPUT);
         lowSlideLimit.setMode(DigitalChannel.Mode.INPUT);
         grabberLimit.setMode(DigitalChannel.Mode.INPUT);
-
+        Rev2mDistanceSensor redSensor = hardwareMap.get(Rev2mDistanceSensor.class, "redSensor");
+        Rev2mDistanceSensor blueSensor = hardwareMap.get(Rev2mDistanceSensor.class, "blueSensor");
 
         return new IntakeHardware(
                 slideMotorSettings.makeExMotor(hardwareMap),
@@ -100,7 +106,9 @@ public class IntakeHardware {
                 botSensor,
                 topSensor,
                 backSensor,
-                grabberLimit
+                grabberLimit,
+                redSensor,
+                blueSensor
         );
     }
 }

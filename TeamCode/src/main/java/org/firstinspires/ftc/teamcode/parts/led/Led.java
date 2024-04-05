@@ -35,7 +35,7 @@ public class Led extends LoopedPartImpl<Robot, ObjectUtils.Null, ObjectUtils.Nul
 
     @Override
     public void onStart() {
-        leds.setBrightness(5);//max of 31
+        leds.setBrightness(10);//max of 31
         leds.turnAllOff();
     }
 

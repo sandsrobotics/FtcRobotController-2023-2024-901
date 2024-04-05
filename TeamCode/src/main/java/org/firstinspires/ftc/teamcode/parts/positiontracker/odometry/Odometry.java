@@ -67,7 +67,7 @@ public class Odometry extends LoopedPartImpl<PositionTracker, OdometrySettings, 
         double imuAng = parent.getImuAngle();
         boolean imuAccurate = Math.abs(imuAng - lastImuAngle) < 0.5;
         if(imuAccurate){
-//            odoAngle = imuAng;
+            odoAngle = imuAng;
         }
 
         lastImuAngle = imuAng;

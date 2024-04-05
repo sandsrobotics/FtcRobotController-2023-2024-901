@@ -51,12 +51,12 @@ public class TeamPropDetectionPipeline extends OpenCvPipeline
     static final Point REGION1_TOPLEFT_ANCHOR_POINT = new Point(0,400);
     static final Point REGION2_TOPLEFT_ANCHOR_POINT = new Point(550,350);
     static final Point REGION3_TOPLEFT_ANCHOR_POINT = new Point(1080,400);
-    static final Point REGION4_TOPLEFT_ANCHOR_POINT = new Point(0,200);
-    static final Point REGION5_TOPLEFT_ANCHOR_POINT = new Point(213,200);
-    static final Point REGION6_TOPLEFT_ANCHOR_POINT = new Point(426,200);
-    static final Point REGION7_TOPLEFT_ANCHOR_POINT = new Point(639,200);
-    static final Point REGION8_TOPLEFT_ANCHOR_POINT = new Point(852,200);
-    static final Point REGION9_TOPLEFT_ANCHOR_POINT = new Point(1080,200);
+    static final Point REGION4_TOPLEFT_ANCHOR_POINT = new Point(0,0);
+    static final Point REGION5_TOPLEFT_ANCHOR_POINT = new Point(213,0);
+    static final Point REGION6_TOPLEFT_ANCHOR_POINT = new Point(426,0);
+    static final Point REGION7_TOPLEFT_ANCHOR_POINT = new Point(639,0);
+    static final Point REGION8_TOPLEFT_ANCHOR_POINT = new Point(852,0);
+    static final Point REGION9_TOPLEFT_ANCHOR_POINT = new Point(1080,0);
     static final int REGION_WIDTH = 200;
     static final int REGION_HEIGHT = 200;
 
@@ -277,12 +277,10 @@ public class TeamPropDetectionPipeline extends OpenCvPipeline
                 region4_pointB, // Second point which defines the rectangle
                 BLOCK, // The color the rectangle is drawn in
                 2); // Thickness of the rectangle lines
-        Imgproc.rectangle(
-                input, // Buffer to draw on
-                region5_pointA, // First point which defines the rectangle
-                region5_pointB, // Second point which defines the rectangle
-                BLOCK, // The color the rectangle is drawn in
-                2); // Thickness of the rectangle lines
+        Imgproc.rectangle(input, region5_pointA, region5_pointB, BLOCK, 2);
+        Imgproc.rectangle(input, region6_pointA, region6_pointB, BLOCK, 2);
+        Imgproc.rectangle(input, region7_pointA, region7_pointB, BLOCK, 2);
+        Imgproc.rectangle(input, region8_pointA, region8_pointB, BLOCK, 2);
         Imgproc.rectangle(
                 input, // Buffer to draw on
                 region9_pointA, // First point which defines the rectangle

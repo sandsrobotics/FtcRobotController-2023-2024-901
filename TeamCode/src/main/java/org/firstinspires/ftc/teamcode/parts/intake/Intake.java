@@ -40,11 +40,16 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
     public boolean doTagCenter = false;
     private boolean armed;
     public boolean run = false;
+    public boolean runRed = false;
+    public boolean runBlue = false;
     public boolean runCenter = false;
     private boolean abortRange;
     private double xPos = 0;
     public double yPos = 36;
     public double lastBackDist;
+    public double redSideDist;
+    public double blueSideDist;
+    public double sideRangeDist;
     Vector3 mid;
     public boolean extraDrop;
     public boolean completeDrop;
@@ -198,6 +203,8 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
     public double getBackDist() {
         return backDist == 0.0 ? 7.0 : Math.min(backDist, 30.0);
     }
+
+    public double getBlueSideDist(){return blueSideDist;}
 
     public int hasPixels() {
         if (getTopPixelDist() < 2.5 && getBottomPixelDist() < 2.5)
@@ -475,10 +482,9 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
     public void constructFoundRange() {
         foundRangeTask.autoStart = false;
 
-//        foundRangeTask.addStep(() -> drive.addController("Move to closer pixel drop position", (control) -> control.power = control.power.addY(.6)));
-//        foundRangeTask.addDelay(65);
-//        foundRangeTask.addStep(() -> drive.removeController("Move to closer pixel drop position"));
-        foundRangeTask.addTimedStep(()->robotLiftWithPower(1), 1300);
+        foundRangeTask.addStep(() -> drive.addController("Move to closer distance position", (control) -> control.power = control.power.addY(.6)));
+        foundRangeTask.addDelay(65);
+        foundRangeTask.addStep(() -> drive.removeController("Move to closer distance position"));
 
         foundRangeTask.addStep(() -> triggerEvent(Events.foundRangeComplete));
     }
@@ -487,7 +493,15 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
         foundRangeTask.restart();
     }
 
-    public void addFoundRangeToTask(TaskEx task) {
+    public void addFoundRangeToTask(TaskEx task, boolean side, double distance) {
+        task.addStep(()->sideRangeDist = distance);
+        task.addStep((Runnable) () -> runRed = side);
+        task.addStep(foundRangeTask::restart);
+        task.waitForEvent(eventManager.getContainer(Events.foundRangeComplete));
+    }
+
+    public void addFoundRangeToTask(TaskEx task, double distance) {
+        task.addStep(()->sideRangeDist = distance);
         task.addStep(foundRangeTask::restart);
         task.waitForEvent(eventManager.getContainer(Events.foundRangeComplete));
     }
@@ -544,10 +558,28 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
     public void doTagRanging(DriveControl control) {
         final double desiredAutoDistance = 7.0;
         final double desiredTeleDistance = 7.0;
-        final double xPower = 0.03;
+        final double xPower = 0.05;
         final double yPower = 0.02;
         final double zPower = 0.01;
         final double yAutoPower = 0.035;
+
+        if(runRed){
+            if(redSideDist - sideRangeDist <= 1 || redSideDist - sideRangeDist >= -1){
+                control.power = control.power.addX((redSideDist - sideRangeDist) * -xPower);
+            } else {
+                triggerEvent(Events.foundRangeComplete);
+                runRed = false;
+            }
+        }
+        if(runBlue){
+            if(redSideDist - sideRangeDist <= 0){
+                control.power = control.power.addX((blueSideDist - sideRangeDist) * -xPower);
+            } else {
+                triggerEvent(Events.foundRangeComplete);
+                runBlue = false;
+            }
+        }
+
 
         if (doTagCenter) {
             if (tag.desiredTag != null) {
@@ -606,7 +638,6 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
 
     @Override
     public void onInit() {
-        backDist = getHardware().backSensor.getDistance(DistanceUnit.INCH);
         positionSolver = getBeanManager().getBestMatch(PositionSolver.class, false);
         positionTracker = getBeanManager().getBestMatch(PositionTracker.class, false, true);
 
@@ -626,6 +657,9 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
         setLaunchState(0);
         lastBackDist = getBackDist();
         rangingHeld = false;
+        backDist = getHardware().backSensor.getDistance(DistanceUnit.INCH);
+        redSideDist = getHardware().redSensor.getDistance(DistanceUnit.INCH);
+        blueSideDist = getHardware().blueSensor.getDistance(DistanceUnit.INCH);
     }
 
     @Override
@@ -644,8 +678,14 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
 
         if(doTagRange || run)
           backDist = getHardware().backSensor.getDistance(DistanceUnit.INCH);
+        if(runRed)
+            redSideDist = getHardware().redSensor.getDistance(DistanceUnit.INCH);
+//        else if(runBlue)
+        blueSideDist = getHardware().blueSensor.getDistance(DistanceUnit.INCH);
         currentSlidePos = getHardware().sliderMotor.getCurrentPosition();
         currentLiftPos = getHardware().robotLiftMotor.getCurrentPosition();
+        parent.opMode.telemetry.addData("left dist", redSideDist);
+        parent.opMode.telemetry.addData("right dist", blueSideDist);
     }
 
     @Override

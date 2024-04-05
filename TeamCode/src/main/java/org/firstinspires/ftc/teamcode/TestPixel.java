@@ -89,7 +89,7 @@ public class TestPixel extends LinearOpMode {
         pt.positionSourceId = Odometry.class;
         Intake intake = new Intake(robot);
         new IntakeTeleop(intake);
-//        TeamProp tp = new TeamProp(robot);
+        TeamProp tp = new TeamProp(robot);
         robot.init();
 
         //****** tjk
@@ -101,6 +101,9 @@ public class TestPixel extends LinearOpMode {
 
         while (!isStarted()) {
 //            teamPropPosition = tp.pipeline.position;
+            telemetry.addData("PIPELINE Pixel pos", tp.pipeline.pixelPosition);
+            telemetry.addData("left dist", intake.redSideDist);
+            telemetry.addData("right dist", intake.blueSideDist);
 //            telemetry.addData("Team Prop", teamPropPosition);
 //            telemetry.addData("left:", tp.pipeline.getAvg1());
 //            telemetry.addData("center:", tp.pipeline.getAvg2());
@@ -109,7 +112,7 @@ public class TestPixel extends LinearOpMode {
             telemetry.update();
         }
 
-//        tp.onStop(); // stop team prop detection
+        tp.onStop(); // stop team prop detection
         aprilTag = new AprilTag(robot);
         aprilTag.onInit();
         robot.start();
