@@ -74,8 +74,8 @@ public class IntakeHardware {
         ServoSettings grabberServoSettings = new ServoSettings(ServoSettings.Number.ZERO, Servo.Direction.FORWARD);
         ServoSettings swingServoLeftSettings = new ServoSettings(ServoSettings.Number.ONE, Servo.Direction.FORWARD);
         ServoSettings swingServoRightSettings = new ServoSettings(ServoSettings.Number.TWO, Servo.Direction.REVERSE);
-        ServoSettings launchServoAngleSettings = new ServoSettings(ServoSettings.Number.THREE, Servo.Direction.FORWARD);
-        ServoSettings launchServoReleaseSettings = new ServoSettings(ServoSettings.Number.THREE_B, Servo.Direction.FORWARD);
+        ServoSettings launchServoAngleSettings = new ServoSettings(ServoSettings.Number.THREE_B, Servo.Direction.FORWARD);
+        ServoSettings launchServoReleaseSettings = new ServoSettings(ServoSettings.Number.THREE, Servo.Direction.FORWARD);
         RevColorSensorV3 botSensor = hardwareMap.get(RevColorSensorV3.class, "botSensor");
         RevColorSensorV3 topSensor = hardwareMap.get(RevColorSensorV3.class, "topSensor");
         Rev2mDistanceSensor backSensor = hardwareMap.get(Rev2mDistanceSensor.class, "backSensor");

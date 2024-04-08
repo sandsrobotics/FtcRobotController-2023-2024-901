@@ -205,6 +205,8 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
     }
 
     public double getBlueSideDist(){return blueSideDist;}
+    public double getRedSideDist(){return redSideDist;}
+
 
     public int hasPixels() {
         if (getTopPixelDist() < 2.5 && getBottomPixelDist() < 2.5)
@@ -256,13 +258,11 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
     }
 
     public void setLaunchState(int state) {
-        switch (state) {
-            case 1:
-                if (armed)
-                    getHardware().launchServoRelease.setPosition(getSettings().launchReleaseUnlockPosition);
-                break;
-            case 0:
-                getHardware().launchServoRelease.setPosition(getSettings().launchReleaseLockPosition);
+        if (state == 1) {
+            getHardware().launchServoRelease.setPosition(getSettings().launchReleaseUnlockPosition);
+            //            case 0:
+//                getHardware().launchServoRelease.setPosition(getSettings().launchReleaseLockPosition);
+//                break;
         }
     }
 
@@ -301,7 +301,7 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
 //            if (getHardware().liftLowLimitSwitch.getState())
 //                motorPower = 0.0;
         } else if (power < 0) { // going down
-            if (getHardware().robotLiftMotor.getCurrent(CurrentUnit.MILLIAMPS) > 5000 || isTop) {
+            if (getHardware().robotLiftMotor.getCurrent(CurrentUnit.MILLIAMPS) > 5500 || isTop) {
                 isTop = true;
                 motorPower = 0.0;
             }
@@ -347,30 +347,28 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
 
         autoArmTask.addStep(this::preAutoMove);
         autoArmTask.addTimedStep(() -> robotLiftWithPower(1), 1500);
-
-        autoArmTask.addStep(() -> setLaunchAngle(1));
+//        autoArmTask.addStep(() -> setLaunchAngle(1));
         autoArmTask.addStep(this::postAutoMove);
         autoArmTask.addStep(() -> triggerEvent(Events.armComplete));
     }
-
+//
     public void startAutoArm() {
-        armed = true;
         autoArmTask.restart();
     }
-
-    public void constructAutoStore() {
-        autoStoreTask.autoStart = false;
-
-        autoStoreTask.addStep(this::preAutoMove);
-        autoStoreTask.addStep(() -> setLaunchAngle(2));
-        autoStoreTask.addStep(this::postAutoMove);
-        autoStoreTask.addStep(() -> triggerEvent(Events.storeComplete));
-    }
-
-    public void startAutoStore() {
-        armed = false;
-        autoStoreTask.restart();
-    }
+//
+//    public void constructAutoStore() {
+//        autoStoreTask.autoStart = false;
+//
+//        autoStoreTask.addStep(this::preAutoMove);
+//        autoStoreTask.addStep(() -> setLaunchAngle(2));
+//        autoStoreTask.addStep(this::postAutoMove);
+//        autoStoreTask.addStep(() -> triggerEvent(Events.storeComplete));
+//    }
+//
+//    public void startAutoStore() {
+//        armed = false;
+//        autoStoreTask.restart();
+//    }
 
     public void constructAutoGrab() {
         autoGrabTask.autoStart = false;
@@ -418,7 +416,7 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
         autoDockTask.addDelay(75);
         autoDockTask.addStep(() -> drive.removeController("Move to closer pixel drop position"));
         autoDockTask.addStep(() -> setSwingPosition(getSlidePosition() > 740 ? 2 : 1));
-        autoDockTask.addDelay(500);
+        autoDockTask.addDelay(350);
         autoDockTask.addStep(() -> setSlidePosition(0));
         autoDockTask.addStep(this::postAutoMove);
         autoDockTask.addStep(() -> triggerEvent(Lifter.Events.dockComplete));
@@ -439,7 +437,7 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
 //        autoDropTask.addStep(this::preAutoMove);
         autoDropTask.addStep(()-> setGrabPosition(3));
         autoDropTask.addStep(() -> setSlidePosition(pixLineToPos[pixLine]));
-        autoDropTask.addDelay(500);
+        autoDropTask.addDelay(700);
         autoDropTask.addStep(() -> setSwingPosition(getPix() == 8 ? 4 : getPix() == 7 ? 3 : 1));
         autoDropTask.addStep(() -> setGrabPosition(4));
         autoDropTask.addStep((Runnable) ()->completeDrop = true);
@@ -558,22 +556,23 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
     public void doTagRanging(DriveControl control) {
         final double desiredAutoDistance = 7.0;
         final double desiredTeleDistance = 7.0;
-        final double xPower = 0.05;
+        final double xPower = 0.03;
         final double yPower = 0.02;
         final double zPower = 0.01;
         final double yAutoPower = 0.035;
+//        final double sideRangeDist = 15.0;
 
         if(runRed){
-            if(redSideDist - sideRangeDist <= 1 || redSideDist - sideRangeDist >= -1){
-                control.power = control.power.addX((redSideDist - sideRangeDist) * -xPower);
+            if(!(getRedSideDist() - sideRangeDist <= 0.5 && getRedSideDist() - sideRangeDist >= -0.5)){
+                control.power = control.power.addX((getRedSideDist() - sideRangeDist) * -xPower);
             } else {
                 triggerEvent(Events.foundRangeComplete);
                 runRed = false;
             }
         }
-        if(runBlue){
-            if(redSideDist - sideRangeDist <= 0){
-                control.power = control.power.addX((blueSideDist - sideRangeDist) * -xPower);
+        else if(runBlue){
+            if(!(getBlueSideDist() - sideRangeDist <= 0.5 && getBlueSideDist() - sideRangeDist >= -0.5)){
+                control.power = control.power.addX((getBlueSideDist() - sideRangeDist) * xPower);
             } else {
                 triggerEvent(Events.foundRangeComplete);
                 runBlue = false;
@@ -647,15 +646,15 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
         constructAutoGrab();
         constructAutoHome();
         constructAutoArm();
-        constructAutoStore();
+//        constructAutoStore();
         constructFinishDrop();
         constructFoundRange();
         constructRunCenter();
 
         setSwingPosition(2);
-        setLaunchAngle(2);
+//        setLaunchAngle(2);
         setLaunchState(0);
-        lastBackDist = getBackDist();
+        lastBackDist = 322;
         rangingHeld = false;
         backDist = getHardware().backSensor.getDistance(DistanceUnit.INCH);
         redSideDist = getHardware().redSensor.getDistance(DistanceUnit.INCH);
@@ -679,13 +678,15 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
         if(doTagRange || run)
           backDist = getHardware().backSensor.getDistance(DistanceUnit.INCH);
         if(runRed)
-            redSideDist = getHardware().redSensor.getDistance(DistanceUnit.INCH);
-//        else if(runBlue)
-        blueSideDist = getHardware().blueSensor.getDistance(DistanceUnit.INCH);
+           redSideDist = getHardware().redSensor.getDistance(DistanceUnit.INCH);
+        else if(runBlue)
+           blueSideDist = getHardware().blueSensor.getDistance(DistanceUnit.INCH);
         currentSlidePos = getHardware().sliderMotor.getCurrentPosition();
         currentLiftPos = getHardware().robotLiftMotor.getCurrentPosition();
-        parent.opMode.telemetry.addData("left dist", redSideDist);
-        parent.opMode.telemetry.addData("right dist", blueSideDist);
+        parent.opMode.telemetry.addData("Motor amps", getHardware().robotLiftMotor.getCurrent(CurrentUnit.MILLIAMPS));
+        parent.opMode.telemetry.addData("side dist (red)", getRedSideDist());
+        parent.opMode.telemetry.addData("side dist (blue)", getBlueSideDist());
+        parent.opMode.telemetry.addData("abort range", abortRange);
     }
 
     @Override

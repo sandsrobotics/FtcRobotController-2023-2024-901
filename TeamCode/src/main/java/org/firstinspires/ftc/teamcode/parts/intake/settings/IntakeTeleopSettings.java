@@ -68,7 +68,7 @@ public class IntakeTeleopSettings {
         autoDock.setBase(()-> gamepad2.dpad_down);
 
         EdgeSupplier autoArm = new EdgeSupplier();
-        autoArm.setBase(()->gamepad2.dpad_right);
+        autoArm.setBase(()->gamepad.dpad_left);
 
         EdgeSupplier autoStore = new EdgeSupplier();
         autoStore.setBase(()->gamepad2.dpad_left);
@@ -89,7 +89,7 @@ public class IntakeTeleopSettings {
 //                upSupplier::isRisingEdge,
             autoDrop::isRisingEdge,
             autoDock::isRisingEdge,
-            () -> gamepad2.x ? 1 : 0,
+            () -> gamepad2.x && gamepad2.dpad_right ? 1 : 0,
             new EdgeSupplier(()-> robot.opMode.gamepad1.back).getRisingEdgeSupplier(),
                 autoArm::isRisingEdge,
                 autoStore::isRisingEdge,

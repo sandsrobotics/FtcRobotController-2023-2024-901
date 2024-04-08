@@ -31,6 +31,7 @@ public class IntakeSettings {
     public final double swingLeftMaxPosition;
     public final double sweepLiftServoStackTopPosition;
     public final double swingLeftActualMaxPosition;
+    public final double launcherLoadPosition;
 
 
 
@@ -38,7 +39,8 @@ public class IntakeSettings {
                           int maxDownLiftSpeed, double tolerance, double sweepLiftServoDownPosition, double sweepLiftServoStackPosition,
                           double sweepLiftServoStorePosition, int maxLiftPosition, int minLiftPosition, double grabberOpenPosition, double grabberGripTwoPosition,
                           double grabberGripOnePosition, double swingLeftSafePosition, double swingRightSafePosition, double swingLeftDropPosition, double swingRightDropPosition, int maxPix, int maxPixLine, double launchAngleStorePosition,
-                          double launchAngleArmPosition, double launchReleaseLockPosition, double launchReleaseUnlockPosition, double grabberPrimePosition, double swingLeftMaxPosition, double sweepLiftServoStackTopPosition, double swingLeftActualMaxPosition) {
+                          double launchAngleArmPosition, double launchReleaseLockPosition, double launchReleaseUnlockPosition, double grabberPrimePosition, double swingLeftMaxPosition, double sweepLiftServoStackTopPosition, double swingLeftActualMaxPosition,
+                          double launcherLoadPosition) {
         this.minSlidePosition = minSlidePosition;
         this.maxSlidePosition = maxSlidePosition;
         this.maxDownSlideSpeed = maxDownSlideSpeed;
@@ -69,6 +71,7 @@ public class IntakeSettings {
         this.swingLeftMaxPosition = swingLeftMaxPosition;
         this.sweepLiftServoStackTopPosition = sweepLiftServoStackTopPosition;
         this.swingLeftActualMaxPosition = swingLeftActualMaxPosition;
+        this.launcherLoadPosition = launcherLoadPosition;
     }
 
     // left safe: ,.14 drop: .5 FOR ACTUAL MAX, .6
@@ -92,7 +95,7 @@ public class IntakeSettings {
                 .95,
                 .18,
                 .58,
-                .158,
+                .172,
                 .842,
                 .52,
                 .48,
@@ -100,12 +103,18 @@ public class IntakeSettings {
                 7,
                 .46,
                 .59,
-                .482,
-                .702,
+                .660,
+                .325,
                 .42,
                 .56,
                 .365,
-                        .6
+                .6,
+                .58
                 );
+//        swingLeftSafePosition Gobuilda .158
+//        swingRightSafePosition Goubilda .842
+                //  old launchReleaseLockPosition  .482,
+                //  old launchReleaseUnlockPosition .702
+               //new Launcher load position .58
     }
 }

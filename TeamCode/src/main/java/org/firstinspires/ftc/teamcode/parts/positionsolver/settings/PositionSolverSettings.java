@@ -43,4 +43,6 @@ public class PositionSolverSettings {
             new SolverSettings(1, 10, false, 10000, new PIDCoefficients(0.05, 0, 0), 1),
             new SolverSettings(2.5, 10, false, 10000, new PIDCoefficients(0.0125, 0, 0), 1)
     );
+
+
 }
