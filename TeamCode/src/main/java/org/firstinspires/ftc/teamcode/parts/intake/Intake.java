@@ -43,7 +43,7 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
     public boolean runRed = false;
     public boolean runBlue = false;
     public boolean runCenter = false;
-    private boolean abortRange;
+    public boolean abortRange;
     private double xPos = 0;
     public double yPos = 36;
     public double lastBackDist;
@@ -560,25 +560,24 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
         final double yPower = 0.02;
         final double zPower = 0.01;
         final double yAutoPower = 0.035;
+        boolean atDist = Math.abs(getRedSideDist() - sideRangeDist) <= 1.0;
 //        final double sideRangeDist = 15.0;
 
         if(runRed){
-            if(!(getRedSideDist() - sideRangeDist <= 0.5 && getRedSideDist() - sideRangeDist >= -0.5)){
+            if(!atDist){
                 control.power = control.power.addX((getRedSideDist() - sideRangeDist) * -xPower);
             } else {
-                triggerEvent(Events.foundRangeComplete);
                 runRed = false;
             }
         }
-        else if(runBlue){
-            if(!(getBlueSideDist() - sideRangeDist <= 0.5 && getBlueSideDist() - sideRangeDist >= -0.5)){
+        else if(runBlue) {
+            if (!(getBlueSideDist() - sideRangeDist <= 0.5 && getBlueSideDist() - sideRangeDist >= -0.5)) {
                 control.power = control.power.addX((getBlueSideDist() - sideRangeDist) * xPower);
             } else {
                 triggerEvent(Events.foundRangeComplete);
                 runBlue = false;
             }
         }
-
 
         if (doTagCenter) {
             if (tag.desiredTag != null) {
@@ -602,7 +601,6 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
                     rangingHeld = false;
                 }
             }
-            lastBackDist = getBackDist();
         } else if (run) {
             if (getHardware().grabberLimitSwitch.getState()) {
                 control.power = control.power.addY((Math.min(getBackDist(), 15) - desiredAutoDistance) * -yAutoPower);
@@ -655,7 +653,7 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
 //        setLaunchAngle(2);
         setLaunchState(0);
         lastBackDist = 322;
-        rangingHeld = false;
+        rangingHeld = true;
         backDist = getHardware().backSensor.getDistance(DistanceUnit.INCH);
         redSideDist = getHardware().redSensor.getDistance(DistanceUnit.INCH);
         blueSideDist = getHardware().blueSensor.getDistance(DistanceUnit.INCH);
@@ -667,6 +665,13 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
 
     @Override
     public void onRun(IntakeControl control) { //TODO separate keeping Slider motor position from onRun
+        if(doTagRange || run)
+            backDist = getHardware().backSensor.getDistance(DistanceUnit.INCH);
+        if(runRed)
+            redSideDist = getHardware().redSensor.getDistance(DistanceUnit.INCH);
+        if(runBlue)
+            blueSideDist = getHardware().blueSensor.getDistance(DistanceUnit.INCH);
+
         sweepWithPower(control.sweeperPower);
         setGrabPosition(control.grabberPosition);
         robotLiftWithPower(control.robotLiftPosition);
@@ -675,18 +680,15 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
         setRanging(control.ranging);
         setCentering(control.centering);
 
-        if(doTagRange || run)
-          backDist = getHardware().backSensor.getDistance(DistanceUnit.INCH);
-        if(runRed)
-           redSideDist = getHardware().redSensor.getDistance(DistanceUnit.INCH);
-        else if(runBlue)
-           blueSideDist = getHardware().blueSensor.getDistance(DistanceUnit.INCH);
         currentSlidePos = getHardware().sliderMotor.getCurrentPosition();
         currentLiftPos = getHardware().robotLiftMotor.getCurrentPosition();
-        parent.opMode.telemetry.addData("Motor amps", getHardware().robotLiftMotor.getCurrent(CurrentUnit.MILLIAMPS));
+//        parent.opMode.telemetry.addData("Motor amps", getHardware().robotLiftMotor.getCurrent(CurrentUnit.MILLIAMPS));
         parent.opMode.telemetry.addData("side dist (red)", getRedSideDist());
         parent.opMode.telemetry.addData("side dist (blue)", getBlueSideDist());
         parent.opMode.telemetry.addData("abort range", abortRange);
+
+        if(lastBackDist != 322)
+            lastBackDist = getBackDist();
     }
 
     @Override

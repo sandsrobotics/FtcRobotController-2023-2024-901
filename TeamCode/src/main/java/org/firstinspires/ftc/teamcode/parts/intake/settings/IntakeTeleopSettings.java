@@ -25,6 +25,7 @@ public class IntakeTeleopSettings {
     public final Supplier<Integer> startTagCentering;
     public final Supplier<Boolean> releaseCenter;
     public final Supplier<Boolean> releaseRange;
+    public final Supplier<Boolean> abortSupplier;
 
     public IntakeTeleopSettings(Supplier<Integer> sweepSpeedSupplier,
                                 Supplier<Integer> sweepLiftSupplier, Supplier<Integer> robotLiftSupplier,
@@ -33,7 +34,7 @@ public class IntakeTeleopSettings {
                                 Supplier<Boolean> autoDockSupplier, Supplier<Integer> launchReleaseSupplier,
                                 Supplier<Boolean> autoHomeSupplier, Supplier<Boolean> autoArmSupplier, Supplier<Boolean> autoStoreSupplier,
                                 Supplier<Integer> startTagRanging, Supplier<Integer> startTagCentering, Supplier<Boolean> releaseCenter,
-                                Supplier<Boolean> releaseRange){
+                                Supplier<Boolean> releaseRange, Supplier<Boolean> abortSupplier){
         this.sweepSpeedSupplier = sweepSpeedSupplier;
         this.sweepLiftSupplier = sweepLiftSupplier;
         this.robotLiftSupplier = robotLiftSupplier;
@@ -49,6 +50,7 @@ public class IntakeTeleopSettings {
         this.startTagCentering = startTagCentering;
         this.releaseCenter = releaseCenter;
         this.releaseRange = releaseRange;
+        this.abortSupplier = abortSupplier;
     }
 
     public static IntakeTeleopSettings makeDefault(Robot robot){
@@ -96,7 +98,8 @@ public class IntakeTeleopSettings {
             ()-> gamepad.b ? 1 : 0,
             ()-> gamepad.y ? 1 : 0,
                 releaseCenter::isFallingEdge,
-                releaseRange::isFallingEdge
+                releaseRange::isFallingEdge,
+                new EdgeSupplier(()->robot.opMode.gamepad1.a).getRisingEdgeSupplier()
         );
     }
 }

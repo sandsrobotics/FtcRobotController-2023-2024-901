@@ -12,9 +12,9 @@ public class AutoTest extends AutoRedWallAndAll {
         //transformFunc = (v) -> v.withY(-v.Y).withZ(-180 - v.Z); // Original Adi
         transformFunc = (v) -> v;
         // transformFunc = (v) -> v.withY(-v.Y).withZ(AngleMath.scaleAngle(-180 + v.Z)); //tjk
-        customStartPos = new Vector3(1.5*23.5,-62,-90); // red board TEST side
+        customStartPos = new Vector3(1.5*23.5,-1*23.5,-180); // red board TEST side
         midPark = false;
-        isRed = false;
+        isRed = true;
         parkOnly = true;
         isBoard = false;
     }

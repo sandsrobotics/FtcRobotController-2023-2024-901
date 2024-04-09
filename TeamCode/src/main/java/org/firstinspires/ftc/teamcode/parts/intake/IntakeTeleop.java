@@ -76,6 +76,8 @@ public class IntakeTeleop extends LoopedPartImpl<Intake, IntakeTeleopSettings, O
         }
         else if(settings.releaseCenter.get())
             parent.startRunCenter();
+        else if(settings.abortSupplier.get())
+            parent.abortRange = false;
 
 
         parent.parent.opMode.telemetry.addData("pix", parent.getPix() + 1);
