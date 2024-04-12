@@ -48,17 +48,21 @@ public class TeamPropDetectionPipeline extends OpenCvPipeline
     /*
      * The core values which define the location and size of the sample regions
      */
+    static final double leftTagLeftTopLeft = 50;
     static final Point REGION1_TOPLEFT_ANCHOR_POINT = new Point(0,400);
     static final Point REGION2_TOPLEFT_ANCHOR_POINT = new Point(550,350);
     static final Point REGION3_TOPLEFT_ANCHOR_POINT = new Point(1080,400);
-    static final Point REGION4_TOPLEFT_ANCHOR_POINT = new Point(0,0);
-    static final Point REGION5_TOPLEFT_ANCHOR_POINT = new Point(213,0);
-    static final Point REGION6_TOPLEFT_ANCHOR_POINT = new Point(426,0);
-    static final Point REGION7_TOPLEFT_ANCHOR_POINT = new Point(639,0);
-    static final Point REGION8_TOPLEFT_ANCHOR_POINT = new Point(852,0);
-    static final Point REGION9_TOPLEFT_ANCHOR_POINT = new Point(1080,0);
-    static final int REGION_WIDTH = 200;
-    static final int REGION_HEIGHT = 200;
+    static final Point REGION4_TOPLEFT_ANCHOR_POINT = new Point(leftTagLeftTopLeft,0);
+    static final Point REGION5_TOPLEFT_ANCHOR_POINT = new Point(REGION4_TOPLEFT_ANCHOR_POINT.x + 213,0);
+    static final Point REGION6_TOPLEFT_ANCHOR_POINT = new Point(REGION5_TOPLEFT_ANCHOR_POINT.x + 213,0);
+    static final Point REGION7_TOPLEFT_ANCHOR_POINT = new Point(REGION6_TOPLEFT_ANCHOR_POINT.x + 200,0);
+    static final Point REGION8_TOPLEFT_ANCHOR_POINT = new Point(REGION7_TOPLEFT_ANCHOR_POINT.x + 200,0);
+    static final Point REGION9_TOPLEFT_ANCHOR_POINT = new Point(REGION8_TOPLEFT_ANCHOR_POINT.x + 200,0);
+    static final int REGION_WIDTH = 50;
+    static final int REGION_HEIGHT = 150;
+    static final int tpREGION_WIDTH = 200;
+    static final int tpREGION_HEIGHT = 200;
+    public int pixMax;
 
     /*
      * Points which actually define the sample region rectangles, derived from above values
@@ -81,20 +85,20 @@ public class TeamPropDetectionPipeline extends OpenCvPipeline
             REGION1_TOPLEFT_ANCHOR_POINT.x,
             REGION1_TOPLEFT_ANCHOR_POINT.y);
     Point region1_pointB = new Point(
-            REGION1_TOPLEFT_ANCHOR_POINT.x + REGION_WIDTH,
-            REGION1_TOPLEFT_ANCHOR_POINT.y + REGION_HEIGHT);
+            REGION1_TOPLEFT_ANCHOR_POINT.x + tpREGION_WIDTH,
+            REGION1_TOPLEFT_ANCHOR_POINT.y + tpREGION_HEIGHT);
     Point region2_pointA = new Point(
             REGION2_TOPLEFT_ANCHOR_POINT.x,
             REGION2_TOPLEFT_ANCHOR_POINT.y);
     Point region2_pointB = new Point(
-            REGION2_TOPLEFT_ANCHOR_POINT.x + REGION_WIDTH,
-            REGION2_TOPLEFT_ANCHOR_POINT.y + REGION_HEIGHT);
+            REGION2_TOPLEFT_ANCHOR_POINT.x + tpREGION_WIDTH,
+            REGION2_TOPLEFT_ANCHOR_POINT.y + tpREGION_HEIGHT);
     Point region3_pointA = new Point(
             REGION3_TOPLEFT_ANCHOR_POINT.x,
             REGION3_TOPLEFT_ANCHOR_POINT.y);
     Point region3_pointB = new Point(
-            REGION3_TOPLEFT_ANCHOR_POINT.x + REGION_WIDTH,
-            REGION3_TOPLEFT_ANCHOR_POINT.y + REGION_HEIGHT);
+            REGION3_TOPLEFT_ANCHOR_POINT.x + tpREGION_WIDTH,
+            REGION3_TOPLEFT_ANCHOR_POINT.y + tpREGION_HEIGHT);
 
     Point region4_pointA = new Point(
             REGION4_TOPLEFT_ANCHOR_POINT.x,
@@ -294,8 +298,7 @@ public class TeamPropDetectionPipeline extends OpenCvPipeline
          */
         int maxOneTwo = Math.max(avg1, avg2);
         int max = Math.max(maxOneTwo, avg3);
-        int pixMax = Math.max(Math.max(Math.max(avg4, avg5), avg6), Math.max(Math.max(avg7, avg8), avg9));
-
+        this.pixMax = Math.max(Math.max(Math.max(avg4, avg5), avg6), Math.max(Math.max(avg7, avg8), avg9));
         /*
          * Now that we found the max, we actually need to go and
          * figure out which sample region that value was from
@@ -348,6 +351,7 @@ public class TeamPropDetectionPipeline extends OpenCvPipeline
         if(pixMax > 0){
             pixelPosition = pixMax == avg4 ? PixelPosition.LEFTTAGLEFT : pixMax == avg5 ? PixelPosition.LEFTTAGRIGHT : pixMax == avg6 ? PixelPosition.CENTERTAGLEFT : pixMax == avg7 ? PixelPosition.CENTERTAGRIGHT : pixMax == avg8 ? PixelPosition.RIGHTTAGLEFT : PixelPosition.RIGHTTAGRIGHT;
         }
+
         /*
          * Render the 'input' buffer to the viewport. But note this is not
          * simply rendering the raw camera feed, because we called functions
@@ -363,6 +367,9 @@ public class TeamPropDetectionPipeline extends OpenCvPipeline
 
     public PixelPosition getPixAnalysis()
     {
+//        if(pixMax > 0){
+//            pixelPosition = pixMax == avg4 ? PixelPosition.LEFTTAGLEFT : pixMax == avg5 ? PixelPosition.LEFTTAGRIGHT : pixMax == avg6 ? PixelPosition.CENTERTAGLEFT : pixMax == avg7 ? PixelPosition.CENTERTAGRIGHT : pixMax == avg8 ? PixelPosition.RIGHTTAGLEFT : PixelPosition.RIGHTTAGRIGHT;
+//        }
         return pixelPosition;
     }
 

@@ -14,10 +14,10 @@ public class AutoRedBoard extends AutoRedWallAndAll {
         isRed = true;
         parkOnly = false;
         isBoard = true;
-        extraPix = false;
+        extraPix = true;
         dropLow = true;
-        stackPathSide = false;
-        dropPathSide = false;
+        stackPathSide = true;
+        dropPathSide = true;
         stackSide = true;
     }
 }

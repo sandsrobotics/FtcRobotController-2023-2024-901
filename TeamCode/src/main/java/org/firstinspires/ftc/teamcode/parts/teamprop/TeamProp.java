@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.apache.commons.lang3.ObjectUtils;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.vision.VisionPortal;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraException;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -14,9 +15,12 @@ import om.self.ezftc.core.part.LoopedPartImpl;
 
 public class TeamProp extends LoopedPartImpl<Robot, ObjectUtils.Null, ObjectUtils.Null> {
     OpenCvCamera camera;
+    private VisionPortal visionPortal;
     public TeamPropDetectionPipeline pipeline;
+    public TeamPropDetectionPipeline.PixelPosition pixPos;
+
     public TeamProp(Robot parent) {
-        super(parent, "tags");
+        super(parent, "team prop");
     }
 
     @Override
@@ -24,6 +28,8 @@ public class TeamProp extends LoopedPartImpl<Robot, ObjectUtils.Null, ObjectUtil
 
     @Override
     public void onInit() {
+//        visionPortal
+
         HardwareMap hardwareMap = parent.opMode.hardwareMap;
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
@@ -55,6 +61,8 @@ public class TeamProp extends LoopedPartImpl<Robot, ObjectUtils.Null, ObjectUtil
 
     @Override
     public void onRun() {
+//        if(pixPos != pipeline.pixelPosition)
+        pixPos = pipeline.getPixAnalysis();
         pipeline.pixelPosition = pipeline.getPixAnalysis();
     }
 
