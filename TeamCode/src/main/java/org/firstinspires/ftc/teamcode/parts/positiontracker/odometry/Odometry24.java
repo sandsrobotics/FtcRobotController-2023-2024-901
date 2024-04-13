@@ -141,7 +141,8 @@ public class Odometry24 extends LoopedPartImpl<PositionTracker, OdometrySettings
     public double lkYPos, lkXPos;
     public boolean lkUseFusedHeading = false;
 
-    Vector3 lkOdoRobotOffset = new Vector3 (1.75,0.25,0);          // map odo to robot (so it holds turn position better)
+    //Vector3 lkOdoRobotOffset = new Vector3 (1.75,0.25,0);          // map odo to robot (so it holds turn position better)
+    Vector3 lkOdoRobotOffset = new Vector3 (1.625,0,0);          // map odo to robot (so it holds turn position better)
     //Vector3 lkOdoFieldStart = new Vector3 (-36,63,-90);  // field start position [blue right slot]
     //Vector3 lkOdoFieldStart = parent.lkStartPosition;                   //?? This value probably not ready when constructed; linked?
     Vector3 lkOdoFieldStart = new Vector3 (0,0,0);
@@ -155,7 +156,7 @@ public class Odometry24 extends LoopedPartImpl<PositionTracker, OdometrySettings
     void lkOnStart() {
         lkEncoderY0 = getHardware().XWheel.getCurrentPosition();
         lkEncoderXL0 = getHardware().leftYWheel.getCurrentPosition();
-        lkEncoderXR0 = getHardware().rightYWheel.getCurrentPosition();
+        lkEncoderXR0 = -getHardware().rightYWheel.getCurrentPosition();
         lkImuHeading0 = parent.lkRawImuAngle;
         lkOdoHeading0 = lkGetOdoHeading();
         lkGlobalHeading0 = lkImuHeading0;
@@ -172,7 +173,7 @@ public class Odometry24 extends LoopedPartImpl<PositionTracker, OdometrySettings
         /* Update encoder readings */
         lkEncoderY = getHardware().XWheel.getCurrentPosition();
         lkEncoderXL = getHardware().leftYWheel.getCurrentPosition();
-        lkEncoderXR = getHardware().rightYWheel.getCurrentPosition();
+        lkEncoderXR = -getHardware().rightYWheel.getCurrentPosition();
 
         /* Update heading */
         lkImuHeading = parent.lkRawImuAngle;  //.returnImuHeading();

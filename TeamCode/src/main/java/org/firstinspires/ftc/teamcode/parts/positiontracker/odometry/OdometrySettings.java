@@ -31,7 +31,7 @@ public class OdometrySettings {
         return new OdometrySettings(
                 (((40268+40341)/2+(40301+40343)/2+(40275+40358)/2))/(117.5*3), //82300 / 48.0, old: 220,000
                 ((42425+41303)+(41873+41900)+(41394+42559)+(41947+41794))/16, //169619 - old: 440928
-                new Vector3(-0.25, 1.5,0), // old offset : -.25, 1.75, 0. yWheel offsets: x - 9.75/2, y - 3
+                new Vector3(0, 1.625,0), // old offset : -.25, 1.75, 0. yWheel offsets: x - 9.75/2, y - 3
                 .57,
                 1,
                 .485,
@@ -41,3 +41,4 @@ public class OdometrySettings {
         );
     }
 }
+//                new Vector3(-0.25, 1.5,0), // old offset : -.25, 1.75, 0. yWheel offsets: x - 9.75/2, y - 3

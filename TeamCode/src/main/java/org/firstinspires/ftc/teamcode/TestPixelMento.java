@@ -76,10 +76,10 @@ public class TestPixelMento extends LinearOpMode {
         XRelativeSolver solver = new XRelativeSolver(drive);
         //EncoderTracker et = new EncoderTracker(pt);
         //pt.positionSourceId = EncoderTracker.class;
-        Odometry24 odo = new Odometry24(pt);
-        pt.positionSourceId = Odometry24.class;
-//        Odometry odo = new Odometry(pt); // THIS MAY BE FIXED (warning: breaks robot lifter and sweeper cause of something with encoders)
-//        pt.positionSourceId = Odometry.class;
+//        Odometry24 odo = new Odometry24(pt);
+//        pt.positionSourceId = Odometry24.class;
+        Odometry odo = new Odometry(pt); // THIS MAY BE FIXED (warning: breaks robot lifter and sweeper cause of something with encoders)
+        pt.positionSourceId = Odometry.class;
         Intake intake = new Intake(robot);
         new IntakeTeleop(intake);
         TeamProp tp = new TeamProp(robot);

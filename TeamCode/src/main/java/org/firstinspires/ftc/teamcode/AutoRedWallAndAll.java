@@ -387,21 +387,21 @@ public class AutoRedWallAndAll extends LinearOpMode{
 //        autoTask.addStep(()->intake.setSweepPosition(4)); // for easier autonomous setup
     }
 
-    private void dropAuto(TimedTask autoTask){
-        Vector3 centerAT = new Vector3(1.5,-1.55,180);
+    private void dropAuto(TimedTask autoTask) {
+        Vector3 centerAT = new Vector3(1.5, -1.55, 180);
         Vector3 leftAT = new Vector3(1.5, -1.22, 180);
         Vector3 rightAT = new Vector3(1.5, -1.72, 180);
-        Vector3 scenterAT = new Vector3(1.8,-1.55,180);
+        Vector3 scenterAT = new Vector3(1.8, -1.55, 180);
         Vector3 sleftAT = new Vector3(1.8, -1.27, 180);
         Vector3 srightAT = new Vector3(1.8, -1.72, 180);
         Vector3 setupTagsMid = new Vector3(1.5, -.5, 180);
         Vector3 postTag = new Vector3(1, -2.5, 180);
         Vector3 postStack = new Vector3(-2.2, stackPathSide ? -2.5 : -.5, 180);
         Vector3 throughRigging = new Vector3(-2, -2.5, 180);
-        Vector3 pixCheck = new Vector3(1.5,-1.5,180);
+        Vector3 pixCheck = new Vector3(1.5, -1.5, 180);
 
-        if(!isBoard && extraPix) {
-            if(stackSide)
+        if (!isBoard && extraPix) {
+            if (stackSide)
                 positionSolver.addMoveToTaskEx(tileToInchAuto(postStack), autoTask);
             if (stackPathSide) {
                 positionSolver.addMoveToTaskEx(tileToInchAuto(throughRigging), autoTask);
@@ -413,8 +413,13 @@ public class AutoRedWallAndAll extends LinearOpMode{
             }
         }
 //        autoTask.addStep(() -> intake.setGrabPosition(3));
-        if(right || !isBoard)
-           intake.addAutoDropToTask(autoTask);
+        if (isRed){
+            if(right||!isBoard)
+            intake.addAutoDropToTask(autoTask);
+        } else {
+            if(!center && !right && !left)
+            intake.addAutoDropToTask(autoTask);
+        }
 //        if(!isBoard) {
         if(!isBoard) {
             positionSolver.addMoveToTaskEx(tileToInchAuto(pixCheck), autoTask);
