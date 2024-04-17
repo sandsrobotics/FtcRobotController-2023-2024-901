@@ -20,6 +20,7 @@ public class AutoBlueBoard extends AutoRedWallAndAll {
         stackPathSide = true;
         dropPathSide = true;
         stackSide = true;
+        purple = false;
     }
 
 }

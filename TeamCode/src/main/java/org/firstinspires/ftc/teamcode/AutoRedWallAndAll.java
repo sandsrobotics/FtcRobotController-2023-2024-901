@@ -58,6 +58,7 @@ public class AutoRedWallAndAll extends LinearOpMode{
     public boolean extraWallPix;
     public boolean dropLow;
     public boolean stackSide;
+    public boolean purple;
     private boolean retryStack;
 //  DASHBOARD VARIABLES (static public)
     static public int shortDelay = 1000;
@@ -76,7 +77,7 @@ public class AutoRedWallAndAll extends LinearOpMode{
     private int parkPosition;
     private int pixels;
     private TeamPropDetectionPipeline.PixelPosition pixPos;
-    private final double stackDist = 2.43*23.5 - 7.3125;
+    private final double stackDist = 58.5 - 7.3125;
     private final double stack2Dist = 35.25 - 7.3125; // was 35.25 (1.5 * 23.5)
     private final double lLeft = 44 - 7.3125;
     private final double lRight = lLeft - 3.0;
@@ -103,6 +104,7 @@ public class AutoRedWallAndAll extends LinearOpMode{
         extraWallPix = false;
         stackSide = false;
         retryStack = true;
+        purple = false;
     }
 
     private Vector3 tileToInchAuto(Vector3 tiles){
@@ -248,10 +250,14 @@ public class AutoRedWallAndAll extends LinearOpMode{
 //            aprilTag.setDesiredTag(center ? 5 : left ? 4 : 6);
         }
         else {
-            if(left)
+            if(left) {
                 left = false;
-            else if(right)
+                right = true;
+            }
+            else if(right) {
+                right = false;
                 left = true;
+            }
 //            aprilTag.setDesiredTag(center ? 2 : left ? 1 : 3);
         }
 
@@ -309,6 +315,8 @@ public class AutoRedWallAndAll extends LinearOpMode{
                     wallAutoGrabPix(autoTask);
                     parkAuto(autoTask);
                 }
+                else if(purple)
+                    wallAuto(autoTask);
                 else {
                     wallAuto(autoTask);
                     dropAuto(autoTask);
@@ -316,6 +324,7 @@ public class AutoRedWallAndAll extends LinearOpMode{
                 }
             }
 //            parkAuto(autoTask);
+            autoTask.addStep(()->intake.setSweepPosition(1));
         } else {
             testAuto(autoTask);
         }
@@ -397,7 +406,10 @@ public class AutoRedWallAndAll extends LinearOpMode{
         Vector3 setupTagsMid = new Vector3(1.5, -.5, 180);
         Vector3 postTag = new Vector3(1, -2.5, 180);
         Vector3 postStack = new Vector3(-2.2, stackPathSide ? -2.5 : -.5, 180);
+        Vector3 beforeRig = new Vector3(-1.5, -1.5, 90);
         Vector3 throughRigging = new Vector3(-2, -2.5, 180);
+        Vector3 throughRigging2 = new Vector3(-1.5, -2.5, 90);
+        Vector3 throughRigging2turn = new Vector3(-1.5, -2.5, 180);
         Vector3 pixCheck = new Vector3(1.5, -1.5, 180);
 
         if (!isBoard && extraPix) {
@@ -411,45 +423,77 @@ public class AutoRedWallAndAll extends LinearOpMode{
                 autoTask.addStep(() -> positionSolver.setSettings(PositionSolverSettings.loseSettings));
                 positionSolver.addMoveToTaskEx(tileToInchAuto(setupTagsMid), autoTask);
             }
+        } else if (!isBoard){
+            if(stackPathSide) {
+                positionSolver.addMoveToTaskEx(tileToInchAuto(beforeRig), autoTask);
+                positionSolver.addMoveToTaskEx(tileToInchAuto(throughRigging2), autoTask);
+                positionSolver.addMoveToTaskEx(tileToInchAuto(throughRigging2turn), autoTask);
+                autoTask.addStep(() -> positionSolver.setSettings(PositionSolverSettings.loseSettings));
+                positionSolver.addMoveToTaskEx(tileToInchAuto(postTag), autoTask);
+            }
+            else{
+                autoTask.addStep(() -> positionSolver.setSettings(PositionSolverSettings.loseSettings));
+                positionSolver.addMoveToTaskEx(tileToInchAuto(setupTagsMid), autoTask);
+            }
         }
+
+        if(!isBoard)
+            intake.addAutoDropToTask(autoTask);
 //        autoTask.addStep(() -> intake.setGrabPosition(3));
-        if (isRed){
-            if(right||!isBoard)
-            intake.addAutoDropToTask(autoTask);
-        } else {
-            if(!center && !right && !left)
-            intake.addAutoDropToTask(autoTask);
-        }
+//        if (isRed){
+//            if(right||!isBoard)
+//                intake.addAutoDropToTask(autoTask);
+//        } else {
+//            if(!center && !right && !left)
+//                intake.addAutoDropToTask(autoTask);
+//        }
 //        if(!isBoard) {
         if(!isBoard) {
             positionSolver.addMoveToTaskEx(tileToInchAuto(pixCheck), autoTask);
             autoTask.addDelay(2000); // lock position to detect the pixel better
             autoTask.addStep(() -> {
                 pixPos = tp.pipeline.getPixAnalysis();
-                intake.ulSideDist =
-                    pixPos == TeamPropDetectionPipeline.PixelPosition.RIGHTTAGLEFT && right ? rRight :
-                    pixPos == TeamPropDetectionPipeline.PixelPosition.LEFTTAGRIGHT && left ? lLeft :
-                    pixPos == TeamPropDetectionPipeline.PixelPosition.LEFTTAGLEFT && left ? lRight :
-                    pixPos == TeamPropDetectionPipeline.PixelPosition.RIGHTTAGRIGHT && right ? rLeft :
-                    pixPos == TeamPropDetectionPipeline.PixelPosition.CENTERTAGLEFT && center ? cRight :
-                    pixPos == TeamPropDetectionPipeline.PixelPosition.CENTERTAGRIGHT && center ? cLeft : 100;
+                if(isRed) {
+                    intake.ulSideDist =
+                            pixPos == TeamPropDetectionPipeline.PixelPosition.RIGHTTAGLEFT && right ? rRight :
+                                    pixPos == TeamPropDetectionPipeline.PixelPosition.LEFTTAGRIGHT && left ? lLeft :
+                                            pixPos == TeamPropDetectionPipeline.PixelPosition.LEFTTAGLEFT && left ? lRight :
+                                                    pixPos == TeamPropDetectionPipeline.PixelPosition.RIGHTTAGRIGHT && right ? rLeft :
+                                                            pixPos == TeamPropDetectionPipeline.PixelPosition.CENTERTAGLEFT && center ? cRight :
+                                                                    pixPos == TeamPropDetectionPipeline.PixelPosition.CENTERTAGRIGHT && center ? cLeft : 100000;
+                }
+                else {
+                    intake.ulSideDist =
+                            pixPos == TeamPropDetectionPipeline.PixelPosition.RIGHTTAGLEFT && left ? rRight :
+                                    pixPos == TeamPropDetectionPipeline.PixelPosition.LEFTTAGRIGHT && right ? lLeft :
+                                            pixPos == TeamPropDetectionPipeline.PixelPosition.LEFTTAGLEFT && right ? lRight :
+                                                    pixPos == TeamPropDetectionPipeline.PixelPosition.RIGHTTAGRIGHT && left ? rLeft :
+                                                            pixPos == TeamPropDetectionPipeline.PixelPosition.CENTERTAGLEFT && center ? cRight :
+                                                                    pixPos == TeamPropDetectionPipeline.PixelPosition.CENTERTAGRIGHT && center ? cLeft : 100000;
+
+                }
             });
-            autoTask.addStep(() -> intake.sideRangeDist = intake.ulSideDist);
+            autoTask.addStep(() -> {
+                if(isRed)
+                    intake.sideRangeDist = intake.ulSideDist;
+                else
+                    intake.sideRangeDist = 3*23.5 - intake.ulSideDist;
+            });
 //        autoTask.addDelay(3000);
         }
         autoTask.addStep(()->positionSolver.setSettings(PositionSolverSettings.defaultSettings));
         positionSolver.addMoveToTaskExNoWait(tileToInchAuto(center ? centerAT : left ? leftAT : rightAT), autoTask);
         autoTask.addStep(()->positionSolver.setSettings(PositionSolverSettings.defaultNoAlwaysRunSettings));
 
-        if(!isBoard && extraPix){
-            autoTask.addConditionalDelay(400, ()-> dropLow = false); //give swing arm time to get out before lowering slider
+        if(!isBoard){
+            autoTask.addConditionalDelay(400, ()-> !dropLow); //give swing arm time to get out before lowering slider
             autoTask.addStep(()-> intake.setSlidePosition(dropLow ? 650 : 1000));
             autoTask.addStep(() -> {
                 intake.run = true;
                 if(isRed) intake.runRed = true;
                 else intake.runBlue = true;
             });
-            autoTask.addConditionalDelay(7000, ()->!intake.getHardware().grabberLimitSwitch.getState());
+            autoTask.addConditionalDelay(5000, ()->!intake.getHardware().grabberLimitSwitch.getState());
             autoTask.addStep(()-> {
                 intake.run = false;
                 intake.runRed = false;
@@ -461,23 +505,24 @@ public class AutoRedWallAndAll extends LinearOpMode{
             autoTask.addStep(()->positionSolver.setSettings(PositionSolverSettings.defaultSettings));
             positionSolver.addMoveToTaskExNoWait(tileToInchAuto(center ? sleftAT : scenterAT), autoTask);
             autoTask.addStep(()->positionSolver.setSettings(PositionSolverSettings.defaultNoAlwaysRunSettings));
-            autoTask.addConditionalDelay(750, ()->extraPix = false);
+            autoTask.addConditionalDelay(750, ()->!extraPix);
             if(dropLow)
                 autoTask.addStep(()-> intake.setSlidePosition(1000));
 //            autoTask.addDelay(500); //magic deelay *(DO NORT MREOVE)
         } else{
             autoTask.addDelay(500); //give swing arm time to get out before lowering slider (ALSO MAGICAL)
             autoTask.addStep(()-> intake.setSlidePosition(dropLow ? 700 : 1000));
+            autoTask.addDelay(750); //magic deelay *(DO NORT MREOVE)
         }
-        autoTask.addDelay(250); //magic deelay *(DO NORT MREOVE)
-        if(!isBoard) {
+        if(!isBoard && extraPix) {
+            autoTask.addDelay(750); //magic deelay *(DO NORT MREOVE)
             autoTask.addStep((Runnable) () -> intake.run = true);
-            autoTask.addConditionalDelay(7000, () -> !intake.getHardware().grabberLimitSwitch.getState() || !extraPix);
+            autoTask.addConditionalDelay(3000, () -> !intake.getHardware().grabberLimitSwitch.getState());
             autoTask.addStep((Runnable) () -> intake.run = false);
             autoTask.addStep(() -> intake.setGrabPosition(1));
             autoTask.addConditionalDelay(100, ()->extraPix = false);
             intake.addFoundRangeToTask(autoTask);
-        } else {
+        } else if(isBoard){
             autoTask.addStep((Runnable) () -> intake.run = true);
             autoTask.addConditionalDelay(7000, ()->!intake.getHardware().grabberLimitSwitch.getState());
             autoTask.addStep((Runnable) ()->intake.run = false);
@@ -496,6 +541,8 @@ public class AutoRedWallAndAll extends LinearOpMode{
         Vector3 startPos = new Vector3(-1.5, -2.6, -90);
         Vector3 pushProp = new Vector3(-1.5, -1.38, -90);
         Vector3 centerRight = new Vector3(-1.7, -1.38, 0);
+        Vector3 centerP = new Vector3(-1.7, -1.5, -90);
+        Vector3 centerTurn = new Vector3(-1.7, -1.5, 90);
         Vector3 moveRight = new Vector3(-1.7, -.5, 0);
         Vector3 dropCenter = new Vector3(-1.5, -.6, -90);
         Vector3 dropPixLeft = new Vector3(-1.49, -1.38, 180);
@@ -513,27 +560,31 @@ public class AutoRedWallAndAll extends LinearOpMode{
 
         autoTask.addStep(()->positionSolver.setSettings(PositionSolverSettings.defaultSettings));
         autoTask.addStep(()->intake.setGrabPosition(3));
-        if (center){
-            positionSolver.addMoveToTaskEx(tileToInchAuto(dropCenter), autoTask);
+        if (center && stackPathSide){
+            positionSolver.addMoveToTaskEx(tileToInchAuto(centerP), autoTask);
+            positionSolver.addMoveToTaskEx(tileToInchAuto(centerTurn), autoTask);
             autoTask.addTimedStep(()->intake.sweepWithPower(1), 1000);
-            positionSolver.addMoveToTaskEx(tileToInchAuto(preSetupTagsMid), autoTask);
-
+//            positionSolver.addMoveToTaskEx(tileToInchAuto(preSetupTagsMid), autoTask);
+        } else if (center){
+            positionSolver.addMoveToTaskEx(tileToInchAuto(dropCenter), autoTask);
+            autoTask.addTimedStep(()->intake.sweepWithPower(1), 750);
+            autoTask.addStep(() -> positionSolver.setSettings(PositionSolverSettings.loseSettings));
         }
         else if(left){
             positionSolver.addMoveToTaskEx(tileToInchAuto(pushProp), autoTask);
             positionSolver.addMoveToTaskEx(tileToInchAuto(dropPixLeft), autoTask);
             autoTask.addTimedStep(()->intake.sweepWithPower(1), 1000);
-            positionSolver.addMoveToTaskEx(tileToInchAuto(preSetupTagsMid), autoTask);
+//            positionSolver.addMoveToTaskEx(tileToInchAuto(preSetupTagsMid), autoTask);
         } else {
             positionSolver.addMoveToTaskEx(tileToInchAuto(pushProp), autoTask);
             positionSolver.addMoveToTaskEx(tileToInchAuto(preDropPixRight), autoTask);
             positionSolver.addMoveToTaskEx(tileToInchAuto(dropPixRight), autoTask);
             autoTask.addTimedStep(()->intake.sweepWithPower(1), 1000);
-            positionSolver.addMoveToTaskEx(tileToInchAuto(centerRight),autoTask);
-            positionSolver.addMoveToTaskEx(tileToInchAuto(moveRight), autoTask);
-            positionSolver.addMoveToTaskEx(tileToInchAuto(preSetupTagsMidRIGHT), autoTask);
+//            positionSolver.addMoveToTaskEx(tileToInchAuto(centerRight),autoTask);
+//            positionSolver.addMoveToTaskEx(tileToInchAuto(moveRight), autoTask);
+//            positionSolver.addMoveToTaskEx(tileToInchAuto(preSetupTagsMidRIGHT), autoTask);
         }
-        positionSolver.addMoveToTaskEx(tileToInchAuto(setupTagsMid), autoTask);
+//        positionSolver.addMoveToTaskEx(tileToInchAuto(setupTagsMid), autoTask);
     }
 
     private void boardAuto(TimedTask autoTask){
@@ -564,6 +615,7 @@ public class AutoRedWallAndAll extends LinearOpMode{
         else {
             positionSolver.addMoveToTaskEx(tileToInchAuto(turnRight), autoTask);
             autoTask.addTimedStep(()->intake.sweepWithPower(1), 1000);
+            intake.addAutoDropToTask(autoTask);
         }
         autoTask.addDelay(250);
         if(center || left) {
@@ -674,11 +726,15 @@ public class AutoRedWallAndAll extends LinearOpMode{
             positionSolver.addMoveToTaskEx(tileToInchAuto(moveRight), autoTask);
         }
         positionSolver.addMoveToTaskEx(tileToInchAuto(preSetupTagsMid), autoTask);
+        if(stackSide) {
+            positionSolver.addMoveToTaskEx(tileToInchAuto(preStack), autoTask);
+            positionSolver.addMoveToTaskEx(tileToInchAuto(preSecondStack), autoTask);
+        }
         autoTask.addStep(() -> intake.setSweepPosition(3));
         intake.addAutoGrabToTask(autoTask, false);
         autoTask.addStep(() -> positionSolver.setSettings(PositionSolverSettings.slowSettings));
 //        autoTask.addDelay(2000);
-        positionSolver.addMoveToTaskExNoWait(tileToInchAuto(stack), autoTask);
+        positionSolver.addMoveToTaskExNoWait(tileToInchAuto(stackSide ? stack2 : stack), autoTask);
         autoTask.addStep(()->positionSolver.setSettings(PositionSolverSettings.slowNoAlwaysRunSettings));
         autoTask.addDelay(750);
         autoTask.addStep(()->{

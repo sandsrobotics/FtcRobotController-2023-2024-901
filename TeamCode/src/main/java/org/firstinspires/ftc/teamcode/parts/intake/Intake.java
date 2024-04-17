@@ -562,13 +562,14 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
 
 
     public void doTagRanging(DriveControl control) {
-        final double desiredAutoDistance = 7.0;
-        final double desiredTeleDistance = 7.0;
+        final double desiredAutoDistance = 6.9;
+        final double desiredTeleDistance = 6.35;
         final double xPower = 0.08;
-        final double yPower = 0.05;
+        final double yPower = 0.055;
         final double zPower = 0.01;
-        final double yAutoPower = 0.05;
+        final double yAutoPower = 0.053;
         boolean atDist = Math.abs(Math.min(55, getRedSideDist()) - sideRangeDist) <= 1.0;
+        boolean atBDist = Math.abs(Math.min(55, getBlueSideDist()) - sideRangeDist) <= 1.0;
 //        final double sideRangeDist = 15.0;
 
         if(runRed){
@@ -578,11 +579,10 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
                 runRed = false;
             }
         }
-        else if(runBlue) {
-            if (!(getBlueSideDist() - sideRangeDist <= 0.5 && getBlueSideDist() - sideRangeDist >= -0.5)) {
-                control.power = control.power.addX((getBlueSideDist() - sideRangeDist) * xPower);
+        else if(runBlue){
+            if(!atBDist && !(getBlueSideDist() > sideRangeDist - 18)){
+                control.power = control.power.addX((Math.min(60, getBlueSideDist()) - sideRangeDist) * xPower);
             } else {
-                triggerEvent(Events.foundRangeComplete);
                 runBlue = false;
             }
         }
@@ -611,7 +611,7 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
                 }
             }
         }
-        if (run) {
+        else if (run) {
             if (getHardware().grabberLimitSwitch.getState()) {
                 control.power = control.power.addY((Math.min(getBackDist(), 15) - desiredAutoDistance) * -yAutoPower);
             } else if (!getHardware().grabberLimitSwitch.getState()) {

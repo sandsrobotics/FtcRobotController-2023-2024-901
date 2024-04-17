@@ -1,8 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-@Autonomous(name="3 BLUE-WALL", group="Test")
-public class AutoBlueWall extends AutoRedWallAndAll {
+@Autonomous(name="5 Purple only", group="Test")
+public class AutoPurple extends AutoRedWallAndAll {
     @Override
 
     public void initAuto(){
@@ -11,13 +11,13 @@ public class AutoBlueWall extends AutoRedWallAndAll {
         isRed = false;
         parkOnly = false;
         isBoard = false;
-        extraPix = true;
+        extraPix = false;
         dropLow = false;
         stackPathSide = false;
         dropPathSide = false;
         extraWallPix = false;
         stackSide = false;
-        purple = false;
+        purple = true;
     }
 
 }

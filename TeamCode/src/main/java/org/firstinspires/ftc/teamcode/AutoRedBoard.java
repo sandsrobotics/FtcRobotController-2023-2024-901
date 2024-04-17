@@ -19,5 +19,6 @@ public class AutoRedBoard extends AutoRedWallAndAll {
         stackPathSide = true;
         dropPathSide = true;
         stackSide = true;
+        purple = false;
     }
 }
