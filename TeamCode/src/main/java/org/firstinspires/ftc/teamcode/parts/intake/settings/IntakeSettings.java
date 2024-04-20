@@ -89,7 +89,7 @@ public class IntakeSettings {
                 2,
                 0.209,
                 0.320,
-                0.776,
+                0.8,
                 8699,
                 201,
                 .95,
@@ -107,7 +107,7 @@ public class IntakeSettings {
                 .325,
                 .42,
                 .56,
-                .358,
+                .347,
                 .6,
                 .58
                 );

@@ -303,7 +303,7 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
         this.pixLine = pix;
     }
 
-    public void robotLiftWithPower(int power) {
+    public void robotLiftWithPower(double power) {
         motorPower = power;
 
         if (power > 0) { // going up
@@ -366,19 +366,17 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
         autoArmTask.restart();
     }
 //
-//    public void constructAutoStore() {
-//        autoStoreTask.autoStart = false;
-//
-//        autoStoreTask.addStep(this::preAutoMove);
-//        autoStoreTask.addStep(() -> setLaunchAngle(2));
-//        autoStoreTask.addStep(this::postAutoMove);
+    public void constructAutoStore() {
+        autoStoreTask.autoStart = true;
+
+        autoStoreTask.addTimedStep(()->robotLiftWithPower(-.2), 750);
 //        autoStoreTask.addStep(() -> triggerEvent(Events.storeComplete));
-//    }
-//
-//    public void startAutoStore() {
-//        armed = false;
-//        autoStoreTask.restart();
-//    }
+    }
+
+    public void startAutoStore() {
+        armed = false;
+        autoStoreTask.restart();
+    }
 
     public void constructAutoGrab() {
         autoGrabTask.autoStart = false;
@@ -562,7 +560,7 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
 
 
     public void doTagRanging(DriveControl control) {
-        final double desiredAutoDistance = 6.9;
+        final double desiredAutoDistance = 6.8;
         final double desiredTeleDistance = 6.35;
         final double xPower = 0.08;
         final double yPower = 0.055;
@@ -654,7 +652,7 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
         constructAutoGrab();
         constructAutoHome();
         constructAutoArm();
-//        constructAutoStore();
+        constructAutoStore();
         constructFinishDrop();
         constructFoundRange();
         constructRunCenter();
@@ -696,6 +694,7 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
         parent.opMode.telemetry.addData("back dist (red)", getBackDist());
 //        parent.opMode.telemetry.addData("side dist (blue)", getBlueSideDist());
         parent.opMode.telemetry.addData("abort range", abortRange);
+        parent.opMode.telemetry.addData("limit switch pressed: ", !getHardware().grabberLimitSwitch.getState());
 
         if(lastBackDist != 322)
             lastBackDist = getBackDist();
@@ -715,6 +714,7 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
 
         drive.addController(Intake.ContollerNames.distanceContoller, this::doTagRanging);
         dropCounter = 0;
+//        startAutoStore();
     }
 
     @Override
