@@ -27,13 +27,13 @@ public class IntakeTeleopSettings {
     public final Supplier<Boolean> releaseRange;
     public final Supplier<Boolean> abortSupplier;
 
-    public IntakeTeleopSettings(Supplier<Integer> sweepSpeedSupplier,
-                                Supplier<Integer> sweepLiftSupplier, Supplier<Integer> robotLiftSupplier,
-                                Supplier<Integer> grabberSupplier,
+    public IntakeTeleopSettings(Supplier<Integer> sweepSpeedSupplier, Supplier<Integer> sweepLiftSupplier,
+                                Supplier<Integer> robotLiftSupplier, Supplier<Integer> grabberSupplier,
                                 Supplier<Integer> pixChangeSupplier, Supplier<Boolean> autoDropSupplier,
                                 Supplier<Boolean> autoDockSupplier, Supplier<Integer> launchReleaseSupplier,
-                                Supplier<Boolean> autoHomeSupplier, Supplier<Boolean> autoArmSupplier, Supplier<Boolean> autoStoreSupplier,
-                                Supplier<Integer> startTagRanging, Supplier<Integer> startTagCentering, Supplier<Boolean> releaseCenter,
+                                Supplier<Boolean> autoHomeSupplier, Supplier<Boolean> autoArmSupplier,
+                                Supplier<Boolean> autoStoreSupplier, Supplier<Integer> startTagRanging,
+                                Supplier<Integer> startTagCentering, Supplier<Boolean> releaseCenter,
                                 Supplier<Boolean> releaseRange, Supplier<Boolean> abortSupplier){
         this.sweepSpeedSupplier = sweepSpeedSupplier;
         this.sweepLiftSupplier = sweepLiftSupplier;
