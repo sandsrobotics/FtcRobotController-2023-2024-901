@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -31,7 +32,7 @@ import om.self.ezftc.utils.Vector3;
 import om.self.ezftc.utils.VectorMath;
 import om.self.supplier.suppliers.EdgeSupplier;
 
-@TeleOp(name="1 Teleop", group="Linear Opmode")
+@TeleOp(name="Pixel Teleop", group="Linear Opmode")
 public class TestPixel extends LinearOpMode {
     double tileSide = 23.5;
     boolean slideDone = false;

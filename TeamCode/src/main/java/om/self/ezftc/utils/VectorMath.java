@@ -47,6 +47,16 @@ public class VectorMath {
         return new Vector3(xOut, yOut, val.Z);
     }
 
+//    function move(point, angle, unit) {
+//  const rad = Math.radians(angle % 360);
+//
+//        let [x, y] = point;
+//        x += unit * Math.sin(rad);
+//        y -= unit * Math.cos(rad);
+//
+//        return [x, y];
+//    }
+
 //    public static Vector3 translateTagAsVector2(Vector3 val, double x, double y){
 //        double r = Math.toRadians(val.Z);
 //        double xOut = val.X + y * Math.sin(r) + x * Math.cos(r);

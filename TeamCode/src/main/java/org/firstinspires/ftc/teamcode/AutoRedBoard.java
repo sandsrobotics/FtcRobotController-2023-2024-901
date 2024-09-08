@@ -1,9 +1,10 @@
 package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import om.self.ezftc.utils.Vector3;
 
-
+@Disabled
 @Autonomous(name="2 RED-BOARD", group="Test")
 public class AutoRedBoard extends AutoRedWallAndAll {
     @Override

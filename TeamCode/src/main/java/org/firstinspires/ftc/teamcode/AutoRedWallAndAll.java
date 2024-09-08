@@ -3,6 +3,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -33,7 +34,7 @@ import om.self.task.core.Group;
 import om.self.task.other.TimedTask;
 
 import static om.self.ezftc.utils.Constants.tileSide;
-
+@Disabled
 @Config
 @Autonomous(name="1 RED-WALL", group="Test")
 public class AutoRedWallAndAll extends LinearOpMode{
@@ -168,48 +169,48 @@ public class AutoRedWallAndAll extends LinearOpMode{
             else
                 telemetry.addData("Team Prop", tp.pipeline.position);
 
-            if(new EdgeSupplier(()-> r.opMode.gamepad1.right_bumper).isRisingEdge()) {
-                startDelay += 1000;
-            }
-            else if(new EdgeSupplier(()->r.opMode.gamepad1.left_bumper).isRisingEdge()) {
-                startDelay -= 1000;
-                if(startDelay < 0) startDelay = 0;
-            } else if(new EdgeSupplier(()->r.opMode.gamepad1.a).isRisingEdge()) {
-                parkPosition = 1;
-                maxDelay = isBoard ? 18000 : 6000;
-            } else if(new EdgeSupplier(()->r.opMode.gamepad1.b).isRisingEdge()) {
-                parkPosition = 2;
-                maxDelay = isBoard ? 18000 : 6000;
-            } else if(new EdgeSupplier(()->r.opMode.gamepad1.x).isRisingEdge()) {
-                parkPosition = 3;
-                maxDelay = isBoard ? 20000 : 7000;
-            } else if(new EdgeSupplier(()->r.opMode.gamepad1.y).isRisingEdge()) {
-                parkPosition = 0;
-            } else if(new EdgeSupplier(()->r.opMode.gamepad1.dpad_up).isRisingEdge()) {
-                extraPix = true;
-            } else if(new EdgeSupplier(()->r.opMode.gamepad1.dpad_down).isRisingEdge()) {
-                extraPix = false;
-            } else if(new EdgeSupplier(()->r.opMode.gamepad1.dpad_left).isRisingEdge()){
-                dropLow = true;
-            } else if(new EdgeSupplier(()->r.opMode.gamepad1.dpad_right).isRisingEdge()){
-                dropLow = false;
-            } else if(new EdgeSupplier(()->r.opMode.gamepad2.dpad_left).isRisingEdge()){
-                stackPathSide = false;
-            } else if(new EdgeSupplier(()->r.opMode.gamepad2.dpad_right).isRisingEdge()){
-                stackPathSide = true;
-            } else if(new EdgeSupplier(()->r.opMode.gamepad2.dpad_down).isRisingEdge()){
-                dropPathSide = false;
-            } else if(new EdgeSupplier(()->r.opMode.gamepad2.dpad_up).isRisingEdge()){
-                dropPathSide = true;
-            } else if(new EdgeSupplier(()->r.opMode.gamepad2.x).isRisingEdge()){
-                extraWallPix = false;
-            } else if(new EdgeSupplier(()->r.opMode.gamepad2.y).isRisingEdge()){
-                extraWallPix = true;
-            } else if(new EdgeSupplier(()->r.opMode.gamepad2.right_bumper).isRisingEdge()){
-                stackSide = true;
-            } else if(new EdgeSupplier(()->r.opMode.gamepad2.left_bumper).isRisingEdge()){
-                stackSide = false;
-            }
+//            if(new EdgeSupplier(()-> r.opMode.gamepad1.right_bumper).isRisingEdge()) {
+//                startDelay += 1000;
+//            }
+//            else if(new EdgeSupplier(()->r.opMode.gamepad1.left_bumper).isRisingEdge()) {
+//                startDelay -= 1000;
+//                if(startDelay < 0) startDelay = 0;
+//            } else if(new EdgeSupplier(()->r.opMode.gamepad1.a).isRisingEdge()) {
+//                parkPosition = 1;
+//                maxDelay = isBoard ? 18000 : 6000;
+//            } else if(new EdgeSupplier(()->r.opMode.gamepad1.b).isRisingEdge()) {
+//                parkPosition = 2;
+//                maxDelay = isBoard ? 18000 : 6000;
+//            } else if(new EdgeSupplier(()->r.opMode.gamepad1.x).isRisingEdge()) {
+//                parkPosition = 3;
+//                maxDelay = isBoard ? 20000 : 7000;
+//            } else if(new EdgeSupplier(()->r.opMode.gamepad1.y).isRisingEdge()) {
+//                parkPosition = 0;
+//            } else if(new EdgeSupplier(()->r.opMode.gamepad1.dpad_up).isRisingEdge()) {
+//                extraPix = true;
+//            } else if(new EdgeSupplier(()->r.opMode.gamepad1.dpad_down).isRisingEdge()) {
+//                extraPix = false;
+//            } else if(new EdgeSupplier(()->r.opMode.gamepad1.dpad_left).isRisingEdge()){
+//                dropLow = true;
+//            } else if(new EdgeSupplier(()->r.opMode.gamepad1.dpad_right).isRisingEdge()){
+//                dropLow = false;
+//            } else if(new EdgeSupplier(()->r.opMode.gamepad2.dpad_left).isRisingEdge()){
+//                stackPathSide = false;
+//            } else if(new EdgeSupplier(()->r.opMode.gamepad2.dpad_right).isRisingEdge()){
+//                stackPathSide = true;
+//            } else if(new EdgeSupplier(()->r.opMode.gamepad2.dpad_down).isRisingEdge()){
+//                dropPathSide = false;
+//            } else if(new EdgeSupplier(()->r.opMode.gamepad2.dpad_up).isRisingEdge()){
+//                dropPathSide = true;
+//            } else if(new EdgeSupplier(()->r.opMode.gamepad2.x).isRisingEdge()){
+//                extraWallPix = false;
+//            } else if(new EdgeSupplier(()->r.opMode.gamepad2.y).isRisingEdge()){
+//                extraWallPix = true;
+//            } else if(new EdgeSupplier(()->r.opMode.gamepad2.right_bumper).isRisingEdge()){
+//                stackSide = true;
+//            } else if(new EdgeSupplier(()->r.opMode.gamepad2.left_bumper).isRisingEdge()){
+//                stackSide = false;
+//            }
 
 
             if(startDelay > maxDelay) startDelay = maxDelay;
@@ -295,17 +296,22 @@ public class AutoRedWallAndAll extends LinearOpMode{
         });
         // add calls to special autonomous action collections in methods below
         if(!parkOnly) {
+//            intake.addAutoStoreToTask(autoTask);
             autoTask.addDelay(startDelay);
             if (isBoard) {
                 if(extraPix) {
                     boardAutoGrabPix(autoTask);
                     autoTask.addStep(checker);
                 }
-                else{
+                else if(purple){
                     boardAuto(autoTask);
                     dropAuto(autoTask);
-                    parkAuto(autoTask);
+                    demoAuto(autoTask);
                 }
+            } else if(purple){
+                boardAuto(autoTask);
+                dropAuto(autoTask);
+                demoAuto(autoTask);
             }
             else {
                 if(extraPix && extraWallPix) {
@@ -315,8 +321,8 @@ public class AutoRedWallAndAll extends LinearOpMode{
                     wallAutoGrabPix(autoTask);
                     parkAuto(autoTask);
                 }
-                else if(purple)
-                    wallAuto(autoTask);
+//                else if(purple)
+//                    wallAuto(autoTask);
                 else {
                     wallAuto(autoTask);
                     dropAuto(autoTask);
@@ -325,7 +331,7 @@ public class AutoRedWallAndAll extends LinearOpMode{
             }
 //            parkAuto(autoTask);
         } else {
-            testAuto(autoTask);
+//            testAuto(autoTask);
         }
 
         while (opModeIsActive()) {
@@ -400,7 +406,7 @@ public class AutoRedWallAndAll extends LinearOpMode{
     private void dropAuto(TimedTask autoTask) {
         Vector3 centerAT = new Vector3(1.5, -1.55, 180);
         Vector3 leftAT = new Vector3(1.5, -1.22, 180);
-        Vector3 rightAT = new Vector3(1.5, -1.72, 180);
+        Vector3 rightAT = new Vector3(1.5, -1.75, 180);
         Vector3 scenterAT = new Vector3(1.8, -1.55, 180);
         Vector3 sleftAT = new Vector3(1.8, -1.27, 180);
         Vector3 srightAT = new Vector3(1.8, -1.72, 180);
@@ -488,7 +494,7 @@ public class AutoRedWallAndAll extends LinearOpMode{
 
         if(!isBoard){
             autoTask.addConditionalDelay(400, ()-> !dropLow); //give swing arm time to get out before lowering slider
-            autoTask.addStep(()-> intake.setSlidePosition(dropLow ? 650 : 1000));
+            autoTask.addStep(()-> intake.setSlidePosition(650));
             autoTask.addStep(() -> {
                 intake.run = true;
                 if(isRed) intake.runRed = true;
@@ -512,7 +518,7 @@ public class AutoRedWallAndAll extends LinearOpMode{
 //            autoTask.addDelay(500); //magic deelay *(DO NORT MREOVE)
         } else{
             autoTask.addDelay(500); //give swing arm time to get out before lowering slider (ALSO MAGICAL)
-            autoTask.addStep(()-> intake.setSlidePosition(dropLow ? 700 : 1000));
+            autoTask.addStep(()-> intake.setSlidePosition(700));
             autoTask.addDelay(750); //magic deelay *(DO NORT MREOVE)
         }
         if(!isBoard && extraPix) {
@@ -997,6 +1003,27 @@ public class AutoRedWallAndAll extends LinearOpMode{
         if(parkPosition == 3)
             positionSolver.addMoveToTaskEx(tileToInchAuto(board), autoTask);
         parkAuto(autoTask);
+    }
+
+    public void demoAuto(TimedTask autoTask){
+        Vector3 planeLaunchPos = new Vector3(1.5, -1, 180);
+        //Vector3 preClimbPos = new Vector3(1, -.5, 180);
+        Vector3 preClimbPos = new Vector3(1, .5, 180);
+        //Vector3 climbPos = new Vector3(0, -.5, 180);
+        Vector3 climbPos = new Vector3(-.4,.5,180);
+
+        intake.addAutoDockToTask(autoTask);
+        positionSolver.addMoveToTaskEx(tileToInchAuto(planeLaunchPos), autoTask);
+        autoTask.addStep(()->intake.setLaunchState(1));
+        autoTask.addDelay(2000);
+        positionSolver.addMoveToTaskEx(tileToInchAuto(preClimbPos), autoTask);
+        autoTask.addDelay(2000);
+        intake.addAutoArmToTask(autoTask);
+        autoTask.addDelay(2000);
+        positionSolver.addMoveToTaskEx(tileToInchAuto(climbPos), autoTask);
+        autoTask.addStep(()->positionSolver.setSettings(PositionSolverSettings.setopSetting));
+        autoTask.addDelay(2000);
+        intake.addAutoStoreToTask(autoTask);
     }
 
     public void setExtraPix(boolean extraPix) {

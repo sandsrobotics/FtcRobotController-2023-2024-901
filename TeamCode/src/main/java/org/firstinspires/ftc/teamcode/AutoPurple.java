@@ -1,18 +1,22 @@
 package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
-@Autonomous(name="5 Purple only", group="Test")
+import om.self.ezftc.utils.Vector3;
+
+@Autonomous(name="Pixel Demo (Purple)", group="Test")
 public class AutoPurple extends AutoRedWallAndAll {
     @Override
 
     public void initAuto(){
-        transformFunc = (v) -> v.withY(-v.Y).withZ(-v.Z);
-        midPark = true;
-        isRed = false;
+        transformFunc = (v) -> v;
+        customStartPos = new Vector3(.5 * 23.5,-62,-90); // red board side
+        midPark = false;
+        isRed = true;
         parkOnly = false;
-        isBoard = false;
+        isBoard = true;
         extraPix = false;
-        dropLow = false;
+        dropLow = true;
         stackPathSide = false;
         dropPathSide = false;
         extraWallPix = false;

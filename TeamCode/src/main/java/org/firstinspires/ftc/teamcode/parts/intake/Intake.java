@@ -307,14 +307,12 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
         motorPower = power;
 
         if (power > 0) { // going up
-//            isTop = false;
-//            if (getHardware().liftLowLimitSwitch.getState())
-//                motorPower = 0.0;
+            isTop = false;
         } else if (power < 0) { // going down
-//            if (getHardware().robotLiftMotor.getCurrent(CurrentUnit.MILLIAMPS) > 5500 || isTop) {
-//                isTop = true;
-//                motorPower = 0.0;
-//            }
+            if (getHardware().robotLiftMotor.getCurrent(CurrentUnit.MILLIAMPS) > 8000 || isTop) {
+                isTop = true;
+                motorPower = 0.0;
+            }
             if(!sweepStored)
                 setSweepPosition(4);
         }
@@ -358,6 +356,7 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
         autoArmTask.addStep(this::preAutoMove);
         autoArmTask.addTimedStep(() -> robotLiftWithPower(1), 1500);
 //        autoArmTask.addStep(() -> setLaunchAngle(1));
+        autoArmTask.addStep(() -> robotLiftWithPower(0));
         autoArmTask.addStep(this::postAutoMove);
         autoArmTask.addStep(() -> triggerEvent(Events.armComplete));
     }
@@ -365,17 +364,30 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
     public void startAutoArm() {
         autoArmTask.restart();
     }
+
+    public void addAutoArmToTask(TaskEx task){
+        task.addStep(autoArmTask::restart);
+//        task.waitForEvent(eventManager.getContainer(Events.armComplete));
+    }
 //
     public void constructAutoStore() {
-        autoStoreTask.autoStart = true;
+        autoStoreTask.autoStart = false;
 
-        autoStoreTask.addTimedStep(()->robotLiftWithPower(-.2), 750);
-//        autoStoreTask.addStep(() -> triggerEvent(Events.storeComplete));
+        autoArmTask.addStep(this::preAutoMove);
+        autoStoreTask.addTimedStep(()->robotLiftWithPower(-1), 3000);
+        autoArmTask.addStep(() -> robotLiftWithPower(0));
+        autoArmTask.addStep(this::postAutoMove);
+        autoStoreTask.addStep(() -> triggerEvent(Events.storeComplete));
     }
 
     public void startAutoStore() {
         armed = false;
         autoStoreTask.restart();
+    }
+
+    public void addAutoStoreToTask(TaskEx task){
+        task.addStep(autoStoreTask::restart);
+        task.waitForEvent(eventManager.getContainer(Events.storeComplete));
     }
 
     public void constructAutoGrab() {
@@ -682,7 +694,7 @@ public class Intake extends ControllablePart<Robot, IntakeSettings, IntakeHardwa
 
         sweepWithPower(control.sweeperPower);
         setGrabPosition(control.grabberPosition);
-        robotLiftWithPower(control.robotLiftPosition);
+//        robotLiftWithPower(control.robotLiftPosition);
         setLaunchState(control.launchState);
         setSweepPosition(control.sweepLiftPosition);
         setRanging(control.ranging);

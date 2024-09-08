@@ -50,4 +50,15 @@ public class PositionSolverSettings {
             new SolverSettings(2.5, 10, false, 10000, new PIDCoefficients(0.0125, 0, 0), .4)
     );
 
+    public static PositionSolverSettings slowScanSettings = new PositionSolverSettings(
+            new SolverSettings(3, 5, true, 10000, new PIDCoefficients(0.05, 0, 0), 1),
+            new SolverSettings(3, 5, true, 10000, new PIDCoefficients(0.05, 0, 0), 1),
+            new SolverSettings(5, 1, true, 10000, new PIDCoefficients(0.0125, 0, 0), .25)
+    );
+
+    public static PositionSolverSettings setopSetting = new PositionSolverSettings(
+            new SolverSettings(3, 5, true, 10000, new PIDCoefficients(0, 0, 0), 0),
+            new SolverSettings(3, 5, true, 10000, new PIDCoefficients(0, 0, 0), 0),
+            new SolverSettings(5, 1, true, 10000, new PIDCoefficients(0, 0, 0), 0)
+    );
 }

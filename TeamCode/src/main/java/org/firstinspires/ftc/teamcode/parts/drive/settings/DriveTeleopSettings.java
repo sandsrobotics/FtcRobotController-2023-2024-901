@@ -33,19 +33,20 @@ public class DriveTeleopSettings {
 
     public static DriveTeleopSettings makeDefault(Robot robot){
         Gamepad gamepad = robot.opMode.gamepad1;
+        Gamepad gamepad2 = robot.opMode.gamepad2;
 
         return new DriveTeleopSettings(
                 () -> new Vector3(
-                        -gamepad.left_stick_x,
-                        -gamepad.left_stick_y,
-                        gamepad.right_stick_x
+                        gamepad.left_stick_x + gamepad2.left_stick_x,
+                        -gamepad.left_stick_y - gamepad2.left_stick_y,
+                        gamepad.right_stick_x + gamepad2.right_stick_x
                 ),
                 () -> gamepad.x,
                 new LatchedModifier().toSupplier(() -> gamepad.right_bumper),
-                1.0,
+                6.0,
                 //new LatchedModifier().toSupplier(() -> gamepad.b),
-                () -> gamepad.right_trigger > 0.5,
-                0.5
+                () -> true,//gamepad.right_trigger > 0.5,
+                0.6
         );
     }
 
@@ -54,16 +55,16 @@ public class DriveTeleopSettings {
 
         return new DriveTeleopSettings(
                 () -> new Vector3(
-                        -gamepad.left_stick_x,
+                        gamepad.left_stick_x,
                         gamepad.left_trigger - gamepad.right_trigger,
                         gamepad.right_stick_x
                 ),
                 () -> gamepad.x,
                 new LatchedModifier().toSupplier(() -> gamepad.x),
-                1.0,
+                6.0,
                 //new LatchedModifier().toSupplier(() -> gamepad.b),
-                () -> false,
-                0.5
+                () -> true,
+                0.6
         );
     }
 
